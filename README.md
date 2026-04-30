@@ -1,25 +1,119 @@
-# hackathon-edutech-mendoza-2026
-Plataforma web oficial para la Hackathon EduTech Mendoza 2026. Desarrollada de manera colaborativa con Astro y Supabase por estudiantes del IES 9-023 y el IES Tomás Alva Edison.
+# HEM2026 — Hackathon EduTech Mendoza 2026
 
-## Nombre de repo
-El nombre del repositorio se puede cambiar en cualquier momento.
-Por temas de comodidad y practicidad se podria optar por HEM-2026.
-Estas siglas indican el nombre actual:
-* H: Hackathon
-* E: Edutech
-* M: Mendoza
-Y la fecha de creacion.
+Plataforma web oficial para la **Hackathon EduTech Mendoza 2026**, desarrollada de manera colaborativa por estudiantes del **IES 9-023** y el **IES Tomás Alva Edison**.
 
-## Tecnologias - Desarrollo
-* Frontend: Astro
-* Backend: Supabase(Typescript si llega a ser necesario)
-* Control de versiones: Git/GitHub
+## ¿Por qué HEM2026?
 
-## Tecnologias - Despliegue
-* Vercel: Frontend (Raiz(main)-> Produccion / Develop-> Desarrollo,Test,Etc) -> Luego cada programador tendria su rama de desarrollo:
-  Ej: Nahuel_Develop -> test ok -> PR a Develop -> Test Ok -> PR a Produccion
-* Supabase: Backend(RLS, Loggin, Encriptacion, Etc) + TS (Gestion de datos, validacion extra)
-* Nic.ar: Si dan el ok de ambas instituciones comprar dominio .com.ar ($8500)
-* Sentry: Catch de errores, logs de errores, performance, ddos, etc. (Ademas vercel con las Vercel Analitycs)
-  
-   
+El nombre del repositorio utiliza un acrónimo práctico y fácil de recordar:
+
+| Letra | Significado |
+|-------|-------------|
+| **H** | Hackathon |
+| **E** | EduTech |
+| **M** | Mendoza |
+| **2026** | Año de realización |
+
+> El nombre puede cambiar en cualquier momento si el equipo lo decide, pero estas siglas servirán como identificador interno del proyecto.
+
+---
+
+## Tecnologías
+
+### Desarrollo
+
+| Tecnología | Rol | Descripción |
+|------------|-----|-------------|
+| [Astro](https://astro.build/) | Frontend | Framework web moderno con enfoque en rendimiento. Genera sitios estáticos (SSG) con hidratación parcial, ideal para una plataforma informativa con secciones interactivas. |
+| [Supabase](https://supabase.com/) | Backend | Backend-as-a-Service basado en PostgreSQL. Proporciona autenticación, base de datos con Row Level Security (RLS), almacenamiento y Edge Functions. |
+| TypeScript | Lenguaje | Se utiliza cuando es necesario para tipado estático y mayor robustez en la integración con Supabase. |
+| Git / GitHub | Control de versiones | Gestión colaborativa del código fuente con ramas protegidas y revisiones de código. |
+
+### Despliegue e Infraestructura
+
+| Servicio | Función | Configuración |
+|----------|---------|---------------|
+| [Vercel](https://vercel.com/) | Hosting del frontend | Deploys automáticos conectados a GitHub. `main` → Producción, `develop` → Preview/Staging. |
+| [Supabase](https://supabase.com/) | Backend en la nube | Base de datos PostgreSQL, autenticación, RLS, encriptación y Edge Functions para lógica serverless. |
+| [Sentry](https://sentry.io/) | Monitoreo y observabilidad | Captura de errores en tiempo real, logs, métricas de performance y protección contra anomalías. |
+| Vercel Analytics | Métricas de uso | Análisis de tráfico, Web Vitals y comportamiento de usuarios en producción. |
+| [Nic.ar](https://nic.ar/) | Dominio | Dominio `.com.ar` (pendiente aprobación institucional, ~$8500 ARS). |
+
+---
+
+## Flujo de Trabajo con Git
+
+El proyecto utiliza un flujo de ramas protegidas para garantizar la estabilidad de producción:
+
+```
+┌─────────────────┐    PR + Test OK    ┌──────────┐    PR + Test OK    ┌──────────────┐
+│ [Nombre]_Develop │ ─────────────────► │ develop  │ ─────────────────► │ main (Prod)  │
+└─────────────────┘                    └──────────┘                    └──────────────┘
+      Tu rama                           Staging                        Producción
+```
+
+1. Cada desarrollador trabaja en su propia rama: `[Nombre]_Develop`
+2. Cuando el trabajo está listo y testeado localmente → **Pull Request a `develop`**
+3. Una vez aprobado y probado en staging → **Pull Request a `main`** (Producción)
+
+> ⚠️ **Regla de oro:** Nunca hacer merge manual ni push directo a `main`. Todo pasa por Pull Request.
+
+Para más detalles, consultá el archivo [GIT_GUIDELINES.md](./GIT_GUIDELINES.md).
+
+---
+
+## Arquitectura de Carpetas
+
+El proyecto sigue la estructura estándar de Astro, adaptada a las necesidades del equipo:
+
+```
+HEM2026/
+│
+├── src/                        # Código fuente principal
+│   ├── pages/                  # Rutas y páginas (cada archivo = una ruta)
+│   │   ├── index.astro         # Página principal (/)
+│   │   └── ...
+│   ├── components/             # Componentes reutilizables (.astro, .tsx, .jsx)
+│   ├── layouts/                # Layouts base (header, footer, estructura general)
+│   ├── styles/                 # CSS global, variables y design tokens
+│   └── lib/                    # Utilidades, helpers e integración con Supabase
+│       └── supabase.ts         # Cliente de Supabase configurado
+│
+├── public/                     # Assets estáticos (imágenes, favicons, fonts)
+│   └── favicon.svg
+│
+├── .env.example                # Variables de entorno de ejemplo (SIN secrets)
+├── astro.config.mjs            # Configuración de Astro
+├── package.json                # Dependencias y scripts
+├── tsconfig.json               # Configuración de TypeScript
+│
+├── README.md                   # Este archivo
+├── GIT_GUIDELINES.md           # Guía de contribución y control de versiones
+├── BEST_PRACTICES.md           # Buenas prácticas y uso de IA
+├── LICENSE                     # Licencia del proyecto
+└── .gitignore                  # Archivos ignorados por Git
+```
+
+> **Nota:** Los archivos de Astro (`src/`, `public/`, `astro.config.mjs`, etc.) se generarán al inicializar el proyecto con `npm create astro@latest`.
+
+---
+
+## Documentación del Proyecto
+
+| Documento | Descripción |
+|-----------|-------------|
+| [README.md](./README.md) | Visión general del proyecto (este archivo) |
+| [GIT_GUIDELINES.md](./GIT_GUIDELINES.md) | Convenciones de ramas, commits y Pull Requests |
+| [BEST_PRACTICES.md](./BEST_PRACTICES.md) | Estándares de calidad, testing y uso responsable de IA |
+| [LICENSE](./LICENSE) | Licencia del proyecto |
+
+---
+
+## Equipo
+
+Proyecto desarrollado por estudiantes de:
+- **IES 9-023** — Instituto de Educación Superior
+- **IES Tomás Alva Edison** — Instituto de Educación Superior
+
+---
+
+*Hackathon EduTech Mendoza 2026 — Construyendo el futuro de la educación con tecnología.*
