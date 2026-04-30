@@ -141,3 +141,44 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# ================================
+# Stack específico: Astro + Supabase + Vercel
+# ================================
+
+# Astro build output
+.astro/
+
+# Supabase local
+.supabase/
+
+# Vercel
+.vercel
+
+# ================================
+# IDE y Editores
+# ================================
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ================================
+# Archivos del Sistema Operativo
+# ================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ================================
+# AI Agents / Gemini CLI (configuración personal)
+# ================================
+.gemini/
+
+# ================================
+# Carpetas personales (no del proyecto)
+# ================================
+ayudas_y_recursos/
