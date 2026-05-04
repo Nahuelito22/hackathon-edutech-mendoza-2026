@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Plataforma oficial de la Hackathon EduTech Mendoza 2026 - 2da edición." />
+  <title>EduTech 2026 | Hackathon Mendoza</title>
+
+  <style>
+    :root {
+      --bg: #05070d;
+      --bg-2: #0c1220;
+      --surface: rgba(255, 255, 255, 0.07);
+      --surface-strong: rgba(255, 255, 255, 0.12);
+      --text: #f8fafc;
+      --muted: #a8b3c7;
+      --primary: #00a7ff;
+      --secondary: #79e83f;
+      --accent: #ff9f1c;
+      --border: rgba(255, 255, 255, 0.14);
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      --radius: 24px;
+      --container: 1160px;
+      --nav-height: 76px;
+      --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body.theme-eco {
+      --bg: #ffffff;
+      --bg-2: #f5f5f5;
+      --surface: rgba(13, 91, 53, 0.07);
+      --surface-strong: rgba(13, 91, 53, 0.12);
+      --text: #0e1726;
+      --muted: #52606d;
+      --primary: #0d5b35;
+      --secondary: #09345f;
+      --accent: #f6a21a;
+      --border: rgba(9, 52, 95, 0.16);
+      --shadow: 0 22px 70px rgba(9, 52, 95, 0.14);
+    }
+
+    body.theme-contrast {
+      --bg: #071016;
+      --bg-2: #0d1b24;
+      --surface: rgba(255, 255, 255, 0.08);
+      --surface-strong: rgba(255, 255, 255, 0.13);
+      --text: #ffffff;
+      --muted: #c7d2dd;
+      --primary: #22a6f2;
+      --secondary: #60c878;
+      --accent: #ffd166;
+      --border: rgba(96, 200, 120, 0.22);
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 10%, color-mix(in srgb, var(--primary) 35%, transparent), transparent 30%),
+        radial-gradient(circle at 85% 12%, color-mix(in srgb, var(--secondary) 26%, transparent), transparent 32%),
+        radial-gradient(circle at 50% 85%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 34%),
+        linear-gradient(180deg, var(--bg), var(--bg-2) 50%, var(--bg));
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.12;
+      background-image:
+        linear-gradient(color-mix(in srgb, var(--primary) 45%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--secondary) 35%, transparent) 1px, transparent 1px);
+      background-size: 46px 46px;
+      mask-image: linear-gradient(to bottom, #000, transparent 75%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    img,
+    svg {
+      display: block;
+      max-width: 100%;
+    }
+
+    .container {
+      width: min(calc(100% - 32px), var(--container));
+      margin-inline: auto;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 1rem;
+      top: -100px;
+      z-index: 999;
+      padding: 0.8rem 1rem;
+      border-radius: 999px;
+      background: var(--primary);
+      color: #031017;
+      font-weight: 900;
+    }
+
+    .skip-link:focus {
+      top: 1rem;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      border-bottom: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 84%, transparent);
+      backdrop-filter: blur(18px);
+    }
+
+    .navbar {
+      min-height: var(--nav-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 950;
+      font-size: 1.08rem;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 12px 34px color-mix(in srgb, var(--primary) 24%, transparent);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand-mark::before {
+      content: "";
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.86);
+      border-top-color: transparent;
+      border-radius: 50%;
+      transform: rotate(-25deg);
+    }
+
+    .nav-menu,
+    .nav-actions {
+      display: none;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .nav-menu a {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 0.93rem;
+      padding: 0.65rem 0.75rem;
+      border-radius: 999px;
+      transition: 0.2s ease;
+    }
+
+    .nav-menu a:hover,
+    .nav-menu a:focus-visible {
+      color: var(--text);
+      background: var(--surface);
+      outline: none;
+    }
+
+    .mobile-toggle {
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 1.3rem;
+    }
+
+    .mobile-panel {
+      display: none;
+      padding-bottom: 1rem;
+    }
+
+    .mobile-panel.is-open {
+      display: block;
+    }
+
+    .mobile-panel a {
+      display: block;
+      margin-top: 0.55rem;
+      padding: 0.9rem 1rem;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-weight: 850;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      min-height: 44px;
+      padding: 0.82rem 1.15rem;
+      border-radius: 999px;
+      border: 0;
+      cursor: pointer;
+      font-weight: 900;
+      letter-spacing: -0.015em;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      color: #061014;
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      box-shadow: 0 18px 42px color-mix(in srgb, var(--primary) 24%, transparent);
+    }
+
+    .btn-secondary {
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .btn-accent {
+      color: #1f1300;
+      background: var(--accent);
+      box-shadow: 0 18px 42px color-mix(in srgb, var(--accent) 22%, transparent);
+    }
+
+    .hero {
+      padding: 4.25rem 0 3.5rem;
+    }
+
+    .hero-grid {
+      display: grid;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: fit-content;
+      padding: 0.48rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .pulse {
+      width: 0.65rem;
+      height: 0.65rem;
+      border-radius: 999px;
+      background: var(--secondary);
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--secondary) 48%, transparent);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      70% {
+        box-shadow: 0 0 0 12px transparent;
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 transparent;
+      }
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 940px;
+      margin-bottom: 1rem;
+      font-size: clamp(2.6rem, 11vw, 6.6rem);
+      line-height: 0.88;
+      letter-spacing: -0.09em;
+    }
+
+    h1 span,
+    .gradient-text {
+      color: transparent;
+      background: linear-gradient(135deg, var(--primary), var(--secondary) 58%, var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .hero-copy {
+      max-width: 720px;
+      color: var(--muted);
+      font-size: clamp(1.04rem, 2.8vw, 1.28rem);
+      line-height: 1.72;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin: 1.6rem 0 1.4rem;
+    }
+
+    .event-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 1.2rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.7rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 850;
+    }
+
+    .hero-card {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      padding: 1.1rem;
+      border-radius: calc(var(--radius) + 10px);
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, var(--surface-strong), var(--surface)),
+        color-mix(in srgb, var(--bg-2) 74%, transparent);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -130px;
+      z-index: -1;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--primary) 28%, transparent);
+      filter: blur(8px);
+    }
+
+    .logo-stage {
+      min-height: 310px;
+      display: grid;
+      place-items: center;
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background:
+        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 38%),
+        linear-gradient(135deg, color-mix(in srgb, var(--bg) 88%, transparent), color-mix(in srgb, var(--bg-2) 88%, transparent));
+    }
+
+    .logo-emblem {
+      width: min(270px, 78vw);
+      filter: drop-shadow(0 20px 45px rgba(0, 0, 0, 0.35));
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .stat {
+      padding: 1rem;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.55rem;
+      letter-spacing: -0.05em;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    section {
+      padding: 3.5rem 0;
+      scroll-margin-top: calc(var(--nav-height) + 24px);
+    }
+
+    .section-heading {
+      display: grid;
+      gap: 0.65rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .section-heading h2 {
+      margin-bottom: 0;
+      font-size: clamp(2rem, 7vw, 3.6rem);
+      line-height: 0.98;
+      letter-spacing: -0.07em;
+    }
+
+    .section-heading p {
+      max-width: 760px;
+      color: var(--muted);
+      line-height: 1.72;
+    }
+
+    .cards-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--surface-strong), var(--surface));
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.08);
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      right: -30%;
+      bottom: -50%;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--primary) 15%, transparent);
+      pointer-events: none;
+    }
+
+    .icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 1rem;
+      border-radius: 16px;
+      border: 1px solid color-mix(in srgb, var(--primary) 32%, transparent);
+      background: color-mix(in srgb, var(--primary) 18%, transparent);
+      color: var(--primary);
+      font-size: 1.45rem;
+    }
+
+    .card h3 {
+      margin-bottom: 0.55rem;
+      font-size: 1.2rem;
+      letter-spacing: -0.035em;
+    }
+
+    .card p,
+    .card li {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .timeline-item {
+      display: grid;
+      gap: 0.6rem;
+      padding: 1.1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .timeline-date {
+      width: fit-content;
+      padding: 0.42rem 0.68rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--secondary) 18%, transparent);
+      color: var(--secondary);
+      font-size: 0.82rem;
+      font-weight: 950;
+    }
+
+    .timeline-item h3 {
+      margin: 0;
+    }
+
+    .timeline-item p {
+      margin-bottom: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .podium-wrap {
+      display: grid;
+      gap: 1rem;
+      align-items: end;
+      margin-bottom: 1.5rem;
+    }
+
+    .podium-card {
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--surface-strong), var(--surface));
+      box-shadow: var(--shadow);
+    }
+
+    .podium-card.first {
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+      background:
+        radial-gradient(circle at 25% 20%, color-mix(in srgb, var(--accent) 30%, transparent), transparent 36%),
+        linear-gradient(180deg, var(--surface-strong), var(--surface));
+    }
+
+    .rank {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 1rem;
+      border-radius: 18px;
+      background: var(--accent);
+      color: #211400;
+      font-size: 1.35rem;
+      font-weight: 1000;
+    }
+
+    .podium-card.second .rank {
+      background: var(--primary);
+      color: #00131d;
+    }
+
+    .podium-card.third .rank {
+      background: var(--secondary);
+      color: #051205;
+    }
+
+    .project-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .project-card {
+      padding: 1.1rem;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .project-card h3 {
+      margin-bottom: 0.35rem;
+    }
+
+    .project-card p {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.9rem;
+    }
+
+    .tag {
+      padding: 0.36rem 0.56rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--primary) 15%, transparent);
+      color: var(--primary);
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .split {
+      display: grid;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .check-list {
+      list-style: none;
+      display: grid;
+      gap: 0.75rem;
+      padding: 0;
+      margin: 0;
+    }
+
+    .check-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      padding: 0.95rem;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .check-list li::before {
+      content: "✓";
+      color: var(--secondary);
+      font-weight: 1000;
+    }
+
+    .form-preview {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .field label {
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 850;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 0.85rem 0.95rem;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 72%, transparent);
+      color: var(--text);
+      outline: none;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .field textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 18%, transparent);
+    }
+
+    .cta-band {
+      padding: 1.4rem;
+      border-radius: calc(var(--radius) + 10px);
+      border: 1px solid var(--border);
+      background:
+        radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--primary) 30%, transparent), transparent 36%),
+        radial-gradient(circle at 82% 22%, color-mix(in srgb, var(--secondary) 24%, transparent), transparent 35%),
+        linear-gradient(135deg, var(--surface-strong), var(--surface));
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .cta-band h2 {
+      margin-bottom: 0.8rem;
+      font-size: clamp(2rem, 7vw, 4rem);
+      line-height: 0.95;
+      letter-spacing: -0.075em;
+    }
+
+    .cta-band p {
+      max-width: 720px;
+      margin-inline: auto;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .footer {
+      padding: 2rem 0 6.2rem;
+      border-top: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 80%, transparent);
+    }
+
+    .footer-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .theme-panel {
+      position: fixed;
+      left: 50%;
+      bottom: 1rem;
+      z-index: 120;
+      transform: translateX(-50%);
+      width: min(calc(100% - 24px), 520px);
+      padding: 0.75rem;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+
+    .theme-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.55rem;
+    }
+
+    .theme-panel strong {
+      font-size: 0.85rem;
+      letter-spacing: -0.02em;
+    }
+
+    .theme-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+
+    .theme-btn {
+      display: grid;
+      place-items: center;
+      gap: 0.35rem;
+      padding: 0.62rem 0.55rem;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 950;
+    }
+
+    .theme-btn[aria-pressed="true"] {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
+    }
+
+    .swatches {
+      display: flex;
+      gap: 0.16rem;
+    }
+
+    .swatches span {
+      width: 13px;
+      height: 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    @media (min-width: 680px) {
+      .stats {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .timeline {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .podium-wrap {
+        grid-template-columns: 0.9fr 1.2fr 0.9fr;
+      }
+
+      .podium-card.first {
+        min-height: 250px;
+        order: 2;
+      }
+
+      .podium-card.second {
+        min-height: 210px;
+        order: 1;
+      }
+
+      .podium-card.third {
+        min-height: 190px;
+        order: 3;
+      }
+
+      .project-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr auto;
+        align-items: center;
+      }
+    }
+
+    @media (min-width: 920px) {
+      .nav-menu,
+      .nav-actions {
+        display: flex;
+      }
+
+      .mobile-toggle,
+      .mobile-panel {
+        display: none !important;
+      }
+
+      .hero {
+        padding: 5.5rem 0 5rem;
+      }
+
+      .hero-grid {
+        grid-template-columns: minmax(0, 1.14fr) minmax(330px, 0.86fr);
+      }
+
+      .split {
+        grid-template-columns: 0.9fr 1.1fr;
+      }
+
+      .project-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .theme-panel {
+        left: auto;
+        right: 1rem;
+        transform: none;
+        width: 360px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="theme-cyber">
+  <a class="skip-link" href="#inicio">Saltar al contenido</a>
+
+  <header class="site-header">
+    <div class="container">
+      <nav class="navbar" aria-label="Navegación principal">
+        <a class="brand" href="#inicio" aria-label="Ir al inicio">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>EduTech 2026</span>
+        </a>
+
+        <div class="nav-menu" aria-label="Enlaces principales">
+          <a href="#inicio">Inicio</a>
+          <a href="#acerca">Acerca</a>
+          <a href="#cronograma">Cronograma</a>
+          <a href="#ediciones">Ediciones Anteriores</a>
+        </div>
+
+        <div class="nav-actions">
+          <a class="btn btn-secondary" href="#login">Iniciar Sesión</a>
+          <a class="btn btn-primary" href="#registro">Registro</a>
+        </div>
+
+        <button class="mobile-toggle" id="mobileToggle" type="button" aria-label="Abrir menú" aria-expanded="false">
+          ☰
+        </button>
+      </nav>
+
+      <div class="mobile-panel" id="mobilePanel">
+        <a href="#inicio">Inicio</a>
+        <a href="#acerca">Acerca</a>
+        <a href="#cronograma">Cronograma</a>
+        <a href="#ediciones">Ediciones Anteriores</a>
+        <a href="#login">Iniciar Sesión</a>
+        <a href="#registro">Registro</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="inicio">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow">
+            <span class="pulse" aria-hidden="true"></span>
+            2da edición · Nivel Superior Mendoza
+          </span>
+
+          <h1 id="hero-title">
+            Ideas que hackean los <span>desafíos actuales de la educación</span>
+          </h1>
+
+          <p class="hero-copy">
+            Una experiencia intensiva, gratuita y colaborativa para diseñar soluciones EduTech con impacto real.
+            Organizan el IES 9-023 de Maipú y el IES Tomás Alva Edison.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#registro">Inscribirse ahora →</a>
+            <a class="btn btn-secondary" href="#cronograma">Ver cronograma</a>
+          </div>
+
+          <div class="event-pills" aria-label="Datos clave">
+            <span class="pill">💻 3 de junio · Virtual</span>
+            <span class="pill">📍 5 y 6 de junio · Presencial</span>
+            <span class="pill">👥 Equipos de 3 a 5</span>
+          </div>
+        </div>
+
+        <aside class="hero-card" aria-label="Resumen visual EduTech">
+          <div class="logo-stage">
+            <svg class="logo-emblem" viewBox="0 0 320 320" role="img" aria-label="Emblema conceptual EduTech 2026">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+                  <stop offset="0%" stop-color="var(--primary)" />
+                  <stop offset="58%" stop-color="var(--secondary)" />
+                  <stop offset="100%" stop-color="var(--accent)" />
+                </linearGradient>
+              </defs>
+
+              <circle cx="160" cy="160" r="118" fill="none" stroke="url(#g1)" stroke-width="12" opacity="0.82" />
+              <circle cx="160" cy="160" r="92" fill="rgba(255,255,255,0.08)" stroke="var(--border)" />
+
+              <path d="M82 132c26-15 51-15 78 0v86c-27-15-52-15-78 0z" fill="var(--secondary)" opacity="0.95" />
+              <path d="M160 132c27-15 52-15 78 0v86c-26-15-51-15-78 0z" fill="var(--secondary)" opacity="0.72" />
+              <path d="M82 132c26-15 51-15 78 0 27-15 52-15 78 0" fill="none" stroke="#071016" stroke-width="8" stroke-linecap="round" opacity="0.75" />
+
+              <path d="M112 99h96l20 35-68 38-68-38z" fill="var(--primary)" stroke="#071016" stroke-width="8" stroke-linejoin="round" />
+              <path d="M160 172l68-38v54" fill="none" stroke="#071016" stroke-width="8" stroke-linecap="round" />
+              <path d="M228 188v32" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" />
+              <circle cx="228" cy="228" r="9" fill="var(--accent)" />
+
+              <path d="M80 252c45 25 115 25 160 0" fill="none" stroke="url(#g1)" stroke-width="10" stroke-linecap="round" />
+
+              <text x="160" y="286" text-anchor="middle" fill="var(--text)" font-size="31" font-weight="900" letter-spacing="-1.5">
+                EduTech
+              </text>
+              <text x="160" y="309" text-anchor="middle" fill="var(--muted)" font-size="12" font-weight="800">
+                2° Hackathon Mendoza 2026
+              </text>
+            </svg>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <strong>3</strong>
+              <span>instancias</span>
+            </div>
+            <div class="stat">
+              <strong>10</strong>
+              <span>finalistas</span>
+            </div>
+            <div class="stat">
+              <strong>360°</strong>
+              <span>mirada educativa</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="acerca" aria-labelledby="about-title">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">Acerca del Hackathon</span>
+          <h2 id="about-title">Aprender, crear, validar y presentar.</h2>
+          <p>
+            La Hackathon EduTech Mendoza 2026 propone un espacio de trabajo intensivo donde estudiantes
+            identifican problemáticas educativas concretas y diseñan respuestas tecnológicas viables.
+          </p>
+        </div>
+
+        <div class="cards-grid">
+          <article class="card">
+            <div class="icon" aria-hidden="true">🎓</div>
+            <h3>Temática: Educación</h3>
+            <p>
+              Todas las propuestas parten de desafíos actuales del campo educativo: acceso, acompañamiento,
+              comunicación, evaluación, inclusión, gestión o aprendizaje.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="icon" aria-hidden="true">📍</div>
+            <h3>Sedes presenciales</h3>
+            <p>
+              Las jornadas se desarrollan entre el Espacio Cultural Julio Le Parc y la Escuela Edison,
+              combinando apertura, trabajo por equipos, pitch final y premiación.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="icon" aria-hidden="true">🤝</div>
+            <h3>Modalidad por equipos</h3>
+            <p>
+              Equipos diversos de 3 a 5 personas, con perfiles pedagógicos, técnicos, tecnológicos,
+              comunicacionales y creativos para potenciar cada solución.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="cronograma" aria-labelledby="schedule-title">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">Fechas clave</span>
+          <h2 id="schedule-title">Una hoja de ruta clara para llegar al pitch.</h2>
+          <p>
+            El evento combina una instancia virtual previa, una primera jornada de ideación y una segunda
+            jornada de desarrollo, evaluación, finalistas, pitch y cierre.
+          </p>
+        </div>
+
+        <div class="timeline">
+          <article class="timeline-item">
+            <span class="timeline-date">Mié. 3 de junio · 21:30 a 23:00</span>
+            <h3>Actividad virtual previa</h3>
+            <p>
+              Presentación general, bases y condiciones, encuadre metodológico y preparación estratégica.
+            </p>
+          </article>
+
+          <article class="timeline-item">
+            <span class="timeline-date">Vie. 5 de junio · 15:00 a 20:30</span>
+            <h3>Jornada presencial 1</h3>
+            <p>
+              Acreditación, conformación de equipos, apertura institucional, Design Sprint e ideación.
+            </p>
+          </article>
+
+          <article class="timeline-item">
+            <span class="timeline-date">Sáb. 6 de junio · 8:30 a 18:00</span>
+            <h3>Jornada presencial 2</h3>
+            <p>
+              Desarrollo, mentorías, entrega, selección de finalistas, pitch final, premiación y cierre.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="ediciones" aria-labelledby="previous-title">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">Ediciones anteriores</span>
+          <h2 id="previous-title">Proyectos que marcaron el camino.</h2>
+          <p>
+            Una mirada a soluciones destacadas de la primera edición y a la comunidad que impulsa
+            innovación educativa desde Mendoza.
+          </p>
+        </div>
+
+        <div class="podium-wrap" aria-label="Podio de proyectos destacados">
+          <article class="podium-card second">
+            <div>
+              <div class="rank">2</div>
+              <h3>Aula Conecta</h3>
+              <p>Plataforma de acompañamiento entre pares para trayectorias educativas.</p>
+            </div>
+            <div class="tag-row">
+              <span class="tag">Mentoría</span>
+              <span class="tag">Comunidad</span>
+            </div>
+          </article>
+
+          <article class="podium-card first">
+            <div>
+              <div class="rank">1</div>
+              <h3>Proyecto Guidia</h3>
+              <p>
+                Solución ganadora destacada por su claridad de problema, enfoque pedagógico y
+                potencial de aplicación institucional.
+              </p>
+            </div>
+            <div class="tag-row">
+              <span class="tag">Ganador</span>
+              <span class="tag">IA educativa</span>
+              <span class="tag">Impacto</span>
+            </div>
+          </article>
+
+          <article class="podium-card third">
+            <div>
+              <div class="rank">3</div>
+              <h3>EcoCampus</h3>
+              <p>Propuesta digital para organizar recursos, hábitos y participación sustentable.</p>
+            </div>
+            <div class="tag-row">
+              <span class="tag">Gestión</span>
+              <span class="tag">Sustentabilidad</span>
+            </div>
+          </article>
+        </div>
+
+        <div class="project-grid">
+          <article class="project-card">
+            <h3>MentorBot</h3>
+            <p>Asistente conversacional para orientar estudiantes en procesos académicos.</p>
+            <div class="tag-row">
+              <span class="tag">Chatbot</span>
+              <span class="tag">Orientación</span>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <h3>Ruta Lectora</h3>
+            <p>Gamificación para comprensión lectora y seguimiento de avances.</p>
+            <div class="tag-row">
+              <span class="tag">Gamificación</span>
+              <span class="tag">Lengua</span>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <h3>Lab Inclusivo</h3>
+            <p>Mockups accesibles para mejorar experiencias de aprendizaje.</p>
+            <div class="tag-row">
+              <span class="tag">Accesibilidad</span>
+              <span class="tag">UX</span>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <h3>Data Aula</h3>
+            <p>Tablero simple para visualizar indicadores y detectar alertas tempranas.</p>
+            <div class="tag-row">
+              <span class="tag">Datos</span>
+              <span class="tag">Gestión</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="bases" aria-labelledby="rules-title">
+      <div class="container split">
+        <div class="section-heading">
+          <span class="eyebrow">Bases y dinámica</span>
+          <h2 id="rules-title">Qué se evalúa y qué se entrega.</h2>
+          <p>
+            La propuesta debe explicar el problema educativo, la solución con base tecnológica y sus
+            posibilidades reales de implementación.
+          </p>
+
+          <ul class="check-list">
+            <li>Prototipo, mockup, propuesta documentada o formato equivalente.</li>
+            <li>Descripción breve del problema abordado y de la solución desarrollada.</li>
+            <li>Material de apoyo para pitch oral de equipos finalistas.</li>
+            <li>Criterios: innovación, viabilidad pedagógica y técnica, comunicación y colaboración.</li>
+          </ul>
+        </div>
+
+        <article class="card">
+          <div class="icon" aria-hidden="true">🏁</div>
+          <h3>Finalistas y pitch</h3>
+          <p>
+            El jurado selecciona 10 equipos finalistas. Cada equipo cuenta con 3 minutos para presentar
+            y hasta 3 minutos para responder preguntas.
+          </p>
+
+          <div class="tag-row">
+            <span class="tag">10 finalistas</span>
+            <span class="tag">3 min pitch</span>
+            <span class="tag">3 min preguntas</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="registro" aria-labelledby="register-title">
+      <div class="container split">
+        <div class="section-heading">
+          <span class="eyebrow">Registro</span>
+          <h2 id="register-title">Inscripción individual, gratuita y voluntaria.</h2>
+          <p>
+            Esta PoC incluye una vista migrable del formulario actual para integrarlo en la nueva plataforma.
+            Los equipos pueden declararse completos, incompletos o conformarse al inicio del evento.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#registro-form">Completar preinscripción</a>
+            <a class="btn btn-secondary" href="#bases">Leer bases</a>
+          </div>
+        </div>
+
+        <form class="card form-preview" id="registro-form">
+          <div class="field">
+            <label for="nombre">Apellido y nombre como aparece en el DNI *</label>
+            <input id="nombre" name="nombre" type="text" placeholder="Ej.: Pérez, Ana Laura" required />
+          </div>
+
+          <div class="field">
+            <label for="dni">DNI sin puntos *</label>
+            <input id="dni" name="dni" inputmode="numeric" placeholder="Ej.: 40123456" required />
+          </div>
+
+          <div class="field">
+            <label for="email">Correo electrónico *</label>
+            <input id="email" name="email" type="email" placeholder="tuemail@ejemplo.com" required />
+          </div>
+
+          <div class="field">
+            <label for="whatsapp">Número de WhatsApp *</label>
+            <input id="whatsapp" name="whatsapp" type="tel" placeholder="+54 9 261 ..." required />
+          </div>
+
+          <div class="field">
+            <label for="instagram">Perfil de Instagram</label>
+            <input id="instagram" name="instagram" type="text" placeholder="@usuario" />
+          </div>
+
+          <div class="field">
+            <label for="institucion">Institución en la que cursás *</label>
+            <select id="institucion" name="institucion" required>
+              <option value="">Seleccionar opción</option>
+              <option>IES N°9-023 Maipú</option>
+              <option>IES Tomás Alva Edison</option>
+              <option>Otra</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="anio">Año de cursado *</label>
+            <select id="anio" name="anio" required>
+              <option value="">Seleccionar opción</option>
+              <option>Estudiante de 1°</option>
+              <option>Estudiante de 2°</option>
+              <option>Estudiante de 3°</option>
+              <option>Otro</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="perfil">Perfil disciplinar *</label>
+            <select id="perfil" name="perfil" required>
+              <option value="">Seleccionar opción</option>
+              <option>Formación docente / Profesorado</option>
+              <option>Formación técnica / Tecnicatura</option>
+              <option>Otro</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="equipo">¿Ya tenés conformado tu equipo? *</label>
+            <select id="equipo" name="equipo" required>
+              <option value="">Seleccionar opción</option>
+              <option>Sí</option>
+              <option>No</option>
+              <option>Tenemos equipo incompleto</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="integrantes">DNI de integrantes del equipo</label>
+            <textarea id="integrantes" name="integrantes" placeholder="Separar por coma. Ej.: 40111222, 38999888"></textarea>
+          </div>
+
+          <button class="btn btn-accent" type="submit">Enviar inscripción demo</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="login" aria-labelledby="login-title">
+      <div class="container">
+        <div class="cta-band">
+          <span class="eyebrow">Panel participante</span>
+          <h2 id="login-title">Tu espacio para equipos, entregas y mentorías.</h2>
+          <p>
+            En la versión final, participantes podrán iniciar sesión para consultar su equipo, descargar
+            bases, subir entregables, ver horarios y recibir novedades de la organización.
+          </p>
+
+          <div class="hero-actions" style="justify-content:center">
+            <a class="btn btn-primary" href="#registro">Crear cuenta</a>
+            <a class="btn btn-secondary" href="#cronograma">Explorar evento</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="brand" href="#inicio">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>EduTech 2026</span>
+        </a>
+
+        <p style="color: var(--muted); margin: 0.85rem 0 0; line-height: 1.6;">
+          © 2026 Hackathon EduTech Mendoza · IES 9-023 de Maipú + IES Tomás Alva Edison.
+        </p>
+      </div>
+
+      <nav class="footer-links" aria-label="Links de pie de página">
+        <a href="#bases">Bases y Condiciones</a>
+        <a href="#acerca">Acerca de los Creadores</a>
+        <a href="#registro">Registro</a>
+      </nav>
+    </div>
+  </footer>
+
+  <aside class="theme-panel" aria-label="Panel de control de paletas">
+    <div class="theme-panel-header">
+      <strong>🎛️ Paleta visual</strong>
+      <span style="color: var(--muted); font-size: .78rem; font-weight: 800;">
+        Cambios en tiempo real
+      </span>
+    </div>
+
+    <div class="theme-options" role="group" aria-label="Cambiar tema">
+      <button class="theme-btn" type="button" data-theme="theme-cyber" aria-pressed="true">
+        <span class="swatches" aria-hidden="true">
+          <span style="background:#05070d"></span>
+          <span style="background:#00a7ff"></span>
+          <span style="background:#79e83f"></span>
+        </span>
+        Cyber Dark
+      </button>
+
+      <button class="theme-btn" type="button" data-theme="theme-eco" aria-pressed="false">
+        <span class="swatches" aria-hidden="true">
+          <span style="background:#ffffff"></span>
+          <span style="background:#0d5b35"></span>
+          <span style="background:#09345f"></span>
+        </span>
+        Eco Light
+      </button>
+
+      <button class="theme-btn" type="button" data-theme="theme-contrast" aria-pressed="false">
+        <span class="swatches" aria-hidden="true">
+          <span style="background:#071016"></span>
+          <span style="background:#22a6f2"></span>
+          <span style="background:#60c878"></span>
+        </span>
+        Contrast
+      </button>
+    </div>
+  </aside>
+
+  <script>
+    const body = document.body;
+    const themeButtons = document.querySelectorAll(".theme-btn");
+    const mobileToggle = document.getElementById("mobileToggle");
+    const mobilePanel = document.getElementById("mobilePanel");
+    const form = document.getElementById("registro-form");
+
+    const validThemes = ["theme-cyber", "theme-eco", "theme-contrast"];
+    const savedTheme = localStorage.getItem("edutech-theme");
+
+    function setTheme(theme) {
+      const nextTheme = validThemes.includes(theme) ? theme : "theme-cyber";
+
+      body.classList.remove(...validThemes);
+      body.classList.add(nextTheme);
+
+      localStorage.setItem("edutech-theme", nextTheme);
+
+      themeButtons.forEach((button) => {
+        const isActive = button.dataset.theme === nextTheme;
+        button.setAttribute("aria-pressed", String(isActive));
+      });
+    }
+
+    if (savedTheme) {
+      setTheme(savedTheme);
+    }
+
+    themeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setTheme(button.dataset.theme);
+      });
+    });
+
+    mobileToggle.addEventListener("click", () => {
+      const isOpen = mobilePanel.classList.toggle("is-open");
+
+      mobileToggle.setAttribute("aria-expanded", String(isOpen));
+      mobileToggle.textContent = isOpen ? "×" : "☰";
+    });
+
+    mobilePanel.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        mobilePanel.classList.remove("is-open");
+        mobileToggle.setAttribute("aria-expanded", "false");
+        mobileToggle.textContent = "☰";
+      });
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const submitButton = form.querySelector("button[type='submit']");
+      const originalText = submitButton.textContent;
+
+      submitButton.textContent = "Inscripción demo enviada ✓";
+      submitButton.disabled = true;
+
+      setTimeout(() => {
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
+        form.reset();
+      }, 1800);
+    });
+  </script>
+</body>
+</html>
