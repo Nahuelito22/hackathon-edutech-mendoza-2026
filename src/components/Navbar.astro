@@ -1,0 +1,280 @@
+---
+// src/components/Navbar.astro
+---
+
+<nav class="navbar" id="navbar">
+    <div class="container nav-c">
+        <a href="#inicio" class="nav-logo">
+            <span class="logo-m">
+                <svg viewBox="0 0 40 40" fill="none">
+                    <rect x="4" y="4" width="32" height="32" rx="6" stroke="var(--c1)" stroke-width="2.5"/>
+                    <path d="M13 12h14M13 20h10M13 28h14" stroke="var(--c1)" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+            </span>
+            <span class="logo-t">
+                <span class="logo-main">Edu<span class="logo-hl">Tech</span></span>
+                <span class="logo-sub">Mendoza 2026</span>
+            </span>
+        </a>
+        <button class="nav-toggle" id="navToggle" aria-label="Menú">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="nav-menu" id="navMenu">
+            <ul class="nav-links">
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#acerca">Acerca</a></li>
+                <li><a href="#cronograma">Cronograma</a></li>
+                <li><a href="#ediciones">Ediciones</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+            <div class="nav-act">
+                <a href="#registro" class="btn btn-outline">Iniciar Sesión</a>
+                <a href="#registro" class="btn btn-primary">Registro</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<style>
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--nav-h);
+        z-index: 1000;
+        background: var(--bg-1);
+        border-bottom: 1px solid transparent;
+        transition: background var(--t-theme), border-color var(--t-base), box-shadow var(--t-base);
+    }
+
+    .navbar.scrolled {
+        background: var(--bg-2);
+        border-bottom-color: var(--brd-s);
+        box-shadow: var(--sh-sm);
+    }
+
+    .nav-c {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;
+    }
+
+    .nav-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        color: var(--txt-1);
+        z-index: 10;
+    }
+
+    .logo-m {
+        width: 38px;
+        height: 38px;
+        border-radius: var(--r-sm);
+        background: rgba(var(--c1r), 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background var(--t-theme);
+    }
+
+    .logo-m svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .logo-t {
+        display: flex;
+        flex-direction: column;
+        line-height: 1;
+    }
+
+    .logo-main {
+        font-family: var(--font-display);
+        font-size: 1.4rem;
+        letter-spacing: 0.05em;
+    }
+
+    .logo-hl {
+        color: var(--c1);
+        transition: color var(--t-theme);
+    }
+
+    .logo-sub {
+        font-family: var(--font-mono);
+        font-size: 0.6rem;
+        color: var(--txt-m);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+    }
+
+    .nav-toggle {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        z-index: 10;
+    }
+
+    .nav-toggle span {
+        width: 22px;
+        height: 2px;
+        background: var(--txt-1);
+        border-radius: 2px;
+        transition: all var(--t-base);
+        transform-origin: center;
+    }
+
+    .nav-toggle.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .nav-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .nav-toggle.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    .nav-menu {
+        display: flex;
+        align-items: center;
+        gap: 2.5rem;
+    }
+
+    .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 1.5rem;
+        padding: 0;
+        margin: 0;
+    }
+
+    .nav-links a {
+        font-family: var(--font-heading);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--txt-2);
+        letter-spacing: 0.02em;
+        padding: 0.25rem 0;
+        position: relative;
+        transition: color var(--t-fast);
+    }
+
+    .nav-links a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--c1);
+        transition: width var(--t-base);
+    }
+
+    .nav-links a:hover {
+        color: var(--txt-1);
+    }
+
+    .nav-links a:hover::after {
+        width: 100%;
+    }
+
+    .nav-act {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .nav-act .btn {
+        font-size: 0.75rem;
+        padding: 0.5rem 1.25rem;
+    }
+
+    @media (min-width: 768px) {
+        .nav-toggle {
+            display: none !important;
+        }
+        .nav-menu {
+            display: flex !important;
+            transform: none !important;
+            position: static;
+            background: none;
+            flex-direction: row;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .nav-toggle {
+            display: flex;
+        }
+        .nav-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-1);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            transform: translateX(100%);
+            transition: transform 0.4s var(--ease);
+            z-index: 5;
+        }
+        .nav-menu.active {
+            transform: translateX(0);
+        }
+        .nav-links {
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+        .nav-links a {
+            font-size: 1.25rem;
+        }
+        .nav-act {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+</style>
+
+<script>
+    const navbar = document.getElementById('navbar');
+    
+    // Scroll effect
+    window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        if (navbar) {
+            navbar.classList.toggle('scrolled', y > 50);
+        }
+    });
+
+    // Mobile Menu
+    const navToggle = document.getElementById('navToggle');
+    const navMenu = document.getElementById('navMenu');
+    
+    if (navToggle && navMenu) {
+        navToggle.addEventListener('click', () => {
+            navToggle.classList.toggle('active');
+            navMenu.classList.toggle('active');
+            document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+        });
+
+        navMenu.querySelectorAll('a').forEach(a => {
+            a.addEventListener('click', () => {
+                navToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+    }
+</script>

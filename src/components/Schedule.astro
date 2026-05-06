@@ -1,0 +1,433 @@
+---
+// src/components/Schedule.astro
+---
+
+<section class="schedule" id="cronograma">
+    <div class="container">
+        <div class="schedule-hdr reveal">
+            <span class="section-label">Horarios</span>
+            <h2 class="section-title">Cronograma Detallado</h2>
+            <p class="section-desc">Cada minuto cuenta. Conoce el recorrido completo de las tres jornadas del evento.</p>
+        </div>
+
+        <div class="timeline">
+            <!-- Dia Virtual -->
+            <div class="tl-item reveal rd1">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-header">
+                        <div class="tl-header-info">
+                            <span class="tl-date">Miércoles 3 de Junio</span>
+                            <h3>Virtual sincrónico</h3>
+                        </div>
+                        <button class="tl-toggle" aria-label="Toggle details">
+                            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="chevron"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </button>
+                    </div>
+                    <div class="tl-body">
+                        <div class="tl-activity card">
+                            <div class="tl-time">21:30 – 23:00</div>
+                            <div class="tl-info">
+                                <h4>Charla virtual de bases y condiciones</h4>
+                                <p>Presentación del encuadre general y hoja de ruta de trabajo. A cargo de Celina Páez.</p>
+                                <div class="tl-tags">
+                                    <span class="tl-tag">Online</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dia 1 Presencial -->
+            <div class="tl-item reveal rd2">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-header">
+                        <div class="tl-header-info">
+                            <span class="tl-date">Viernes 5 de Junio</span>
+                            <h3>Espacio Cultural Julio Le Parc</h3>
+                        </div>
+                        <button class="tl-toggle" aria-label="Toggle details">
+                            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="chevron"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </button>
+                    </div>
+                    <div class="tl-body">
+                        <div class="tl-activity card">
+                            <div class="tl-time">15:00 – 16:00</div>
+                            <div class="tl-info">
+                                <h4>Recepción, acreditación y conformación de equipos</h4>
+                                <p>Ingreso de participantes, acreditación y organización de equipos mediante dinámica coordinada.</p>
+                            </div>
+                        </div>
+                        <div class="tl-activity card">
+                            <div class="tl-time">16:00 – 16:15</div>
+                            <div class="tl-info">
+                                <h4>Acto de apertura</h4>
+                                <p>Breve acto de apertura con autoridades institucionales.</p>
+                            </div>
+                        </div>
+                        <div class="tl-activity card">
+                            <div class="tl-time">16:15 – 17:45</div>
+                            <div class="tl-info">
+                                <h4>Charla metodológica: Introducción al Design Sprint</h4>
+                                <p>Sesión formativa a cargo de Celina Páez sobre la metodología de trabajo.</p>
+                            </div>
+                        </div>
+                        <div class="tl-activity card">
+                            <div class="tl-time">17:45 – 18:15</div>
+                            <div class="tl-info">
+                                <h4>Recreo</h4>
+                                <p>Pausa para descanso y networking.</p>
+                            </div>
+                        </div>
+                        <div class="tl-activity card">
+                            <div class="tl-time">18:15 – 20:30</div>
+                            <div class="tl-info">
+                                <h4>Bloque de Trabajo 1: Ideación</h4>
+                                <p>Elección de problemática, definición de usuarios, ideación inicial y primer enfoque de solución. Mentores disponibles. El jurado inicia observación.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dia 2 Presencial -->
+            <div class="tl-item reveal rd3">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-header">
+                        <div class="tl-header-info">
+                            <span class="tl-date">Sábado 6 de Junio</span>
+                            <h3>Edison (mañana) + Le Parc (tarde)</h3>
+                        </div>
+                        <button class="tl-toggle" aria-label="Toggle details">
+                            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="chevron"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </button>
+                    </div>
+                    <div class="tl-body">
+                        <div class="tl-activity card">
+                            <div class="tl-time">08:30 – 09:00</div>
+                            <div class="tl-info">
+                                <h4>Recepción</h4>
+                                <p>Escuela Tomás Alva Edison (25 de Mayo 1873, Guaymallén).</p>
+                                <div class="tl-tags"><span class="tl-tag">Edison</span></div>
+                            </div>
+                        </div>
+                        <div class="tl-activity card">
+                            <div class="tl-time">09:00 – 10:00</div>
+                            <div class="tl-info">
+                                <h4>Instancia formativa: Pitch y presentación</h4>
+                                <p>Formación sobre pitch y presentación oral a cargo de Celina Páez, para todos los participantes.</p>
+                            </div>
+                        </div>
+                        <div class="tl-activity card">
+                            <div class="tl-time">10:00 – 14:00</div>
+                            <div class="tl-info">
+                                <h4>Bloque de Trabajo 2: Desarrollo</h4>
+                                <p>Desarrollo del proyecto con mentores, ajuste y mejora de la propuesta, optimización del prototipo.</p>
+                            </div>
+                        </div>
+                        <div class="tl-activity card">
+                            <div class="tl-time">10:15 – 10:45</div>
+                            <div class="tl-info">
+                                <h4>Entrenamiento para voceros</h4>
+                                <p>Sesión específica para voceros de cada equipo. El resto continúa trabajando en la propuesta.</p>
+                            </div>
+                        </div>
+                        <div class="tl-activity card">
+                            <div class="tl-time">14:00</div>
+                            <div class="tl-info">
+                                <h4>Envío del prototipo final</h4>
+                                <p>Plazo límite de entrega por correo electrónico según indique la organización.</p>
+                            </div>
+                        </div>
+                        <div class="tl-activity card">
+                            <div class="tl-time">14:00 – 15:30</div>
+                            <div class="tl-info">
+                                <h4>Almuerzo y traslado a Le Parc</h4>
+                                <p>El jurado deliberará y seleccionará a los 10 equipos finalistas.</p>
+                                <div class="tl-tags"><span class="tl-tag">Traslado</span></div>
+                            </div>
+                        </div>
+                        <div class="tl-activity card">
+                            <div class="tl-time">15:30 – 17:00</div>
+                            <div class="tl-info">
+                                <h4>Pitch final de proyectos</h4>
+                                <p>Cada finalista: 3 minutos de pitch + 3 minutos de preguntas del jurado. Tiempo cronometrado.</p>
+                                <div class="tl-tags"><span class="tl-tag">Le Parc</span></div>
+                            </div>
+                        </div>
+                        <div class="tl-activity card">
+                            <div class="tl-time">17:00 – 18:00</div>
+                            <div class="tl-info">
+                                <h4>Premiación y acto de cierre</h4>
+                                <p>Reconocimiento al primer, segundo y tercer lugar. Cierre institucional del evento.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .schedule {
+        padding: 8rem 0;
+        background: var(--bg-2);
+        transition: background var(--t-theme);
+    }
+    .schedule-hdr {
+        margin-bottom: 6rem;
+    }
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    @media (min-width: 768px) {
+        .timeline {
+            padding-left: 3rem;
+        }
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 7px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--brd);
+        transition: background var(--t-theme);
+    }
+    @media (min-width: 768px) {
+        .timeline::before {
+            left: 11px;
+        }
+    }
+    .tl-item {
+        position: relative;
+        padding-bottom: 3rem;
+    }
+    .tl-item:last-child {
+        padding-bottom: 0;
+    }
+    .tl-dot {
+        position: absolute;
+        left: -2rem;
+        top: 0.5rem;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--bg-2);
+        border: 3px solid var(--c1);
+        z-index: 1;
+        transition: all var(--t-theme);
+    }
+    @media (min-width: 768px) {
+        .tl-dot {
+            left: -3rem;
+            width: 24px;
+            height: 24px;
+            top: 0.25rem;
+            border-width: 4px;
+        }
+    }
+    
+    .tl-item:nth-child(1) .tl-dot { border-color: var(--c1); }
+    .tl-item:nth-child(2) .tl-dot { border-color: var(--c2); }
+    .tl-item:nth-child(3) .tl-dot { border-color: var(--c3); }
+
+    .tl-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        padding: 1.5rem;
+        background: var(--bg-card);
+        border: 1px solid var(--brd);
+        border-radius: var(--r-md);
+        transition: all var(--t-base);
+    }
+    .tl-header:hover {
+        border-color: var(--c1);
+        background: var(--bg-card-h);
+    }
+    .tl-item:nth-child(2) .tl-header:hover { border-color: var(--c2); }
+    .tl-item:nth-child(3) .tl-header:hover { border-color: var(--c3); }
+
+    .tl-date {
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        color: var(--c1);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.25rem;
+        transition: color var(--t-theme);
+    }
+    .tl-item:nth-child(2) .tl-date { color: var(--c2); }
+    .tl-item:nth-child(3) .tl-date { color: var(--c3); }
+
+    .tl-header h3 {
+        font-size: 1.25rem;
+        margin: 0;
+    }
+
+    .tl-toggle {
+        background: transparent;
+        border: none;
+        color: var(--txt-2);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        transition: all var(--t-base);
+    }
+    .tl-header:hover .tl-toggle {
+        background: rgba(var(--c1r), 0.1);
+        color: var(--c1);
+    }
+    .tl-item:nth-child(2) .tl-header:hover .tl-toggle {
+        background: rgba(var(--c2r), 0.1);
+        color: var(--c2);
+    }
+    .tl-item:nth-child(3) .tl-header:hover .tl-toggle {
+        background: rgba(var(--c3r), 0.1);
+        color: var(--c3);
+    }
+    
+    .chevron {
+        transition: transform 0.4s var(--ease);
+    }
+    
+    .tl-body {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.6s var(--ease);
+    }
+    
+    .tl-item.is-open .tl-body {
+        max-height: 2500px; /* Suficiente para el contenido */
+    }
+    .tl-item.is-open .chevron {
+        transform: rotate(180deg);
+    }
+    
+    /* Efecto de borde continuo cuando esta abierto */
+    .tl-item.is-open .tl-header {
+        border-bottom-color: transparent;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .tl-activity {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1.5rem;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-top: none;
+        margin-bottom: 0;
+        background: var(--bg-card);
+        border: 1px solid var(--brd);
+        box-shadow: var(--sh-sm);
+    }
+    
+    /* Asegurar que el fondo sea sólido y no traslúcido */
+    [data-theme="cyber-dark"] .tl-activity {
+        background: #161925; /* Un tono más claro y sólido que el fondo base */
+    }
+
+    /* Corregir bordes redondeados del acordeon para que parezca una sola card */
+    .tl-activity:last-child {
+        border-bottom-left-radius: var(--r-md);
+        border-bottom-right-radius: var(--r-md);
+    }
+    /* Añadir linea separadora entre actividades del mismo dia */
+    .tl-activity:not(:last-child) {
+        border-bottom: 1px solid var(--brd);
+        border-radius: 0;
+    }
+
+    @media (min-width: 768px) {
+        .tl-activity {
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 2rem;
+        }
+    }
+    
+    .tl-time {
+        font-family: var(--font-mono);
+        font-size: 0.95rem;
+        color: var(--txt-1);
+        font-weight: 600;
+        white-space: nowrap;
+        min-width: 120px;
+    }
+    
+    .tl-info {
+        flex: 1;
+    }
+    
+    .tl-info h4 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        color: var(--txt-1);
+    }
+    .tl-info p {
+        font-size: 0.95rem;
+        color: var(--txt-2);
+        margin: 0;
+    }
+    
+    .tl-tags {
+        margin-top: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .tl-tag {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--r-full);
+        background: rgba(var(--c1r), 0.08);
+        color: var(--c1);
+        letter-spacing: 0.05em;
+        transition: all var(--t-theme);
+    }
+    .tl-item:nth-child(2) .tl-tag { background: rgba(var(--c2r), 0.08); color: var(--c2); }
+    .tl-item:nth-child(3) .tl-tag { background: rgba(var(--c3r), 0.08); color: var(--c3); }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const tlHeaders = document.querySelectorAll('.tl-header');
+        
+        tlHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const parentItem = header.closest('.tl-item');
+                const isOpening = !parentItem.classList.contains('is-open');
+                
+                // Opción para permitir múltiples abiertos: comentar las siguientes 3 lineas
+                document.querySelectorAll('.tl-item').forEach(item => {
+                    item.classList.remove('is-open');
+                });
+
+                if (isOpening) {
+                    parentItem.classList.add('is-open');
+                } else {
+                    parentItem.classList.remove('is-open');
+                }
+            });
+        });
+    });
+</script>
