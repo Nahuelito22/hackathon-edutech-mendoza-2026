@@ -1,0 +1,182 @@
+---
+// src/components/FAQ.astro
+---
+
+<section class="faq" id="faq">
+    <div class="container">
+        <div class="faq-hdr reveal">
+            <span class="section-label">Dudas</span>
+            <h2 class="section-title">Preguntas Frecuentes</h2>
+            <p class="section-desc">Todo lo que necesitas saber antes de inscribirte al hackathon.</p>
+        </div>
+
+        <div class="faq-list">
+            <div class="faq-item reveal rd1">
+                <button class="faq-q" aria-expanded="false">
+                    <span>¿Quiénes pueden participar?</span>
+                    <span class="faq-ico">+</span>
+                </button>
+                <div class="faq-a">
+                    <p>Estudiantes, docentes, egresados y profesionales interesados en la educación y la tecnología. No es requisito indispensable saber programar, buscamos perfiles pedagógicos, comunicacionales, de diseño y técnicos para conformar equipos multidisciplinarios.</p>
+                </div>
+            </div>
+
+            <div class="faq-item reveal rd1">
+                <button class="faq-q" aria-expanded="false">
+                    <span>¿Cuántas personas puede tener un equipo?</span>
+                    <span class="faq-ico">+</span>
+                </button>
+                <div class="faq-a">
+                    <p>Los equipos deben estar formados por un mínimo de 3 y un máximo de 5 personas. La inscripción es individual; si ya tienes un equipo, podrán agruparse el primer día del evento durante la instancia de conformación.</p>
+                </div>
+            </div>
+
+            <div class="faq-item reveal rd2">
+                <button class="faq-q" aria-expanded="false">
+                    <span>¿La inscripción tiene algún costo?</span>
+                    <span class="faq-ico">+</span>
+                </button>
+                <div class="faq-a">
+                    <p>No, la participación en la Hackathon EduTech es totalmente gratuita, gracias al esfuerzo conjunto del IES 9-023 y la Escuela Tomás Alva Edison.</p>
+                </div>
+            </div>
+
+            <div class="faq-item reveal rd2">
+                <button class="faq-q" aria-expanded="false">
+                    <span>¿Qué tipo de soluciones se pueden presentar?</span>
+                    <span class="faq-ico">+</span>
+                </button>
+                <div class="faq-a">
+                    <p>Cualquier propuesta que resuelva una problemática del campo educativo utilizando tecnología. Puede ser una aplicación, una plataforma web, un videojuego educativo, hardware interactivo, entre otros formatos.</p>
+                </div>
+            </div>
+
+            <div class="faq-item reveal rd3">
+                <button class="faq-q" aria-expanded="false">
+                    <span>¿Cómo se evalúan las propuestas?</span>
+                    <span class="faq-ico">+</span>
+                </button>
+                <div class="faq-a">
+                    <p>El jurado evaluará los proyectos basándose en cuatro pilares: pertinencia pedagógica, innovación tecnológica, viabilidad de implementación y calidad de la presentación (pitch).</p>
+                </div>
+            </div>
+
+            <div class="faq-item reveal rd3">
+                <button class="faq-q" aria-expanded="false">
+                    <span>¿Cuántos equipos pasan a la final?</span>
+                    <span class="faq-ico">+</span>
+                </button>
+                <div class="faq-a">
+                    <p>De todos los proyectos desarrollados, el jurado seleccionará a los 10 mejores equipos finalistas, quienes tendrán la oportunidad de presentar su Pitch Final ante el jurado y el público.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .faq {
+        padding: 8rem 0;
+    }
+    
+    .faq-hdr {
+        margin-bottom: 6rem;
+    }
+    
+    .faq-list {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .faq-item {
+        border-bottom: 1px solid var(--brd);
+        transition: border-color var(--t-theme);
+    }
+    
+    .faq-item:first-child {
+        border-top: 1px solid var(--brd);
+    }
+    
+    .faq-q {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.5rem 0;
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        font-family: var(--font-heading);
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--txt-1);
+        transition: color var(--t-fast);
+    }
+    
+    .faq-q:hover {
+        color: var(--c1);
+    }
+    
+    .faq-ico {
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-mono);
+        font-size: 1.25rem;
+        color: var(--c1);
+        transition: transform var(--t-base);
+    }
+    
+    .faq-item.active .faq-ico {
+        transform: rotate(45deg);
+    }
+    
+    .faq-a {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s var(--ease), padding 0.4s var(--ease);
+    }
+    
+    .faq-item.active .faq-a {
+        max-height: 500px;
+        padding-bottom: 1.5rem;
+    }
+    
+    .faq-a p {
+        font-size: 0.95rem;
+        line-height: 1.8;
+        color: var(--txt-2);
+        margin: 0;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        faqItems.forEach(item => {
+            const btn = item.querySelector('.faq-q');
+            
+            btn?.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                
+                // Cerrar todos
+                faqItems.forEach(faq => {
+                    faq.classList.remove('active');
+                    faq.querySelector('.faq-q')?.setAttribute('aria-expanded', 'false');
+                });
+                
+                // Si no estaba activo, abrirlo
+                if (!isActive) {
+                    item.classList.add('active');
+                    btn.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+    });
+</script>

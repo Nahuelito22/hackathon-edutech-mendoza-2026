@@ -291,7 +291,7 @@ src/
 ### ÉPICA 6: Preguntas Frecuentes
 
 #### Tarea 6.1 — FAQ Accordion
-- [ ] **Archivo**: `src/components/FAQ.astro`
+- [x] **Archivo**: `src/components/FAQ.astro`
 - **Origen**: FAQ de `MimoV2.5.html` (CSS líneas 370–388, HTML líneas 834–867, JS líneas 1042–1050)
 - **Acciones**:
   1. Header de sección: Label + título
