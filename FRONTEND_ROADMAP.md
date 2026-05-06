@@ -164,7 +164,7 @@ src/
 ### ÉPICA 2: Navegación y Footer
 
 #### Tarea 2.1 — Navbar
-- [ ] **Archivo**: `src/components/Navbar.astro`
+- [x] **Archivo**: `src/components/Navbar.astro`
 - **Origen**: Navbar de `MimoV2.5.html` (CSS líneas 155–189, HTML líneas 507–538, JS líneas 1005–1029)
 - **Acciones**:
   1. Markup semántico: `<nav>` con logo SVG inline, links de navegación, botones de acción (Iniciar Sesión / Registro), hamburger para mobile
@@ -181,7 +181,7 @@ src/
 ---
 
 #### Tarea 2.2 — Footer
-- [ ] **Archivo**: `src/components/Footer.astro`
+- [x] **Archivo**: `src/components/Footer.astro`
 - **Origen**: Footer de `MimoV2.5.html` (CSS líneas 393–411, HTML líneas 872–922)
 - **Acciones**:
   1. Estructura: brand (logo + descripción), columnas de links (Evento, Participá, Organizan), bottom bar (copyright)
@@ -196,7 +196,7 @@ src/
 ### ÉPICA 3: Hero Section y Countdown
 
 #### Tarea 3.1 — Hero Section con fondo animado
-- [ ] **Archivo**: `src/components/Hero.astro`
+- [x] **Archivo**: `src/components/Hero.astro`
 - **Origen**: Hero de `MimoV2.5.html` (CSS líneas 194–238, HTML líneas 542–583) para estructura, efecto visual de `Claude_Opus_4.7.html` (partículas y radial-gradient) como complemento
 - **Acciones**:
   1. Badge: "2da Edición — Mendoza, Argentina" con dot pulsante
@@ -213,7 +213,7 @@ src/
 ---
 
 #### Tarea 3.2 — Countdown Timer
-- [ ] **Integrar en**: `src/components/Hero.astro`
+- [x] **Integrar en**: `src/components/Hero.astro`
 - **Origen**: Countdown de `MimoV2.5.html` (CSS líneas 228–235, HTML líneas 572–577, JS líneas 982–1003) y `Claude_Opus_4.7.html` (JS líneas 440–455)
 - **Acciones**:
   1. UI: 4 items (Días, Horas, Min, Seg) con cards, tipografía display, color primario
@@ -229,7 +229,7 @@ src/
 ### ÉPICA 4: Información y Bases
 
 #### Tarea 4.1 — InfoCards (Acerca del Hackathon)
-- [ ] **Archivo**: `src/components/InfoCards.astro`
+- [x] **Archivo**: `src/components/InfoCards.astro`
 - **Origen**: Sección "About" de `MimoV2.5.html` (CSS líneas 243–258, HTML líneas 586–617)
 - **Acciones**:
   1. Header de sección: Label + título + descripción
@@ -249,7 +249,7 @@ src/
 ### ÉPICA 5: Cronograma Interactivo
 
 #### Tarea 5.1 — Estructura del Cronograma
-- [ ] **Archivo**: `src/components/Schedule.astro`
+- [x] **Archivo**: `src/components/Schedule.astro`
 - **Origen**: Cronograma de `ChatZ.html` (HTML líneas 1005–1141) para los datos hora-por-hora
 - **Acciones**:
   1. Header de sección: Label + título + descripción
@@ -263,7 +263,7 @@ src/
 ---
 
 #### Tarea 5.2 — Lógica de Colapso/Expansión
-- [ ] **Integrar en**: `src/components/Schedule.astro`
+- [x] **Integrar en**: `src/components/Schedule.astro`
 - **Acciones**:
   1. Por defecto, los items de cada día vienen **colapsados** (solo se ve el header del día)
   2. Click en el header del día → expande/colapsa las actividades de ese día
@@ -275,7 +275,7 @@ src/
 ---
 
 #### Tarea 5.3 — Estilo Visual del Cronograma
-- [ ] **Integrar en**: `src/components/Schedule.astro`
+- [x] **Integrar en**: `src/components/Schedule.astro`
 - **Origen**: Estilo visual de `MimoV2.5.html` (CSS líneas 263–288) — Timeline vertical con dots coloreados y tags
 - **Acciones**:
   1. Timeline vertical con línea lateral y dots por día (colores c1, c2, c3)
