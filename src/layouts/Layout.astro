@@ -46,7 +46,7 @@ import Footer from '../components/Footer.astro';
 			const observer = new IntersectionObserver((entries) => {
 				entries.forEach(entry => {
 					if (entry.isIntersecting) {
-						entry.target.classList.add('active');
+						entry.target.classList.add('revealed');
 						// Opcional: observer.unobserve(entry.target); para que anime solo una vez
 					}
 				});

@@ -150,18 +150,6 @@ h1, h2, h3, h4, h5, h6 {
 /* =============================================
    UTILITIES & ANIMATIONS
    ============================================= */
-.reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s var(--ease);
-}
-.reveal.active {
-    opacity: 1;
-    transform: translateY(0);
-}
-.reveal.rd1 { transition-delay: 0.1s; }
-.reveal.rd2 { transition-delay: 0.2s; }
-.reveal.rd3 { transition-delay: 0.3s; }
 .container {
     width: 100%;
     max-width: var(--max-w);
@@ -290,8 +278,9 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
+        animation-duration: 0.3s !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.2s !important;
     }
     html {
         scroll-behavior: auto;

@@ -315,7 +315,7 @@ src/
 ### ÉPICA 7: Ensamblaje Final
 
 #### Tarea 7.1 — Index Page y Revisión General
-- [ ] **Archivo**: `src/pages/index.astro`
+- [x] **Archivo**: `src/pages/index.astro`
 - **Acciones**:
   1. Importar `Layout.astro` como wrapper
   2. Importar y renderizar en orden:

@@ -157,22 +157,17 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const faqItems = document.querySelectorAll('.faq-item');
-        
-        faqItems.forEach(item => {
-            const btn = item.querySelector('.faq-q');
-            
-            btn?.addEventListener('click', () => {
-                const isActive = item.classList.contains('active');
+        document.querySelectorAll('.faq-q').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.closest('.faq-item');
+                const wasActive = item?.classList.contains('active');
                 
-                // Cerrar todos
-                faqItems.forEach(faq => {
-                    faq.classList.remove('active');
-                    faq.querySelector('.faq-q')?.setAttribute('aria-expanded', 'false');
+                document.querySelectorAll('.faq-item').forEach(i => {
+                    i.classList.remove('active');
+                    i.querySelector('.faq-q')?.setAttribute('aria-expanded', 'false');
                 });
                 
-                // Si no estaba activo, abrirlo
-                if (!isActive) {
+                if (!wasActive && item) {
                     item.classList.add('active');
                     btn.setAttribute('aria-expanded', 'true');
                 }

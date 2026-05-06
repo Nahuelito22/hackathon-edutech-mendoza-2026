@@ -373,16 +373,15 @@
   }
 
   .glow-btn {
-    animation: btnGlow 3s infinite;
+    animation: btnGlow 5s ease-in-out infinite;
   }
 
   @keyframes btnGlow {
-    0%,
-    100% {
-      box-shadow: 0 0 0 0 rgba(var(--c1r), 0.3);
+    0%, 100% {
+      box-shadow: 0 4px 12px rgba(var(--c1r), 0.2);
     }
     50% {
-      box-shadow: 0 0 30px 5px rgba(var(--c1r), 0.15);
+      box-shadow: 0 6px 32px rgba(var(--c1r), 0.4), 0 0 16px rgba(var(--c1r), 0.15);
     }
   }
 

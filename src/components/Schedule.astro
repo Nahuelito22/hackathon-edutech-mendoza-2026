@@ -335,8 +335,16 @@
         border-top-right-radius: 0;
         border-top: none;
         margin-bottom: 0;
+        background: var(--bg-card);
+        border: 1px solid var(--brd);
+        box-shadow: var(--sh-sm);
     }
     
+    /* Asegurar que el fondo sea sólido y no traslúcido */
+    [data-theme="cyber-dark"] .tl-activity {
+        background: #161925; /* Un tono más claro y sólido que el fondo base */
+    }
+
     /* Corregir bordes redondeados del acordeon para que parezca una sola card */
     .tl-activity:last-child {
         border-bottom-left-radius: var(--r-md);
@@ -421,11 +429,5 @@
                 }
             });
         });
-
-        // Abrir el primer item por defecto
-        const firstItem = document.querySelector('.tl-item');
-        if (firstItem) {
-            firstItem.classList.add('is-open');
-        }
     });
 </script>
