@@ -115,7 +115,7 @@
     top: -10%;
     right: -8%;
     border-radius: 50%;
-    animation: drift 30s infinite ease-in-out;
+    animation: drift 60s infinite ease-in-out;
   }
   .shape-2 {
     width: 250px;
@@ -124,7 +124,7 @@
     left: -5%;
     border-radius: 30%;
     border-color: var(--c2);
-    animation: drift 25s infinite ease-in-out reverse;
+    animation: drift 50s infinite ease-in-out reverse;
     animation-delay: -8s;
   }
   .shape-3 {
@@ -134,7 +134,7 @@
     right: 20%;
     border-radius: 50%;
     border-color: var(--c3);
-    animation: drift 20s infinite ease-in-out;
+    animation: drift 45s infinite ease-in-out;
     animation-delay: -15s;
   }
   .shape-4 {
@@ -143,7 +143,7 @@
     top: 15%;
     left: 15%;
     border-radius: 50%;
-    animation: drift 35s infinite ease-in-out reverse;
+    animation: drift 70s infinite ease-in-out reverse;
     animation-delay: -5s;
   }
 
@@ -181,10 +181,10 @@
   }
   @keyframes float {
     0% {
-      transform: translateY(100vh) rotate(0deg);
+      transform: translateY(100vh);
     }
     100% {
-      transform: translateY(-10vh) rotate(720deg);
+      transform: translateY(-10vh);
     }
   }
 
@@ -417,16 +417,16 @@
 
     // --- CONFIGURACIÓN DE PARTÍCULAS ---
     const particleCount = 20;
-    const minSpeed = 100; // Segundos (más alto = más lento)
-    const speedRange = 25; // Variación de velocidad
+    const minSpeed = 150; // Segundos (más alto = más lento)
+    const speedRange = 100; // Variación de velocidad
     // ----------------------------------
 
     for (let i = 0; i < particleCount; i++) {
       const p = document.createElement("div");
       p.className = "particle";
-      const size = Math.random() * 6 + 2;
+      const size = Math.random() * 4 + 1; // Un poco más pequeñas para que se sientan más sutiles
       const duration = Math.random() * speedRange + minSpeed;
-      p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random() * 100}%;animation-duration:${duration}s;animation-delay:${Math.random() * 10}s;opacity:${Math.random() * 0.15 + 0.05}`;
+      p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random() * 100}%;animation-duration:${duration}s;animation-delay:${Math.random() * 20}s;opacity:${Math.random() * 0.1 + 0.05}`;
       c.appendChild(p);
     }
   })();
