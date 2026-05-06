@@ -1,46 +1,142 @@
 ---
+
 ---
 
 <meta charset="UTF-8" />
 
-<title>Inscripcion hackatón EduTech</title>
+<h1>Formulario de Inscripción Hackathon EduTech</h1>
 
-<h1>Formulario de inscripcion hackaton EduTech</h1>
-    <form id="InscriptionForm">
-      <label for="FullName">Apellido y Nombre:</label>
-      <br><input
-        type="text"
-        id="FullName"
-        name="FullName"
-        required
-        placeholder="Ej: Garcia, Gustavo"
-      /><br /><br />
+<form id="inscriptionForm">
+  <div>
+    <label for="fullname">Apellido y Nombre</label>
+    <input
+      type="text"
+      id="fullname"
+      name="fullname"
+      required
+      placeholder="Ej: Garcia Lopez, Maria"
+    />
+  </div>
 
-      <label for="DocumentNumber">DNI:</label>
-      <br><input
-        type="text"
-        id="DocumentNumber"
-        name="DocumentNumber"
-        required
-        placeholder="Ej: 12345678"
-      /><br /><br />
+  <div>
+    <label for="dni">DNI</label>
+    <input
+      type="text"
+      id="dni"
+      name="dni"
+      required
+      placeholder="Ej: 35000111"
+    />
+  </div>
 
+  <div>
+    <label for="whatsapp">Teléfono / WhatsApp</label>
+    <input
+      type="tel"
+      id="whatsapp"
+      name="whatsapp"
+      required
+      placeholder="Ej: 2615551234"
+    />
+  </div>
 
-      <label for="Email">Correo Electronico:</label>
-      <br><input
-        type="email"
-        id="Email"
-        name="Email"
-        required
-        placeholder="Ej: tuemail@gmail.com"
-      /><br /><br />
-      <label for="Telephone">Telefono:</label>
-      <br><input
-        type="tel"
-        id="Telephone"
-        name="Telephone"
-        required
-        placeholder="Ej: 2613555444"
-      /><br /><br />
-      <button type="submit">Enviar</button>
-    </form>
+  <div>
+    <label for="email">Correo electrónico</label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      required
+      placeholder="Ej: tu@correo.com"
+    />
+  </div>
+
+  <div>
+    <label for="instagram">Instagram</label>
+    <input
+      type="text"
+      id="instagram"
+      name="instagram"
+      required
+      placeholder="Ej: @tuusuario"
+    />
+  </div>
+
+  <div>
+    <label for="institution">Institución</label>
+    <select id="institution" name="institution" required>
+      <option value="">Seleccionar...</option>
+      <option value="IES 9-023 Maipu">IES N. 9-023 Maipu</option>
+      <option value="IES Tomas Alva Edison">IES Tomas Alva Edison</option>
+      <option value="Otra">Otra</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="year">Año de cursado</label>
+    <select id="year" name="year" required>
+      <option value="">Seleccionar...</option>
+      <option value="1">1°</option>
+      <option value="2">2°</option>
+      <option value="3">3°</option>
+      <option value="Otro">Otro</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="profile">Perfil</label>
+    <select id="profile" name="profile" required>
+      <option value="">Seleccionar...</option>
+      <option value="Formacion docente">Formación docente</option>
+      <option value="Formacion tecnica">Formación técnica</option>
+      <option value="Otro">Otro</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="team">¿Tenés equipo?</label>
+    <select id="team" name="team" required>
+      <option value="">Seleccionar...</option>
+      <option value="Si">Sí</option>
+      <option value="No">No</option>
+      <option value="Incompleto">Incompleto</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="team_dnis">DNIs del equipo (opcional)</label>
+    <textarea
+      id="team_dnis"
+      name="team_dnis"
+      rows="3"
+      placeholder="Ej: 35000111, 35000222"></textarea>
+  </div>
+
+  <button type="submit">Enviar inscripción</button>
+</form>
+
+<script>
+  import { supabase } from "../lib/supabase"; // Ajusta la ruta a tu archivo
+
+  const form = document.getElementById("inscriptionForm");
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target as HTMLFormElement);
+    const data = Object.fromEntries(formData);
+
+    // Enviar a la tabla de Supabase
+    const { error } = await supabase
+      .from("inscripciones") // Asegúrate que el nombre de la tabla coincida
+      .insert([data]);
+
+    if (error) {
+      console.error("Error al insertar:", error.message);
+      alert("Hubo un error en la inscripción");
+    } else {
+      alert("¡Inscripción exitosa!");
+      (event.target as HTMLFormElement).reset();
+    }
+  });
+</script>
