@@ -105,7 +105,7 @@ src/
 ### ÉPICA 1: Core Theming y Layout Base
 
 #### Tarea 1.1 — Variables CSS Globales
-- [ ] **Archivo**: `src/styles/global.css`
+- [x] **Archivo**: `src/styles/global.css`
 - **Origen**: Variables CSS de `MimoV2.5.html` (líneas 16–76) como base principal, complementadas con `ChatZ.html` (líneas 12–89)
 - **Acciones**:
   1. Crear el archivo `src/styles/global.css`
@@ -126,7 +126,7 @@ src/
 ---
 
 #### Tarea 1.2 — ThemeToggle Component
-- [ ] **Archivo**: `src/components/ThemeToggle.astro`
+- [x] **Archivo**: `src/components/ThemeToggle.astro`
 - **Origen**: Toggle de `MimoV2.5.html` (líneas 415–443, JS líneas 952–980)
 - **Acciones**:
   1. Crear componente Astro con markup del selector (botón flotante + panel de opciones)
@@ -144,7 +144,7 @@ src/
 ---
 
 #### Tarea 1.3 — Layout Base
-- [ ] **Archivo**: `src/layouts/Layout.astro`
+- [x] **Archivo**: `src/layouts/Layout.astro`
 - **Acciones**:
   1. Crear layout con `<html lang="es" data-theme="cyber-dark">`
   2. Configurar `<head>`:
