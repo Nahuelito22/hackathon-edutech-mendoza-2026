@@ -169,6 +169,21 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0 var(--pad);
 }
 
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--brd);
+    border-radius: var(--r-lg);
+    box-shadow: var(--sh-md);
+    transition: all var(--t-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--sh-lg);
+    border-color: var(--brd-s);
+}
+
 .btn {
     display: inline-flex;
     align-items: center;
