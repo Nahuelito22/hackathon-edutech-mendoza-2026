@@ -1,0 +1,371 @@
+---
+// src/components/Hero.astro
+---
+
+<section class="hero" id="inicio">
+    <div class="hero-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+    </div>
+    <div class="particles" id="particles"></div>
+    <div class="container hero-c">
+        <div class="hero-badge">
+            <span class="badge-dot"></span>
+            2da Edición &mdash; Mendoza, Argentina
+        </div>
+        <h1 class="hero-title">
+            <span class="t-edu">EDU</span><span class="t-tech">TECH</span>
+        </h1>
+        <p class="hero-ed">Hackathon de Nivel Superior Mendoza 2026</p>
+        <p class="hero-desc">
+            Un espacio intensivo de trabajo colaborativo donde equipos interdisciplinarios diseñan soluciones tecnológicas innovadoras para los desafíos actuales de la educación.
+        </p>
+        
+        <!-- Countdown -->
+        <div class="countdown" id="countdown">
+            <div class="countdown-item"><span class="countdown-val" id="cdD">---</span><span class="countdown-label">Días</span></div>
+            <div class="countdown-item"><span class="countdown-val" id="cdH">--</span><span class="countdown-label">Horas</span></div>
+            <div class="countdown-item"><span class="countdown-val" id="cdM">--</span><span class="countdown-label">Min</span></div>
+            <div class="countdown-item"><span class="countdown-val" id="cdS">--</span><span class="countdown-label">Seg</span></div>
+        </div>
+        <div id="countdown-message" class="cd-message" style="display: none;">
+            ¡El evento ha comenzado!
+        </div>
+
+        <div class="hero-dates">
+            <div class="date-chip">📡 <strong>3 Jun</strong> &mdash; Virtual</div>
+            <div class="date-chip">🏛️ <strong>5-6 Jun</strong> &mdash; Presencial</div>
+        </div>
+
+        <div class="hero-act">
+            <a href="#registro" class="btn btn-primary btn-lg glow-btn">Inscribirse ahora &rarr;</a>
+            <a href="#acerca" class="btn btn-outline btn-lg">Conocer más</a>
+        </div>
+    </div>
+</section>
+
+<style>
+    .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        padding-top: var(--nav-h);
+    }
+
+    /* Claude-style radial gradient + Mimo-style theme handling */
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(ellipse at 50% 0%, rgba(var(--c1r), 0.15), transparent 60%);
+        pointer-events: none;
+        z-index: 0;
+        transition: background var(--t-theme);
+    }
+
+    .hero-shapes {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .shape {
+        position: absolute;
+        border: 1px solid var(--c1);
+        opacity: 0.06;
+        transition: border-color var(--t-theme);
+    }
+
+    .shape-1 { width: 400px; height: 400px; top: -10%; right: -8%; border-radius: 50%; animation: drift 30s infinite ease-in-out; }
+    .shape-2 { width: 250px; height: 250px; bottom: 5%; left: -5%; border-radius: 30%; border-color: var(--c2); animation: drift 25s infinite ease-in-out reverse; animation-delay: -8s; }
+    .shape-3 { width: 180px; height: 180px; top: 40%; right: 20%; border-radius: 50%; border-color: var(--c3); animation: drift 20s infinite ease-in-out; animation-delay: -15s; }
+    .shape-4 { width: 100px; height: 100px; top: 15%; left: 15%; border-radius: 50%; animation: drift 35s infinite ease-in-out reverse; animation-delay: -5s; }
+
+    @keyframes drift {
+        0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+        25% { transform: translate(30px, -40px) rotate(90deg) scale(1.05); }
+        50% { transform: translate(-20px, 30px) rotate(180deg) scale(0.95); }
+        75% { transform: translate(15px, 15px) rotate(270deg) scale(1.02); }
+    }
+
+    /* Claude Particles */
+    .particles {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+    }
+    :global(.particle) {
+        position: absolute;
+        border-radius: 50%;
+        background: var(--c1);
+        opacity: 0.15;
+        animation: float linear infinite;
+        transition: background var(--t-theme);
+    }
+    @keyframes float {
+        0% { transform: translateY(100vh) rotate(0deg); }
+        100% { transform: translateY(-10vh) rotate(720deg); }
+    }
+
+    .hero-c {
+        padding: 6rem 0;
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--c1);
+        background: rgba(var(--c1r), 0.08);
+        border: 1px solid rgba(var(--c1r), 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: var(--r-full);
+        margin-bottom: 2.5rem;
+        letter-spacing: 0.05em;
+        transition: all var(--t-theme);
+        
+        opacity: 0;
+        animation: fadeUp 0.7s var(--ease) forwards;
+        animation-delay: 0.2s;
+    }
+
+    .badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--c2);
+        animation: badgePulse 2s infinite;
+        transition: background var(--t-theme);
+    }
+
+    @keyframes badgePulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(1.5); }
+    }
+
+    .hero-title {
+        font-family: var(--font-display);
+        font-size: clamp(4rem, 12vw, 9rem);
+        line-height: 0.85;
+        letter-spacing: 0.02em;
+        margin-bottom: 1rem;
+        
+        opacity: 0;
+        animation: fadeUp 0.7s var(--ease) forwards;
+        animation-delay: 0.3s;
+    }
+
+    .t-edu { color: var(--txt-1); transition: color var(--t-theme); }
+    .t-tech { color: var(--c1); transition: color var(--t-theme); }
+
+    .hero-ed {
+        font-family: var(--font-heading);
+        font-size: clamp(1.2rem, 3vw, 1.8rem);
+        font-weight: 600;
+        color: var(--txt-2);
+        margin-bottom: 1.5rem;
+        transition: color var(--t-theme);
+        
+        opacity: 0;
+        animation: fadeUp 0.7s var(--ease) forwards;
+        animation-delay: 0.45s;
+    }
+
+    .hero-desc {
+        font-size: 1.1rem;
+        color: var(--txt-2);
+        max-width: 650px;
+        line-height: 1.8;
+        margin-bottom: 2.5rem;
+        
+        opacity: 0;
+        animation: fadeUp 0.7s var(--ease) forwards;
+        animation-delay: 0.55s;
+    }
+
+    /* Claude-style Countdown */
+    .countdown {
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        margin-bottom: 2.5rem;
+        
+        opacity: 0;
+        animation: fadeUp 0.7s var(--ease) forwards;
+        animation-delay: 0.65s;
+    }
+
+    .countdown-item {
+        text-align: center;
+    }
+
+    .countdown-val {
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        font-weight: 800;
+        /* Mimo Gradient */
+        background: linear-gradient(135deg, var(--c1), var(--c2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: block;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+    }
+
+    .countdown-label {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--txt-2);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+    }
+
+    .cd-message {
+        font-family: var(--font-heading);
+        font-size: 1.5rem;
+        color: var(--c1);
+        margin-bottom: 2.5rem;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(var(--c1r), 0.5);
+        
+        opacity: 0;
+        animation: fadeUp 0.7s var(--ease) forwards;
+        animation-delay: 0.65s;
+    }
+
+    /* Claude-style Dates */
+    .hero-dates {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 2.5rem;
+        
+        opacity: 0;
+        animation: fadeUp 0.7s var(--ease) forwards;
+        animation-delay: 0.75s;
+    }
+
+    .date-chip {
+        padding: 10px 20px;
+        background: var(--bg-card);
+        border: 1px solid var(--brd);
+        border-radius: var(--r-full);
+        font-size: 0.9rem;
+        color: var(--txt-2);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .date-chip strong {
+        color: var(--c1);
+        font-weight: 600;
+    }
+
+    .hero-act {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        
+        opacity: 0;
+        animation: fadeUp 0.7s var(--ease) forwards;
+        animation-delay: 0.85s;
+    }
+
+    .glow-btn {
+        animation: btnGlow 3s infinite;
+    }
+
+    @keyframes btnGlow {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(var(--c1r), 0.3); }
+        50% { box-shadow: 0 0 30px 5px rgba(var(--c1r), 0.15); }
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(24px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (min-width: 1024px) {
+        .hero-c {
+            padding: 8rem 0;
+        }
+    }
+    @media (max-width: 640px) {
+        .countdown {
+            gap: 12px;
+        }
+    }
+</style>
+
+<script>
+    // Particles System
+    (function(){
+        const c = document.getElementById('particles');
+        if (!c) return;
+        for(let i=0; i<20; i++){
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const size = Math.random() * 6 + 2;
+            p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${Math.random()*15+10}s;animation-delay:${Math.random()*10}s;opacity:${Math.random()*.15+.05}`;
+            c.appendChild(p);
+        }
+    })();
+
+    // Countdown Timer Logic
+    const cdContainer = document.getElementById('countdown');
+    const cdMessage = document.getElementById('countdown-message');
+    
+    function updateCD() {
+        const target = new Date('2026-06-03T21:30:00-03:00').getTime();
+        const now = new Date().getTime();
+        const diff = target - now;
+
+        if (diff <= 0) {
+            if (cdContainer) cdContainer.style.display = 'none';
+            if (cdMessage) cdMessage.style.display = 'block';
+            return;
+        }
+
+        const d = Math.floor(diff / 86400000);
+        const h = Math.floor((diff % 86400000) / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+
+        const cdD = document.getElementById('cdD');
+        const cdH = document.getElementById('cdH');
+        const cdM = document.getElementById('cdM');
+        const cdS = document.getElementById('cdS');
+
+        if (cdD) cdD.textContent = String(d).padStart(3, '0');
+        if (cdH) cdH.textContent = String(h).padStart(2, '0');
+        if (cdM) cdM.textContent = String(m).padStart(2, '0');
+        if (cdS) cdS.textContent = String(s).padStart(2, '0');
+    }
+
+    updateCD();
+    setInterval(updateCD, 1000);
+</script>
