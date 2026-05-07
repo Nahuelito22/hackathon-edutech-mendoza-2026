@@ -1,0 +1,25 @@
+---
+import Acordion from "../components/Acordion.astro";
+import Avatar from "../components/Avatar.astro";
+import Badge from "../components/Badge.astro";
+import Button from "../components/Button.astro";
+import Card from "../components/Card.astro";
+import Input from "../components/Input.astro";
+import Tooltip from "../components/Tooltip.astro";
+import Typography from "../components/Typography.astro";
+---
+
+<div>
+    <Button
+        label="Button"
+        size="small"
+        onClick={() => console.log("Button clicked")}
+    />
+    <Input type="text" placeholder="Enter your name" />
+    <Badge label="Badge" />
+    <Typography type="h1" text="Typography" />
+    <Acordion />
+    <Card />
+    <Tooltip />
+    <Avatar />
+</div>

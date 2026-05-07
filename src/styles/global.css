@@ -1,5 +1,47 @@
 /* 
  * HEM2026 - Estilos Globales
  * Este archivo contiene las variables CSS y estilos base del proyecto.
- * Se completará cuando se defina el diseño visual.
  */
+
+:root {
+  /* Paleta de Colores (Valores temporales/placeholders) */
+  --color-primary: #3b82f6; /* Azul temporal */
+  --color-secondary: #10b981; /* Verde temporal */
+  --color-background: #ffffff;
+  --color-text: #1f2937;
+
+  /* Tipografía */
+  --font-base: system-ui, -apple-system, sans-serif;
+}
+
+/* ---------------------------------------------------------
+ * RESPONSIVE DESIGN (Enfoque Mobile First)
+ * Breakpoints estándar:
+ * - Mobile: Default (< 768px)
+ * - Tablet: >= 768px
+ * - Desktop: >= 1024px
+ * --------------------------------------------------------- */
+
+/* Estilos Base (Mobile First) */
+body {
+  font-family: var(--font-base);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  margin: 0;
+  padding: 0;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  :root {
+    /* Aquí puedes redefinir variables si necesitas, 
+       como tamaños de fuente más grandes para tablet */
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  :root {
+    /* Redefinición de variables para desktop */
+  }
+}
