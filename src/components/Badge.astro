@@ -1,0 +1,67 @@
+---
+interface Props {
+  label: string;
+  variant?: "primary" | "secondary" | "success" | "warning" | "error" | "info";
+  size?: "small" | "medium";
+}
+
+const { label, variant = "primary", size = "medium" } = Astro.props as Props;
+---
+
+<span class={`badge badge-${variant} badge-${size}`}>
+  {label}
+</span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-family: var(--font-logo);
+    font-weight: var(--font-semibold);
+    border-radius: var(--border-radius-full);
+    white-space: nowrap;
+    transition: all var(--transition-normal);
+  }
+
+  .badge-small {
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--text-xs);
+  }
+
+  .badge-medium {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--text-sm);
+  }
+
+  /* Variantes de color */
+  .badge-primary {
+    background-color: var(--color-primary);
+    color: white;
+  }
+
+  .badge-secondary {
+    background-color: var(--color-secondary);
+    color: white;
+  }
+
+  .badge-success {
+    background-color: #48bb78;
+    color: white;
+  }
+
+  .badge-warning {
+    background-color: #ed8936;
+    color: white;
+  }
+
+  .badge-error {
+    background-color: #f56565;
+    color: white;
+  }
+
+  .badge-info {
+    background-color: #04a6d5;
+    color: white;
+  }
+</style>

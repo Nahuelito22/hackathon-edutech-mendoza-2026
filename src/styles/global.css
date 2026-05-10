@@ -1,47 +1,196 @@
 /* 
  * HEM2026 - Estilos Globales
- * Este archivo contiene las variables CSS y estilos base del proyecto.
+ * Sistema de diseño para Hackathon EduTech 2026
+ * Paleta de colores, tipografía y componentes base
  */
 
-:root {
-  /* Paleta de Colores (Valores temporales/placeholders) */
-  --color-primary: #3b82f6; /* Azul temporal */
-  --color-secondary: #10b981; /* Verde temporal */
-  --color-background: #ffffff;
-  --color-text: #1f2937;
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
-  /* Tipografía */
-  --font-base: system-ui, -apple-system, sans-serif;
+:root {
+  /* ========== PALETA DE COLORES ========== */
+  --color-primary: #10b981; /* Verde esmeralda vibrante - Nuevo principal */
+  --color-primary-light: #34d399;
+  --color-primary-dark: #059669;
+
+  --color-secondary: #88007b; /* PANTONE 2415 C - Púrpura secundario */
+  --color-secondary-light: #a82da9;
+  --color-secondary-dark: #5c0052;
+
+  --color-neutral-white: #ffffff;
+  --color-neutral-black: #000000;
+  --color-neutral-light: #eae7ea; /* PANTONE 9345 C */
+
+  --color-text-primary: #000000;
+  --color-text-secondary: #333333;
+  --color-text-tertiary: #666666;
+
+  --color-background: #ffffff;
+  --color-surface: #f9f9f9;
+  --color-border: #e0e0e0;
+  --color-border-light: #f0f0f0;
+
+  /* ========== TIPOGRAFÍA ========== */
+  /* Fuentes */
+  --font-logo: "Lexend", sans-serif;
+  --font-body: "Roboto", sans-serif;
+
+  /* Tamaños - Mobile First */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 1.875rem; /* 30px */
+  --text-4xl: 2.25rem; /* 36px */
+  --text-5xl: 3rem; /* 48px */
+
+  /* Pesos */
+  --font-thin: 100;
+  --font-extralight: 200;
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+  --font-black: 900;
+
+  /* ========== ESPACIADO ========== */
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+  --spacing-2xl: 3rem; /* 48px */
+
+  /* ========== BORDES Y SOMBRAS ========== */
+  --border-radius-sm: 0.25rem;
+  --border-radius-md: 0.5rem;
+  --border-radius-lg: 1rem;
+  --border-radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+  /* ========== TRANSICIONES ========== */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 300ms ease-in-out;
+  --transition-slow: 500ms ease-in-out;
 }
 
-/* ---------------------------------------------------------
- * RESPONSIVE DESIGN (Enfoque Mobile First)
- * Breakpoints estándar:
- * - Mobile: Default (< 768px)
- * - Tablet: >= 768px
- * - Desktop: >= 1024px
- * --------------------------------------------------------- */
+/* ========== ESTILOS BASE ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-/* Estilos Base (Mobile First) */
+html {
+  font-size: 16px;
+}
+
 body {
-  font-family: var(--font-base);
+  font-family: var(--font-body);
   background-color: var(--color-background);
-  color: var(--color-text);
+  color: var(--color-text-primary);
+  line-height: 1.6;
   margin: 0;
   padding: 0;
 }
 
-/* Tablet */
+/* ========== TIPOGRAFÍA GLOBAL ========== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-logo);
+  font-weight: var(--font-bold);
+  margin: var(--spacing-md) 0;
+  color: var(--color-text-primary);
+}
+
+h1 {
+  font-size: var(--text-5xl);
+  font-weight: var(--font-black);
+}
+
+h2 {
+  font-size: var(--text-4xl);
+  font-weight: var(--font-bold);
+}
+
+h3 {
+  font-size: var(--text-3xl);
+}
+
+h4 {
+  font-size: var(--text-2xl);
+}
+
+h5 {
+  font-size: var(--text-xl);
+}
+
+h6 {
+  font-size: var(--text-lg);
+}
+
+p {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  margin: var(--spacing-md) 0;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+/* Tablet (>= 768px) */
 @media (min-width: 768px) {
   :root {
-    /* Aquí puedes redefinir variables si necesitas, 
-       como tamaños de fuente más grandes para tablet */
+    --text-lg: 1.25rem;
+    --text-xl: 1.5rem;
+    --text-2xl: 1.875rem;
+    --text-3xl: 2.25rem;
+    --text-4xl: 3rem;
+    --text-5xl: 3.75rem;
   }
 }
 
-/* Desktop */
+/* Desktop (>= 1024px) */
 @media (min-width: 1024px) {
   :root {
-    /* Redefinición de variables para desktop */
+    --text-2xl: 2rem;
+    --text-3xl: 2.5rem;
+    --text-4xl: 3.5rem;
+    --text-5xl: 4.5rem;
   }
 }
+
+/* ========== CUSTOM UI ELEMENTS ========== */
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-neutral-white);
+}
+
+/* Scrollbar (Webkit) */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary-light);
+  border-radius: var(--border-radius-full);
+  border: 2px solid var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+

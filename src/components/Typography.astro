@@ -1,5 +1,103 @@
 ---
-    const { type, text } = Astro.props;
+interface Props {
+  type?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "body" | "caption";
+  text: string;
+  color?: "primary" | "secondary" | "light" | "dark";
+  align?: "left" | "center" | "right";
+  weight?: "light" | "normal" | "semibold" | "bold" | "black";
+}
+
+const {
+  type = "p",
+  text,
+  color = "dark",
+  align = "left",
+  weight = "normal",
+} = Astro.props as Props;
+
+const Tag = type as any;
+
+const colorMap = {
+  primary: "var(--color-primary)",
+  secondary: "var(--color-secondary)",
+  light: "var(--color-text-tertiary)",
+  dark: "var(--color-text-primary)",
+};
+
+const weightMap = {
+  light: "var(--font-light)",
+  normal: "var(--font-normal)",
+  semibold: "var(--font-semibold)",
+  bold: "var(--font-bold)",
+  black: "var(--font-black)",
+};
 ---
 
-    <h1 class={type}>{text}</h1>
+<Tag
+  class={`typography typography-${type} typography-${color} typography-align-${align}`}
+  style={{
+    fontWeight: weightMap[weight],
+    color: colorMap[color],
+    textAlign: align,
+  }}
+>
+  {text}
+</Tag>
+
+<style>
+  .typography {
+    font-family: var(--font-body);
+    margin: 0;
+  }
+
+  .typography-h1 {
+    font-family: var(--font-logo);
+    font-size: var(--text-5xl);
+    font-weight: var(--font-black);
+  }
+
+  .typography-h2 {
+    font-family: var(--font-logo);
+    font-size: var(--text-4xl);
+    font-weight: var(--font-bold);
+  }
+
+  .typography-h3 {
+    font-family: var(--font-logo);
+    font-size: var(--text-3xl);
+    font-weight: var(--font-bold);
+  }
+
+  .typography-h4 {
+    font-family: var(--font-logo);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-semibold);
+  }
+
+  .typography-h5 {
+    font-family: var(--font-logo);
+    font-size: var(--text-xl);
+    font-weight: var(--font-semibold);
+  }
+
+  .typography-h6 {
+    font-family: var(--font-logo);
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+  }
+
+  .typography-p {
+    font-size: var(--text-base);
+    line-height: 1.6;
+  }
+
+  .typography-body {
+    font-size: var(--text-base);
+    line-height: 1.6;
+  }
+
+  .typography-caption {
+    font-size: var(--text-sm);
+    line-height: 1.5;
+  }
+</style>

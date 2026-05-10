@@ -1,7 +1,95 @@
 ---
-const { altName, size } = Astro.props;
+interface Props {
+  src?: string;
+  alt?: string;
+  size?: "small" | "medium" | "large";
+  initials?: string;
+  variant?: "primary" | "secondary";
+}
+
+const {
+  src,
+  alt = "Avatar",
+  size = "medium",
+  initials,
+  variant = "primary",
+} = Astro.props as Props;
 ---
 
-<div class={size}>
-    <img src="" alt={altName} aria-label={altName}/>
+<div
+  class={`avatar avatar-${size} avatar-${variant} ${!src && initials ? "avatar-initials" : ""}`}
+>
+  {
+    src ? (
+      <img src={src} alt={alt} aria-label={alt} class="avatar-image" />
+    ) : initials ? (
+      <span class="avatar-text">{initials}</span>
+    ) : (
+      <span class="avatar-placeholder">👤</span>
+    )
+  }
 </div>
+
+<style>
+  .avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-full);
+    overflow: hidden;
+    background-color: var(--color-neutral-light);
+    font-family: var(--font-logo);
+    font-weight: var(--font-bold);
+  }
+
+  .avatar-small {
+    width: 32px;
+    height: 32px;
+    font-size: var(--text-sm);
+  }
+
+  .avatar-medium {
+    width: 48px;
+    height: 48px;
+    font-size: var(--text-base);
+  }
+
+  .avatar-large {
+    width: 64px;
+    height: 64px;
+    font-size: var(--text-lg);
+  }
+
+  .avatar-primary {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary),
+      var(--color-primary-light)
+    );
+    color: white;
+  }
+
+  .avatar-secondary {
+    background: linear-gradient(
+      135deg,
+      var(--color-secondary),
+      var(--color-secondary-light)
+    );
+    color: white;
+  }
+
+  .avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .avatar-text {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .avatar-placeholder {
+    font-size: 1.5em;
+  }
+</style>
