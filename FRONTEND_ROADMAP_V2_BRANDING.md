@@ -133,14 +133,14 @@ Esto se materializa en:
 ### ÉPICA 2: Logos y Assets
 
 #### Tarea 2.1 — Integrar logos oficiales al proyecto
-- [ ] **Archivos**: `public/` o `src/assets/`
+- [x] **Archivos**: `public/` o `src/assets/`
 - **Acciones**:
   1. Copiar los 5 PNGs de `/LOGOS_FONDO_TRANSPARENTE-_HackathonEduTech2026_/` a `public/img/brand/`
   2. Optimizar con herramienta de compresión si necesario
   3. Considerar crear una versión SVG del isologo simplificado para el navbar (mejor rendimiento)
 
 #### Tarea 2.2 — Reemplazar logo SVG del Navbar
-- [ ] **Archivo**: `src/components/Navbar.astro`
+- [x] **Archivo**: `src/components/Navbar.astro`
 - **Acciones**:
   1. Eliminar el SVG inline genérico actual (el rectángulo con líneas)
   2. Reemplazar por la imagen del isologo oficial (`MARCA_SIMPLE_NEGRO_SIN_FONDO.png` en tema claro, versión blanca/invertida para tema oscuro)
@@ -148,13 +148,13 @@ Esto se materializa en:
   4. Aplicar tipografía Lexend Black para "HACKATHON EDUTECH", Lexend Regular para "Segunda Edición"
 
 #### Tarea 2.3 — Reemplazar logo SVG del Footer
-- [ ] **Archivo**: `src/components/Footer.astro`
+- [x] **Archivo**: `src/components/Footer.astro`
 - **Acciones**:
   1. Misma lógica que Navbar — reemplazar SVG inline por imagen oficial
   2. Actualizar textos de marca con naming correcto
 
 #### Tarea 2.4 — Crear favicon desde isotipo
-- [ ] **Archivo**: `public/favicon.svg` o `public/favicon.ico`
+- [x] **Archivo**: `public/favicon.svg` o `public/favicon.ico`
 - **Acciones**:
   1. Crear un favicon a partir del isotipo del foco (la "He" dentro del foco)
   2. Generar versiones 16×16, 32×32, 192×192 (para PWA)
