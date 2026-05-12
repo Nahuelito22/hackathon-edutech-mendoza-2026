@@ -1,0 +1,108 @@
+---
+interface Props {
+  text: string;
+  position?: "top" | "bottom" | "left" | "right";
+}
+
+const { text, position = "top" } = Astro.props as Props;
+---
+
+<div class={`tooltip-wrapper tooltip-${position}`}>
+  <slot />
+  <span class={`tooltip tooltip-${position}`}>{text}</span>
+</div>
+
+<style>
+  .tooltip-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  .tooltip {
+    position: absolute;
+    background-color: var(--color-primary);
+    color: white;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--transition-normal),
+      visibility var(--transition-normal);
+    z-index: 1000;
+    pointer-events: none;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .tooltip::after {
+    content: "";
+    position: absolute;
+    border: 6px solid transparent;
+  }
+
+  /* Top */
+  .tooltip-top .tooltip {
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .tooltip-top .tooltip::after {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-top-color: var(--color-primary);
+  }
+
+  /* Bottom */
+  .tooltip-bottom .tooltip {
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .tooltip-bottom .tooltip::after {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-bottom-color: var(--color-primary);
+  }
+
+  /* Left */
+  .tooltip-left .tooltip {
+    right: 125%;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+  }
+
+  .tooltip-left .tooltip::after {
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border-left-color: var(--color-primary);
+  }
+
+  /* Right */
+  .tooltip-right .tooltip {
+    left: 125%;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+  }
+
+  .tooltip-right .tooltip::after {
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border-right-color: var(--color-primary);
+  }
+
+  .tooltip-wrapper:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+  }
+</style>

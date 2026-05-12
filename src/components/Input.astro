@@ -1,0 +1,90 @@
+---
+interface Props {
+  type?: "text" | "email" | "password" | "number" | "date" | "search";
+  placeholder?: string;
+  label?: string;
+  value?: string;
+  disabled?: boolean;
+  required?: boolean;
+  id?: string;
+}
+
+const {
+  type = "text",
+  placeholder = "",
+  label,
+  value = "",
+  disabled = false,
+  required = false,
+  id,
+} = Astro.props as Props;
+---
+
+<div class="input-wrapper">
+  {
+    label && (
+      <label for={id} class="input-label">
+        {label}
+        {required && <span class="required">*</span>}
+      </label>
+    )
+  }
+  <input
+    id={id}
+    type={type}
+    placeholder={placeholder}
+    value={value}
+    disabled={disabled}
+    required={required}
+    class="input"
+  />
+</div>
+
+<style>
+  .input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    width: 100%;
+  }
+
+  .input-label {
+    font-family: var(--font-logo);
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+  }
+
+  .required {
+    color: #e53e3e;
+    margin-left: 4px;
+  }
+
+  .input {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    border: 2px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+    transition: all var(--transition-normal);
+  }
+
+  .input::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  .input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(136, 0, 123, 0.1);
+  }
+
+  .input:disabled {
+    background-color: var(--color-surface);
+    color: var(--color-text-tertiary);
+    cursor: not-allowed;
+  }
+</style>

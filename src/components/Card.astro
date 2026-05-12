@@ -1,0 +1,61 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+  variant?: "default" | "elevated" | "outlined";
+  hover?: boolean;
+}
+
+const {
+  title,
+  description,
+  variant = "default",
+  hover = true,
+} = Astro.props as Props;
+---
+
+<div class={`card card-${variant} ${hover ? "card-hover" : ""}`}>
+  {title && <h3 class="card-title">{title}</h3>}
+  {description && <p class="card-description">{description}</p>}
+  <slot />
+</div>
+
+<style>
+  .card {
+    background-color: var(--color-background);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    transition: all var(--transition-normal);
+  }
+
+  .card-default {
+    border: 1px solid var(--color-border-light);
+  }
+
+  .card-elevated {
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-outlined {
+    border: 2px solid var(--color-border);
+  }
+
+  .card-hover:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+  }
+
+  .card-title {
+    font-family: var(--font-logo);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    color: var(--color-primary);
+    margin: 0 0 var(--spacing-md) 0;
+  }
+
+  .card-description {
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-md) 0;
+    font-size: var(--text-base);
+  }
+</style>

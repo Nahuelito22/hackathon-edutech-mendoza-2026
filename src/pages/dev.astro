@@ -1,0 +1,468 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Acordion from "../components/Acordion.astro";
+import Avatar from "../components/Avatar.astro";
+import Badge from "../components/Badge.astro";
+import Button from "../components/Button.astro";
+import Card from "../components/Card.astro";
+import Input from "../components/Input.astro";
+import Tooltip from "../components/Tooltip.astro";
+import Typography from "../components/Typography.astro";
+---
+
+<Layout title="Design System - HackathonEduTech 2026">
+  <div class="dev-container">
+    <!-- Paleta de Colores -->
+    <section class="dev-section">
+      <Typography
+        type="h1"
+        text="Design System - HackathonEduTech 2026"
+        color="primary"
+      />
+
+      <Card title="Paleta de Colores" variant="elevated">
+        <div class="color-grid">
+          <div class="color-swatch">
+            <div class="color-box" style={{ backgroundColor: "#88007b" }}></div>
+            <Typography type="caption" text="PANTONE 2415 C" />
+            <Typography type="caption" text="#88007b" color="light" />
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style={{ backgroundColor: "#9fc637" }}></div>
+            <Typography type="caption" text="PANTONE 2292 C" />
+            <Typography type="caption" text="#9fc637" color="light" />
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style={{ backgroundColor: "#eae7ea" }}></div>
+            <Typography type="caption" text="PANTONE 9345 C" />
+            <Typography type="caption" text="#eae7ea" color="light" />
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style={{ backgroundColor: "#000000" }}></div>
+            <Typography type="caption" text="BLACK" />
+            <Typography type="caption" text="#000000" color="light" />
+          </div>
+        </div>
+      </Card>
+    </section>
+
+    <!-- Tipografía -->
+    <section class="dev-section">
+      <Card title="Tipografía" variant="elevated">
+        <div class="typography-showcase">
+          <div class="typo-item">
+            <Typography type="h1" text="Heading 1 - Lexend Black" />
+            <p class="typo-info">
+              Lexend - 900 (Black) - Para logotipos principales
+            </p>
+          </div>
+          <div class="typo-item">
+            <Typography type="h2" text="Heading 2 - Lexend Bold" />
+            <p class="typo-info">Lexend - 700 (Bold)</p>
+          </div>
+          <div class="typo-item">
+            <Typography type="h3" text="Heading 3 - Lexend Regular" />
+            <p class="typo-info">Lexend - 400 (Regular) - Para bajadas</p>
+          </div>
+          <div class="typo-item">
+            <Typography
+              type="p"
+              text="Body text using Roboto font. This is the main text for content. Line height is set to 1.6 for readability."
+            />
+            <p class="typo-info">Roboto - 400 (Regular)</p>
+          </div>
+          <div class="typo-item">
+            <Typography
+              type="caption"
+              text="Small caption text - Roboto Regular"
+            />
+            <p class="typo-info">Roboto - 400 (Regular) - 12px</p>
+          </div>
+        </div>
+      </Card>
+    </section>
+
+    <!-- Botones -->
+    <section class="dev-section">
+      <Card title="Buttons" variant="elevated">
+        <div class="component-grid">
+          <div>
+            <Typography type="h5" text="Primary Buttons" />
+            <div class="component-row">
+              <Button label="Small" size="small" variant="primary" />
+              <Button label="Medium" size="medium" variant="primary" />
+              <Button label="Large" size="large" variant="primary" />
+            </div>
+          </div>
+
+          <div>
+            <Typography type="h5" text="Secondary Buttons" />
+            <div class="component-row">
+              <Button label="Small" size="small" variant="secondary" />
+              <Button label="Medium" size="medium" variant="secondary" />
+              <Button label="Large" size="large" variant="secondary" />
+            </div>
+          </div>
+
+          <div>
+            <Typography type="h5" text="Outline Buttons" />
+            <div class="component-row">
+              <Button label="Small" size="small" variant="outline" />
+              <Button label="Medium" size="medium" variant="outline" />
+              <Button label="Large" size="large" variant="outline" />
+            </div>
+          </div>
+
+          <div>
+            <Typography type="h5" text="Disabled State" />
+            <div class="component-row">
+              <Button label="Disabled" variant="primary" disabled />
+            </div>
+          </div>
+        </div>
+      </Card>
+    </section>
+
+    <!-- Inputs -->
+    <section class="dev-section">
+      <Card title="Input Fields" variant="elevated">
+        <div class="input-examples">
+          <Input
+            type="text"
+            placeholder="Text input"
+            label="Full Name"
+            id="input-text"
+          />
+          <Input
+            type="email"
+            placeholder="your@email.com"
+            label="Email Address"
+            id="input-email"
+            required
+          />
+          <Input
+            type="password"
+            placeholder="••••••••"
+            label="Password"
+            id="input-password"
+          />
+        </div>
+      </Card>
+    </section>
+
+    <!-- Badges -->
+    <section class="dev-section">
+      <Card title="Badges" variant="elevated">
+        <div class="badge-grid">
+          <div>
+            <Typography type="h5" text="Primary Badges" />
+            <div class="badge-row">
+              <Badge label="Primary" variant="primary" size="small" />
+              <Badge label="Primary Badge" variant="primary" size="medium" />
+            </div>
+          </div>
+
+          <div>
+            <Typography type="h5" text="Secondary Badges" />
+            <div class="badge-row">
+              <Badge label="Secondary" variant="secondary" size="small" />
+              <Badge
+                label="Secondary Badge"
+                variant="secondary"
+                size="medium"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Typography type="h5" text="Status Badges" />
+            <div class="badge-row">
+              <Badge label="Success" variant="success" size="small" />
+              <Badge label="Warning" variant="warning" size="small" />
+              <Badge label="Error" variant="error" size="small" />
+              <Badge label="Info" variant="info" size="small" />
+            </div>
+          </div>
+        </div>
+      </Card>
+    </section>
+
+    <!-- Cards -->
+    <section class="dev-section">
+      <Card title="Cards" variant="elevated">
+        <div class="card-grid">
+          <Card
+            title="Default Card"
+            description="This is a card with default styling"
+            variant="default"
+            hover
+          >
+            <Typography
+              type="p"
+              text="Card content goes here. You can add any content inside."
+            />
+          </Card>
+
+          <Card
+            title="Elevated Card"
+            description="This is an elevated card with shadow"
+            variant="elevated"
+            hover
+          >
+            <Typography
+              type="p"
+              text="Elevated cards have a shadow to indicate depth."
+            />
+          </Card>
+
+          <Card
+            title="Outlined Card"
+            description="This is an outlined card"
+            variant="outlined"
+            hover
+          >
+            <Typography
+              type="p"
+              text="Outlined cards use a border instead of shadow."
+            />
+          </Card>
+        </div>
+      </Card>
+    </section>
+
+    <!-- Avatars -->
+    <section class="dev-section">
+      <Card title="Avatars" variant="elevated">
+        <div class="avatar-grid">
+          <div class="avatar-group">
+            <Typography type="h5" text="Initials - Primary" />
+            <div class="avatar-row">
+              <Avatar initials="JD" size="small" variant="primary" />
+              <Avatar initials="JD" size="medium" variant="primary" />
+              <Avatar initials="JD" size="large" variant="primary" />
+            </div>
+          </div>
+
+          <div class="avatar-group">
+            <Typography type="h5" text="Initials - Secondary" />
+            <div class="avatar-row">
+              <Avatar initials="AB" size="small" variant="secondary" />
+              <Avatar initials="AB" size="medium" variant="secondary" />
+              <Avatar initials="AB" size="large" variant="secondary" />
+            </div>
+          </div>
+
+          <div class="avatar-group">
+            <Typography type="h5" text="Placeholder" />
+            <div class="avatar-row">
+              <Avatar size="small" />
+              <Avatar size="medium" />
+              <Avatar size="large" />
+            </div>
+          </div>
+        </div>
+      </Card>
+    </section>
+
+    <!-- Tooltips -->
+    <section class="dev-section">
+      <Card title="Tooltips" variant="elevated">
+        <div class="tooltip-grid">
+          <div class="tooltip-example">
+            <Typography type="h5" text="Top Tooltip" align="center" />
+            <Tooltip text="This is a tooltip" position="top">
+              <Button label="Hover me" size="small" />
+            </Tooltip>
+          </div>
+
+          <div class="tooltip-example">
+            <Typography type="h5" text="Bottom Tooltip" align="center" />
+            <Tooltip text="This is a tooltip" position="bottom">
+              <Button label="Hover me" size="small" />
+            </Tooltip>
+          </div>
+
+          <div class="tooltip-example">
+            <Typography type="h5" text="Left Tooltip" align="center" />
+            <Tooltip text="Tooltip" position="left">
+              <Button label="Hover me" size="small" />
+            </Tooltip>
+          </div>
+
+          <div class="tooltip-example">
+            <Typography type="h5" text="Right Tooltip" align="center" />
+            <Tooltip text="Tooltip" position="right">
+              <Button label="Hover me" size="small" />
+            </Tooltip>
+          </div>
+        </div>
+      </Card>
+    </section>
+
+    <!-- Accordion -->
+    <section class="dev-section">
+      <Card title="Accordion" variant="elevated">
+        <Acordion
+          items={[
+            {
+              title: "¿Qué es HackathonEduTech?",
+              content:
+                "HackathonEduTech es un evento de innovación en educación donde se reúnen desarrolladores, diseñadores y educadores para crear soluciones tecnológicas que impacten el sector educativo.",
+            },
+            {
+              title: "¿Quiénes pueden participar?",
+              content:
+                "El evento está abierto a estudiantes, profesionales y entusiastas de la tecnología que deseen contribuir a soluciones educativas innovadoras.",
+            },
+            {
+              title: "¿Cuál es el formato del evento?",
+              content:
+                "Los participantes forman equipos y trabajan durante dos días en el desarrollo de sus proyectos, con mentorías y recursos técnicos disponibles.",
+            },
+          ]}
+          defaultOpen={0}
+        />
+      </Card>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .dev-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+  }
+
+  .dev-section {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+  }
+
+  .color-swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    text-align: center;
+  }
+
+  .color-box {
+    width: 100%;
+    height: 120px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+
+  .typography-showcase {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+  }
+
+  .typo-item {
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-surface);
+  }
+
+  .typo-info {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    margin-top: var(--spacing-md);
+  }
+
+  .component-grid {
+    display: grid;
+    gap: var(--spacing-xl);
+  }
+
+  .component-row {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: var(--spacing-md);
+  }
+
+  .input-examples {
+    display: grid;
+    gap: var(--spacing-lg);
+    max-width: 400px;
+  }
+
+  .badge-grid {
+    display: grid;
+    gap: var(--spacing-xl);
+  }
+
+  .badge-row {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: var(--spacing-md);
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+  }
+
+  .avatar-grid {
+    display: grid;
+    gap: var(--spacing-xl);
+  }
+
+  .avatar-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .avatar-row {
+    display: flex;
+    gap: var(--spacing-lg);
+    align-items: center;
+    margin-top: var(--spacing-md);
+  }
+
+  .tooltip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-lg);
+  }
+
+  .tooltip-example {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background-color: var(--color-surface);
+    border-radius: var(--border-radius-md);
+  }
+
+  @media (max-width: 768px) {
+    .dev-container {
+      padding: var(--spacing-lg);
+    }
+
+    .card-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .tooltip-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
