@@ -51,11 +51,39 @@ const profiles = allProfiles || [];
         <p class="admin-subtitle">Gestión de usuarios, roles e inscripciones</p>
       </div>
 
+      <div class="admin-actions">
+        <div class="filters">
+          <select id="filter-role" class="filter-select">
+            <option value="all">Todos los roles</option>
+            <option value="usuario">Usuario</option>
+            <option value="mentor">Mentor</option>
+            <option value="juez">Juez</option>
+            <option value="admin">Admin</option>
+            <option value="superadmin">Superadmin</option>
+          </select>
+          <select id="filter-status" class="filter-select">
+            <option value="all">Todos los estados</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="aprobado">Aprobado</option>
+            <option value="rechazado">Rechazado</option>
+          </select>
+        </div>
+        <button id="bulk-approve-btn" class="btn btn-primary" disabled>
+          Aprobar Seleccionados (0)
+        </button>
+      </div>
+
       <div class="admin-card card">
         <div class="table-responsive">
           <table class="admin-table">
             <thead>
               <tr>
+                <th style="width: 40px;">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="select-all" />
+                    <span class="custom-checkbox"></span>
+                  </label>
+                </th>
                 <th>Nombre</th>
                 <th>DNI</th>
                 <th>Institución</th>
@@ -67,11 +95,17 @@ const profiles = allProfiles || [];
             <tbody>
               {profiles.length === 0 ? (
                 <tr>
-                  <td colspan="6" class="empty-state">No hay usuarios registrados aún.</td>
+                  <td colspan="7" class="empty-state">No hay usuarios registrados aún.</td>
                 </tr>
               ) : (
                 profiles.map((p) => (
-                  <tr data-user-id={p.id} class="user-row">
+                  <tr data-user-id={p.id} class="user-row" data-role={p.role} data-status={p.registration_status}>
+                    <td>
+                      <label class="checkbox-label">
+                        <input type="checkbox" class="row-checkbox" value={p.id} />
+                        <span class="custom-checkbox"></span>
+                      </label>
+                    </td>
                     <td>
                       <div class="user-info">
                         <strong>{p.full_name || 'Sin nombre'}</strong>
@@ -160,6 +194,67 @@ const profiles = allProfiles || [];
     background: var(--bg-card);
     border-radius: var(--r-md);
     overflow: hidden;
+  }
+
+  .admin-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .filters {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .filter-select {
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    border-radius: var(--r-md);
+    background-color: var(--bg-card);
+    border: 1px solid var(--brd);
+    color: var(--txt-1);
+    font-size: 0.9rem;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .checkbox-label input {
+    display: none;
+  }
+
+  .custom-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--brd);
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-input);
+    transition: all var(--t-fast);
+  }
+
+  .checkbox-label input:checked + .custom-checkbox {
+    background: var(--c1);
+    border-color: var(--c1);
+  }
+
+  .checkbox-label input:checked + .custom-checkbox::after {
+    content: '';
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-bottom: 2px;
   }
 
   .table-responsive {
@@ -372,8 +467,116 @@ const profiles = allProfiles || [];
         target.value = originalValue || ''; // Revertir visualmente
       } else {
         target.setAttribute('data-original-val', newValue);
+        tr?.setAttribute(isRole ? 'data-role' : 'data-status', newValue); // Update DOM state for filters
         showToast(`Usuario actualizado correctamente`);
       }
     });
+  });
+
+  // Lógica de Filtros
+  const filterRole = document.getElementById('filter-role') as HTMLSelectElement;
+  const filterStatus = document.getElementById('filter-status') as HTMLSelectElement;
+  const rows = document.querySelectorAll('.user-row');
+
+  function applyFilters() {
+    const roleVal = filterRole.value;
+    const statusVal = filterStatus.value;
+
+    rows.forEach((row) => {
+      const rRole = row.getAttribute('data-role');
+      const rStatus = row.getAttribute('data-status');
+      
+      const matchRole = roleVal === 'all' || rRole === roleVal;
+      const matchStatus = statusVal === 'all' || rStatus === statusVal;
+
+      (row as HTMLElement).style.display = matchRole && matchStatus ? '' : 'none';
+      
+      // Uncheck if hidden
+      if (!(matchRole && matchStatus)) {
+        const cb = row.querySelector('.row-checkbox') as HTMLInputElement;
+        if (cb) cb.checked = false;
+      }
+    });
+    updateBulkBtn();
+  }
+
+  filterRole?.addEventListener('change', applyFilters);
+  filterStatus?.addEventListener('change', applyFilters);
+
+  // Lógica de Acciones Masivas
+  const selectAll = document.getElementById('select-all') as HTMLInputElement;
+  const rowCheckboxes = document.querySelectorAll('.row-checkbox') as NodeListOf<HTMLInputElement>;
+  const bulkApproveBtn = document.getElementById('bulk-approve-btn') as HTMLButtonElement;
+
+  function updateBulkBtn() {
+    const checkedCount = Array.from(rowCheckboxes).filter(cb => cb.checked).length;
+    if (bulkApproveBtn) {
+      bulkApproveBtn.disabled = checkedCount === 0;
+      bulkApproveBtn.textContent = `Aprobar Seleccionados (${checkedCount})`;
+    }
+  }
+
+  selectAll?.addEventListener('change', (e) => {
+    const checked = (e.target as HTMLInputElement).checked;
+    rowCheckboxes.forEach(cb => {
+      const row = cb.closest('tr');
+      // Seleccionar solo filas visibles
+      if (row && row.style.display !== 'none') {
+        cb.checked = checked;
+      }
+    });
+    updateBulkBtn();
+  });
+
+  rowCheckboxes.forEach(cb => {
+    cb.addEventListener('change', () => {
+      const allVisible = Array.from(rows).filter(r => (r as HTMLElement).style.display !== 'none');
+      const checkedVisible = Array.from(rowCheckboxes).filter(c => c.checked && c.closest('tr')?.style.display !== 'none');
+      if (selectAll) selectAll.checked = allVisible.length > 0 && allVisible.length === checkedVisible.length;
+      updateBulkBtn();
+    });
+  });
+
+  bulkApproveBtn?.addEventListener('click', async () => {
+    const selectedIds = Array.from(rowCheckboxes)
+      .filter(cb => cb.checked)
+      .map(cb => cb.value);
+
+    if (selectedIds.length === 0) return;
+
+    bulkApproveBtn.disabled = true;
+    bulkApproveBtn.textContent = 'Aprobando...';
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ registration_status: 'aprobado' })
+      .in('id', selectedIds);
+
+    if (error) {
+      console.error('Bulk update error:', error);
+      showToast('Error al actualizar registros masivamente', true);
+      bulkApproveBtn.disabled = false;
+      updateBulkBtn();
+    } else {
+      showToast(`${selectedIds.length} usuarios aprobados con éxito`);
+      
+      // Update DOM
+      selectedIds.forEach(id => {
+        const row = document.querySelector(`tr[data-user-id="${id}"]`);
+        if (row) {
+          row.setAttribute('data-status', 'aprobado');
+          const select = row.querySelector('.status-select') as HTMLSelectElement;
+          if (select) {
+            select.value = 'aprobado';
+            select.setAttribute('data-original-val', 'aprobado');
+          }
+        }
+      });
+      
+      // Reset
+      if (selectAll) selectAll.checked = false;
+      rowCheckboxes.forEach(cb => cb.checked = false);
+      updateBulkBtn();
+    }
   });
 </script>

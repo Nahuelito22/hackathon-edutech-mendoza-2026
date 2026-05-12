@@ -91,14 +91,52 @@ const isProfileComplete = !!(profile.dni && profile.institution);
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--c2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
           </div>
           <h1>¡Inscripción confirmada!</h1>
-          <div class="status-badge">Estado actual: <strong>PENDIENTE DE APROBACIÓN</strong></div>
+          <div class={`status-badge status-${profile.registration_status || 'pendiente'}`}>
+            Estado actual: <strong>{(profile.registration_status || 'pendiente').toUpperCase()}</strong>
+          </div>
           <p class="success-text">
             Próximamente te notificaremos sobre la conformación de los equipos. El formulario para la entrega del proyecto se habilitará aquí mismo el día del evento.
           </p>
-          <div class="profile-summary">
-            <p><strong>DNI:</strong> {profile.dni}</p>
-            <p><strong>Institución:</strong> {profile.institution === 'ies_9023_maipu' ? 'IES 9-023 Maipú' : profile.institution === 'ies_edison' ? 'IES Tomás Alva Edison' : 'Otra'}</p>
-          </div>
+          <form id="update-contact-form" class="dash-form profile-summary">
+            <h3 class="section-label">Tus Datos Fijos</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="display_dni">DNI</label>
+                <input type="text" id="display_dni" value={profile.dni} disabled />
+              </div>
+              <div class="form-group">
+                <label for="display_inst">Institución</label>
+                <input type="text" id="display_inst" value={profile.institution === 'ies_9023_maipu' ? 'IES 9-023 Maipú' : profile.institution === 'ies_edison' ? 'IES Tomás Alva Edison' : 'Otra'} disabled />
+              </div>
+            </div>
+            <div class="form-group checkbox-group">
+              <label class="checkbox-label" style="opacity: 0.7; cursor: default;">
+                <input type="checkbox" checked={profile.is_egresado} disabled />
+                <span class="custom-checkbox"></span>
+                Egresado/a
+              </label>
+            </div>
+            
+            <h3 class="section-label" style="margin-top: 1rem;">Datos de Contacto (Editables)</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="phone_whatsapp">Teléfono (WhatsApp)</label>
+                <input type="text" id="phone_whatsapp" name="phone_whatsapp" placeholder="Ej: 2611234567" value={profile.phone_whatsapp || ''} />
+              </div>
+              <div class="form-group">
+                <label for="instagram_handle">Instagram</label>
+                <input type="text" id="instagram_handle" name="instagram_handle" placeholder="Ej: @usuario" value={profile.instagram_handle || ''} />
+              </div>
+            </div>
+
+            <div id="update-error" class="form-error" style="display: none;"></div>
+            
+            <div class="form-actions" style="margin-top: 0.5rem; justify-content: flex-start;">
+              <button type="submit" class="btn btn-outline" id="update-btn">
+                Actualizar Contacto
+              </button>
+            </div>
+          </form>
         </div>
       )}
       
@@ -262,13 +300,29 @@ const isProfileComplete = !!(profile.dni && profile.institution);
   }
 
   .status-badge {
-    background: rgba(var(--c1r), 0.1);
-    color: var(--c1);
     padding: 0.5rem 1.5rem;
     border-radius: 999px;
     font-size: 0.85rem;
     letter-spacing: 0.05em;
-    border: 1px solid rgba(var(--c1r), 0.2);
+    border: 1px solid transparent;
+  }
+
+  .status-pendiente {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+    border-color: rgba(255, 193, 7, 0.2);
+  }
+
+  .status-aprobado {
+    background: rgba(var(--c2r), 0.1);
+    color: var(--c2);
+    border-color: rgba(var(--c2r), 0.2);
+  }
+
+  .status-rechazado {
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+    border-color: rgba(220, 38, 38, 0.2);
   }
 
   .success-text {
@@ -286,18 +340,17 @@ const isProfileComplete = !!(profile.dni && profile.institution);
     border: 1px solid var(--brd-s);
   }
 
-  .profile-summary p {
-    margin-bottom: 0.5rem;
-    color: var(--txt-2);
-  }
-
-  .profile-summary p:last-child {
-    margin-bottom: 0;
-  }
-
-  .profile-summary strong {
+  .section-label {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
     color: var(--txt-1);
-    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-group input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--bg-1);
   }
 
   @media (max-width: 768px) {
@@ -380,5 +433,49 @@ const isProfileComplete = !!(profile.dni && profile.institution);
 
     // Éxito: recargar la página para que el servidor Astro renderice la vista "Completo"
     window.location.reload();
+  });
+
+  // Lógica del formulario de actualización de contacto
+  const updateForm = document.getElementById('update-contact-form') as HTMLFormElement;
+  const updateErrorDiv = document.getElementById('update-error') as HTMLDivElement;
+  const updateBtn = document.getElementById('update-btn') as HTMLButtonElement;
+
+  updateForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    updateErrorDiv.style.display = 'none';
+
+    const phone_whatsapp = (updateForm.querySelector('#phone_whatsapp') as HTMLInputElement).value.trim();
+    const instagram_handle = (updateForm.querySelector('#instagram_handle') as HTMLInputElement).value.trim();
+
+    updateBtn.disabled = true;
+    updateBtn.textContent = 'Actualizando...';
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ phone_whatsapp, instagram_handle })
+      .eq('id', session.user.id);
+
+    if (updateError) {
+      console.error(updateError);
+      updateErrorDiv.textContent = 'Hubo un error al actualizar tus datos.';
+      updateErrorDiv.style.display = 'block';
+      updateBtn.disabled = false;
+      updateBtn.textContent = 'Actualizar Contacto';
+      return;
+    }
+
+    updateBtn.textContent = '¡Actualizado!';
+    updateBtn.classList.remove('btn-outline');
+    updateBtn.classList.add('btn-primary');
+    
+    setTimeout(() => {
+      updateBtn.disabled = false;
+      updateBtn.textContent = 'Actualizar Contacto';
+      updateBtn.classList.remove('btn-primary');
+      updateBtn.classList.add('btn-outline');
+    }, 3000);
   });
 </script>
