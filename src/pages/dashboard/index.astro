@@ -1,0 +1,49 @@
+---
+// src/pages/dashboard/index.astro
+// Placeholder temporal — será reemplazado por el dashboard completo
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Dashboard | HEM2026">
+  <main class="dashboard-page">
+    <div class="container">
+      <div class="dashboard-placeholder card">
+        <h1>¡Bienvenido al Dashboard!</h1>
+        <p>Tu cuenta ha sido creada exitosamente. Próximamente aquí podrás completar tu inscripción al Hackathon.</p>
+        <a href="/" class="btn btn-outline">&larr; Volver al inicio</a>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .dashboard-page {
+    min-height: calc(100vh - var(--nav-h));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+  }
+
+  .dashboard-placeholder {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 3rem;
+    text-align: center;
+  }
+
+  .dashboard-placeholder h1 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .dashboard-placeholder p {
+    color: var(--txt-2);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+</style>
