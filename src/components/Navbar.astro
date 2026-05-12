@@ -5,7 +5,7 @@ const user = Astro.locals.user;
 
 <nav class="navbar" id="navbar">
     <div class="container nav-c">
-        <a href="#inicio" class="nav-logo">
+        <a href="/#inicio" class="nav-logo">
             <img src="/img/brand/MARCA_SIMPLE_NEGRO_SIN_FONDO.png" alt="Hackathon EduTech" class="brand-logo" />
         </a>
         <button class="nav-toggle" id="navToggle" aria-label="Menú">
@@ -13,11 +13,11 @@ const user = Astro.locals.user;
         </button>
         <div class="nav-menu" id="navMenu">
             <ul class="nav-links">
-                <li><a href="#inicio">Inicio</a></li>
-                <li><a href="#acerca">Acerca</a></li>
-                <li><a href="#cronograma">Cronograma</a></li>
-                <li><a href="#ediciones">Ediciones</a></li>
-                <li><a href="#faq">FAQ</a></li>
+                <li><a href="/#inicio">Inicio</a></li>
+                <li><a href="/#acerca">Acerca</a></li>
+                <li><a href="/#cronograma">Cronograma</a></li>
+                <li><a href="/#ediciones">Ediciones</a></li>
+                <li><a href="/#faq">FAQ</a></li>
             </ul>
             <div class="nav-act" id="nav-auth-buttons">
                 {user ? (
