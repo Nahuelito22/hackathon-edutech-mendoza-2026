@@ -1,6 +1,7 @@
 ---
 // src/components/Navbar.astro
 const user = Astro.locals.user;
+const profile = Astro.locals.profile;
 ---
 
 <nav class="navbar" id="navbar">
@@ -21,7 +22,12 @@ const user = Astro.locals.user;
             </ul>
             <div class="nav-act" id="nav-auth-buttons">
                 {user ? (
-                    <a href="/dashboard" class="btn btn-primary">Mi Panel</a>
+                    <div class="nav-act-logged">
+                        {(profile?.role === 'admin' || profile?.role === 'superadmin') && (
+                            <a href="/admin" class="btn btn-outline">Admin</a>
+                        )}
+                        <a href="/dashboard" class="btn btn-primary">Mi Panel</a>
+                    </div>
                 ) : (
                     <>
                         <a href="/login" class="btn btn-outline">Iniciar Sesión</a>
@@ -164,6 +170,11 @@ const user = Astro.locals.user;
         padding: 0.5rem 1.25rem;
     }
 
+    .nav-act-logged {
+        display: flex;
+        gap: 0.5rem;
+    }
+
     @media (min-width: 768px) {
         .nav-toggle {
             display: none !important;
@@ -260,7 +271,21 @@ const user = Astro.locals.user;
         const authContainer = document.getElementById('nav-auth-buttons');
         
         if (authContainer && session) {
-            authContainer.innerHTML = '<a href="/dashboard" class="btn btn-primary">Mi Panel</a>';
+            // Fetch profile to check role for client-side rendering (SSG pages)
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', session.user.id)
+                .single();
+
+            const isAdmin = profile?.role === 'admin' || profile?.role === 'superadmin';
+            
+            authContainer.innerHTML = `
+                <div class="nav-act-logged">
+                    ${isAdmin ? '<a href="/admin" class="btn btn-outline">Admin</a>' : ''}
+                    <a href="/dashboard" class="btn btn-primary">Mi Panel</a>
+                </div>
+            `;
         }
     }
     
