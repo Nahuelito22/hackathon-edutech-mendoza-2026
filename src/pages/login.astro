@@ -28,14 +28,19 @@ import Layout from '../layouts/Layout.astro';
 
           <div class="form-group">
             <label for="password">Contraseña</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Tu contraseña"
-              required
-              autocomplete="current-password"
-            />
+            <div class="password-wrapper">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Tu contraseña"
+                required
+                autocomplete="current-password"
+              />
+              <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+            </div>
           </div>
 
           <div id="form-error" class="form-error" style="display: none;"></div>
@@ -138,6 +143,40 @@ import Layout from '../layouts/Layout.astro';
     box-shadow: 0 0 0 3px rgba(var(--c1r), 0.12);
   }
 
+  .password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .password-wrapper input {
+    width: 100%;
+    padding-right: 3rem;
+  }
+
+  .toggle-password {
+    position: absolute;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--txt-2);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--t-fast);
+  }
+
+  .toggle-password:hover {
+    color: var(--c1);
+  }
+
+  .toggle-password svg {
+    width: 20px;
+    height: 20px;
+  }
+
   .form-error {
     background: rgba(220, 38, 38, 0.1);
     border: 1px solid rgba(220, 38, 38, 0.3);
@@ -206,10 +245,12 @@ import Layout from '../layouts/Layout.astro';
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      const msg =
-        error.message === 'Invalid login credentials'
-          ? 'Email o contraseña incorrectos.'
-          : error.message;
+      let msg = error.message;
+      if (error.message === 'Invalid login credentials') {
+        msg = 'Email o contraseña incorrectos.';
+      } else if (error.message.includes('Email logins are disabled')) {
+        msg = 'El inicio de sesión con email está desactivado en la configuración de Supabase.';
+      }
       errorDiv.textContent = msg;
       errorDiv.style.display = 'block';
       submitBtn.disabled = false;
@@ -219,5 +260,21 @@ import Layout from '../layouts/Layout.astro';
 
     // Login exitoso → redirigir al dashboard
     window.location.href = '/dashboard';
+  });
+
+  // Password Visibility Toggle
+  const togglePassword = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('password') as HTMLInputElement;
+
+  togglePassword?.addEventListener('click', () => {
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    
+    // Optional: update icon based on state
+    if (type === 'text') {
+      togglePassword.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+    } else {
+      togglePassword.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+    }
   });
 </script>
