@@ -238,7 +238,7 @@
     
     .tl-item:nth-child(1) .tl-dot { border-color: var(--c1); }
     .tl-item:nth-child(2) .tl-dot { border-color: var(--c2); }
-    .tl-item:nth-child(3) .tl-dot { border-color: var(--c3); }
+    .tl-item:nth-child(3) .tl-dot { border-color: var(--c1); }
 
     .tl-header {
         display: flex;
@@ -256,7 +256,7 @@
         background: var(--bg-card-h);
     }
     .tl-item:nth-child(2) .tl-header:hover { border-color: var(--c2); }
-    .tl-item:nth-child(3) .tl-header:hover { border-color: var(--c3); }
+    .tl-item:nth-child(3) .tl-header:hover { border-color: var(--c1); }
 
     .tl-date {
         display: block;
@@ -269,7 +269,7 @@
         transition: color var(--t-theme);
     }
     .tl-item:nth-child(2) .tl-date { color: var(--c2); }
-    .tl-item:nth-child(3) .tl-date { color: var(--c3); }
+    .tl-item:nth-child(3) .tl-date { color: var(--c1); }
 
     .tl-header h3 {
         font-size: 1.25rem;
@@ -298,8 +298,8 @@
         color: var(--c2);
     }
     .tl-item:nth-child(3) .tl-header:hover .tl-toggle {
-        background: rgba(var(--c3r), 0.1);
-        color: var(--c3);
+        background: rgba(var(--c1r), 0.1);
+        color: var(--c1);
     }
     
     .chevron {
@@ -340,10 +340,7 @@
         box-shadow: var(--sh-sm);
     }
     
-    /* Asegurar que el fondo sea sólido y no traslúcido */
-    [data-theme="cyber-dark"] .tl-activity {
-        background: #161925; /* Un tono más claro y sólido que el fondo base */
-    }
+
 
     /* Corregir bordes redondeados del acordeon para que parezca una sola card */
     .tl-activity:last-child {
@@ -405,7 +402,7 @@
         transition: all var(--t-theme);
     }
     .tl-item:nth-child(2) .tl-tag { background: rgba(var(--c2r), 0.08); color: var(--c2); }
-    .tl-item:nth-child(3) .tl-tag { background: rgba(var(--c3r), 0.08); color: var(--c3); }
+    .tl-item:nth-child(3) .tl-tag { background: rgba(var(--c1r), 0.08); color: var(--c1); }
 </style>
 
 <script>
