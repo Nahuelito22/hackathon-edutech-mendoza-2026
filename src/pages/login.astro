@@ -1,31 +1,19 @@
 ---
-// src/pages/registro.astro
+// src/pages/login.astro
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Registro | HEM2026">
+<Layout title="Iniciar sesión | HEM2026">
   <main class="auth-page">
     <div class="container">
       <div class="auth-card card">
         <div class="auth-header">
           <a href="/" class="auth-back">&larr; Volver al inicio</a>
-          <h1>Crear cuenta</h1>
-          <p class="auth-subtitle">Registrate para participar de la Hackathon EduTech 2026</p>
+          <h1>Iniciar sesión</h1>
+          <p class="auth-subtitle">Accedé a tu cuenta para gestionar tu inscripción</p>
         </div>
 
-        <form id="register-form" class="auth-form" novalidate>
-          <div class="form-group">
-            <label for="full_name">Nombre completo</label>
-            <input
-              type="text"
-              id="full_name"
-              name="full_name"
-              placeholder="Ej: María García López"
-              required
-              autocomplete="name"
-            />
-          </div>
-
+        <form id="login-form" class="auth-form" novalidate>
           <div class="form-group">
             <label for="email">Correo electrónico</label>
             <input
@@ -44,23 +32,21 @@ import Layout from '../layouts/Layout.astro';
               type="password"
               id="password"
               name="password"
-              placeholder="Mínimo 6 caracteres"
+              placeholder="Tu contraseña"
               required
-              minlength="6"
-              autocomplete="new-password"
+              autocomplete="current-password"
             />
           </div>
 
           <div id="form-error" class="form-error" style="display: none;"></div>
-          <div id="form-success" class="form-success" style="display: none;"></div>
 
           <button type="submit" class="btn btn-primary btn-lg btn-full" id="submit-btn">
-            Crear cuenta
+            Iniciar sesión
           </button>
         </form>
 
         <div class="auth-footer">
-          <p>¿Ya tenés cuenta? <a href="/login" class="auth-link">Iniciar sesión</a></p>
+          <p>¿No tenés cuenta? <a href="/registro" class="auth-link">Registrate gratis</a></p>
         </div>
       </div>
     </div>
@@ -161,15 +147,6 @@ import Layout from '../layouts/Layout.astro';
     font-size: 0.9rem;
   }
 
-  .form-success {
-    background: rgba(var(--c2r), 0.1);
-    border: 1px solid rgba(var(--c2r), 0.3);
-    color: var(--c2);
-    padding: 0.75rem 1rem;
-    border-radius: var(--r-md);
-    font-size: 0.9rem;
-  }
-
   .btn-full {
     width: 100%;
   }
@@ -206,70 +183,41 @@ import Layout from '../layouts/Layout.astro';
     import.meta.env.PUBLIC_SUPABASE_ANON_KEY
   );
 
-  const form = document.getElementById('register-form') as HTMLFormElement;
+  const form = document.getElementById('login-form') as HTMLFormElement;
   const errorDiv = document.getElementById('form-error') as HTMLDivElement;
-  const successDiv = document.getElementById('form-success') as HTMLDivElement;
   const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorDiv.style.display = 'none';
-    successDiv.style.display = 'none';
 
-    const fullName = (form.querySelector('#full_name') as HTMLInputElement).value.trim();
     const email = (form.querySelector('#email') as HTMLInputElement).value.trim();
     const password = (form.querySelector('#password') as HTMLInputElement).value;
 
-    // Validación básica del lado del cliente
-    if (!fullName || !email || !password) {
+    if (!email || !password) {
       errorDiv.textContent = 'Por favor, completá todos los campos.';
       errorDiv.style.display = 'block';
       return;
     }
 
-    if (password.length < 6) {
-      errorDiv.textContent = 'La contraseña debe tener al menos 6 caracteres.';
-      errorDiv.style.display = 'block';
-      return;
-    }
-
-    // Estado de carga
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Creando cuenta...';
+    submitBtn.textContent = 'Iniciando sesión...';
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
-        },
-      },
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      errorDiv.textContent = error.message;
+      const msg =
+        error.message === 'Invalid login credentials'
+          ? 'Email o contraseña incorrectos.'
+          : error.message;
+      errorDiv.textContent = msg;
       errorDiv.style.display = 'block';
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Crear cuenta';
+      submitBtn.textContent = 'Iniciar sesión';
       return;
     }
 
-    // Registro exitoso
-    if (data.user?.identities?.length === 0) {
-      // El email ya existe en Supabase
-      errorDiv.textContent = 'Ya existe una cuenta con este correo electrónico.';
-      errorDiv.style.display = 'block';
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Crear cuenta';
-      return;
-    }
-
-    successDiv.textContent = '¡Cuenta creada! Redirigiendo...';
-    successDiv.style.display = 'block';
-    submitBtn.textContent = 'Cuenta creada ✓';
-
-    // Redirigir al dashboard tras el signup exitoso
-    setTimeout(() => { window.location.href = '/dashboard'; }, 800);
+    // Login exitoso → redirigir al dashboard
+    window.location.href = '/dashboard';
   });
 </script>

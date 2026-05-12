@@ -1,5 +1,6 @@
 ---
 // src/components/Navbar.astro
+const user = Astro.locals.user;
 ---
 
 <nav class="navbar" id="navbar">
@@ -18,9 +19,15 @@
                 <li><a href="#ediciones">Ediciones</a></li>
                 <li><a href="#faq">FAQ</a></li>
             </ul>
-            <div class="nav-act">
-                <a href="#registro" class="btn btn-outline">Iniciar Sesión</a>
-                <a href="#registro" class="btn btn-primary">Registro</a>
+            <div class="nav-act" id="nav-auth-buttons">
+                {user ? (
+                    <a href="/dashboard" class="btn btn-primary">Mi Panel</a>
+                ) : (
+                    <>
+                        <a href="/login" class="btn btn-outline">Iniciar Sesión</a>
+                        <a href="/registro" class="btn btn-primary">Registro</a>
+                    </>
+                )}
             </div>
         </div>
     </div>
@@ -237,4 +244,25 @@
             });
         });
     }
+</script>
+
+<script>
+    // Update Auth buttons on client-side (important for SSG landing page)
+    import { createClient } from '@supabase/supabase-js';
+
+    const supabase = createClient(
+        import.meta.env.PUBLIC_SUPABASE_URL,
+        import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+    );
+
+    async function checkAuth() {
+        const { data: { session } } = await supabase.auth.getSession();
+        const authContainer = document.getElementById('nav-auth-buttons');
+        
+        if (authContainer && session) {
+            authContainer.innerHTML = '<a href="/dashboard" class="btn btn-primary">Mi Panel</a>';
+        }
+    }
+    
+    checkAuth();
 </script>
