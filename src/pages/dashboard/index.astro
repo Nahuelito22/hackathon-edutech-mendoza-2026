@@ -86,18 +86,22 @@ const isProfileComplete = !!(profile.dni && profile.institution);
         </div>
       ) : (
         <!-- Vista Perfil Completo -->
-        <div class="dashboard-card card success-card">
-          <div class="success-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--c2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <div class="success-layout">
+          <div class="success-info">
+            <div class="success-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--c2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <h1>¡Inscripción confirmada!</h1>
+            <div class={`status-badge status-${profile.registration_status || 'pendiente'}`}>
+              Estado actual: <strong>{(profile.registration_status || 'pendiente').toUpperCase()}</strong>
+            </div>
+            <p class="success-text">
+              Próximamente te notificaremos sobre la conformación de los equipos. El formulario para la entrega del proyecto se habilitará aquí mismo el día del evento.
+            </p>
           </div>
-          <h1>¡Inscripción confirmada!</h1>
-          <div class={`status-badge status-${profile.registration_status || 'pendiente'}`}>
-            Estado actual: <strong>{(profile.registration_status || 'pendiente').toUpperCase()}</strong>
-          </div>
-          <p class="success-text">
-            Próximamente te notificaremos sobre la conformación de los equipos. El formulario para la entrega del proyecto se habilitará aquí mismo el día del evento.
-          </p>
-          <form id="update-contact-form" class="dash-form profile-summary">
+
+          <div class="dashboard-card card profile-card">
+            <form id="update-contact-form" class="dash-form">
             <h3 class="section-label">Tus Datos Fijos</h3>
             <div class="form-row">
               <div class="form-group">
@@ -137,6 +141,7 @@ const isProfileComplete = !!(profile.dni && profile.institution);
               </button>
             </div>
           </form>
+          </div>
         </div>
       )}
       
@@ -278,14 +283,44 @@ const isProfileComplete = !!(profile.dni && profile.institution);
     justify-content: flex-end;
   }
 
-  /* Success Card Styles */
-  .success-card {
+  /* Success Layout Styles */
+  .success-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 800px) {
+    .success-layout {
+      grid-template-columns: 4fr 6fr;
+      align-items: center;
+    }
+  }
+
+  .success-info {
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
-    max-width: 600px;
+  }
+
+  @media (min-width: 800px) {
+    .success-info {
+      text-align: left;
+      align-items: flex-start;
+    }
+  }
+
+  .profile-card {
+    background: var(--bg-2);
+    padding: 2.5rem;
+    border-radius: var(--r-md);
+    border: 1px solid var(--brd-s);
+    margin: 0;
+    max-width: none;
   }
 
   .success-icon {
@@ -331,19 +366,12 @@ const isProfileComplete = !!(profile.dni && profile.institution);
     max-width: 500px;
   }
 
-  .profile-summary {
-    background: var(--bg-2);
-    padding: 1.5rem;
-    border-radius: var(--r-md);
-    width: 100%;
-    text-align: left;
-    border: 1px solid var(--brd-s);
-  }
-
   .section-label {
     font-family: var(--font-heading);
-    font-size: 1.1rem;
-    color: var(--txt-1);
+    font-size: 0.95rem;
+    color: var(--txt-2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     margin-bottom: 0.5rem;
   }
 
