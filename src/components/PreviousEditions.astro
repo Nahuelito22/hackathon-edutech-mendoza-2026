@@ -1,0 +1,242 @@
+---
+// src/components/PreviousEditions.astro
+
+const editions = [
+  {
+    year: 2025,
+    projects: [
+      {
+        projectName: "ArcoEdu",
+        teamName: "N/A",
+        category: "Idea Propia",
+        award: "Ganador",
+        description: "Plataforma innovadora para la gestión y seguimiento del aprendizaje, enfocada en resolver desafíos educativos contemporáneos mediante analíticas avanzadas e interfaz intuitiva.",
+        link: "#"
+      },
+      {
+        projectName: "Guidia",
+        teamName: "N/A",
+        category: "Idea con Mentores",
+        award: "Finalista",
+        description: "Asistente impulsado por Inteligencia Artificial diseñado para optimizar las tareas administrativas y docentes dentro del ecosistema escolar, ahorrando tiempo clave.",
+        link: "#"
+      }
+    ]
+  }
+];
+
+// Start with the latest edition
+const latestYear = editions[0].year;
+---
+
+<section id="ediciones" class="ediciones section-padding bg-alt reveal">
+  <div class="container">
+    <div class="section-header text-center">
+      <h2 class="section-title">Vitrina de <span class="text-gradient">Ediciones Anteriores</span></h2>
+      <p class="section-desc">Reviví los proyectos destacados que han dejado su marca en el Hackathon EduTech.</p>
+    </div>
+
+    <!-- Pestañas de Años -->
+    <div class="year-tabs">
+      {editions.map((edition) => (
+        <button 
+          class={`tab-btn ${edition.year === latestYear ? 'active' : ''}`} 
+          data-year={edition.year}
+        >
+          Edición {edition.year}
+        </button>
+      ))}
+    </div>
+
+    <!-- Contenedores de Proyectos -->
+    <div class="editions-content">
+      {editions.map((edition) => (
+        <div class={`edition-panel ${edition.year === latestYear ? 'active' : ''}`} id={`panel-${edition.year}`}>
+          <div class="projects-grid">
+            {edition.projects.map(project => (
+              <div class="project-card card hover-card">
+                <div class="card-header">
+                  <div class="tags">
+                    <span class={`badge award-${project.award.toLowerCase()}`}>{project.award}</span>
+                    <span class="badge category">{project.category}</span>
+                  </div>
+                  <h3 class="project-name">{project.projectName}</h3>
+                </div>
+                <div class="card-body">
+                  <p class="project-desc">{project.description}</p>
+                </div>
+                <div class="card-footer">
+                  <a href={project.link} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">
+                    Ver Presentación
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link" style="margin-left: 0.5rem;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .ediciones {
+    background-color: var(--bg-2);
+  }
+
+  .year-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    background: transparent;
+    border: 2px solid var(--brd);
+    color: var(--txt-2);
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.75rem 2rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all var(--t-fast);
+  }
+
+  .tab-btn:hover {
+    border-color: var(--c1);
+    color: var(--txt-1);
+  }
+
+  .tab-btn.active {
+    background: var(--c1);
+    border-color: var(--c1);
+    color: white;
+  }
+
+  .edition-panel {
+    display: none;
+    animation: fadeIn 0.4s ease forwards;
+  }
+
+  .edition-panel.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    padding: 2.5rem;
+    height: 100%;
+    background: var(--bg-card);
+  }
+
+  .card-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .award-ganador {
+    background: rgba(var(--c1r), 0.15);
+    color: var(--c1);
+    border: 1px solid rgba(var(--c1r), 0.3);
+  }
+
+  .award-finalista {
+    background: rgba(var(--c2r), 0.15);
+    color: var(--c2);
+    border: 1px solid rgba(var(--c2r), 0.3);
+  }
+
+  .category {
+    background: var(--bg-3);
+    color: var(--txt-2);
+    border: 1px solid var(--brd);
+  }
+
+  .project-name {
+    font-size: 1.5rem;
+    margin: 0;
+  }
+
+  .card-body {
+    flex-grow: 1;
+    margin-bottom: 2rem;
+  }
+
+  .project-desc {
+    color: var(--txt-2);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .card-footer .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: center;
+  }
+</style>
+
+<script>
+  // Simple tab logic for editions
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.edition-panel');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetYear = btn.getAttribute('data-year');
+        
+        // Update buttons
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Update panels
+        panels.forEach(panel => {
+          if (panel.id === `panel-${targetYear}`) {
+            panel.classList.add('active');
+          } else {
+            panel.classList.remove('active');
+          }
+        });
+      });
+    });
+  });
+</script>
