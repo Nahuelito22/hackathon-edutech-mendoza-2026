@@ -1,17 +1,107 @@
 ---
 // src/pages/dashboard/index.astro
-// Placeholder temporal — será reemplazado por el dashboard completo
 import Layout from '../../layouts/Layout.astro';
+
+const user = Astro.locals.user;
+const profile = Astro.locals.profile;
+
+// Redirigir a login si no hay sesión (esto ya lo hace el middleware, pero por seguridad de tipos)
+if (!user || !profile) {
+  return Astro.redirect('/login');
+}
+
+// Lógica para determinar si el perfil está completo
+const isProfileComplete = !!(profile.dni && profile.institution);
 ---
 
 <Layout title="Dashboard | HEM2026">
   <main class="dashboard-page">
     <div class="container">
-      <div class="dashboard-placeholder card">
-        <h1>¡Bienvenido al Dashboard!</h1>
-        <p>Tu cuenta ha sido creada exitosamente. Próximamente aquí podrás completar tu inscripción al Hackathon.</p>
-        <a href="/" class="btn btn-outline">&larr; Volver al inicio</a>
-      </div>
+      
+      {!isProfileComplete ? (
+        <!-- Vista Perfil Incompleto -->
+        <div class="dashboard-card card">
+          <div class="dash-header">
+            <h1>¡Te damos la bienvenida, {profile.full_name}!</h1>
+            <p class="dash-subtitle">Completá tus datos para confirmar tu inscripción al Hackathon EduTech.</p>
+          </div>
+
+          <form id="profile-form" class="dash-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="dni">DNI (Sin puntos)</label>
+                <input type="text" id="dni" name="dni" placeholder="Ej: 30123456" required pattern="\d+" />
+              </div>
+
+              <div class="form-group">
+                <label for="institution">Institución</label>
+                <select id="institution" name="institution" required>
+                  <option value="" disabled selected>Seleccioná tu institución</option>
+                  <option value="ies_9023_maipu">IES 9-023 Maipú</option>
+                  <option value="ies_edison">IES Tomás Alva Edison</option>
+                  <option value="otra">Otra institución</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="year_of_study">Año de cursado</label>
+                <select id="year_of_study" name="year_of_study" required>
+                  <option value="" disabled selected>Seleccioná tu año</option>
+                  <option value="primero">Primer año</option>
+                  <option value="segundo">Segundo año</option>
+                  <option value="tercero">Tercer año (o superior)</option>
+                  <option value="otro">Otro / No aplica</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="disciplinary_profile">Perfil disciplinar</label>
+                <select id="disciplinary_profile" name="disciplinary_profile" required>
+                  <option value="" disabled selected>Seleccioná tu perfil</option>
+                  <option value="tecnico">Técnico / IT</option>
+                  <option value="docente">Docente / Educación</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="is_egresado" name="is_egresado" />
+                <span class="custom-checkbox"></span>
+                ¿Sos egresado/a? (Importante para la conformación de equipos)
+              </label>
+            </div>
+
+            <div id="form-error" class="form-error" style="display: none;"></div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">
+                Confirmar Inscripción
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : (
+        <!-- Vista Perfil Completo -->
+        <div class="dashboard-card card success-card">
+          <div class="success-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--c2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+          <h1>¡Inscripción confirmada!</h1>
+          <div class="status-badge">Estado actual: <strong>PENDIENTE DE APROBACIÓN</strong></div>
+          <p class="success-text">
+            Próximamente te notificaremos sobre la conformación de los equipos. El formulario para la entrega del proyecto se habilitará aquí mismo el día del evento.
+          </p>
+          <div class="profile-summary">
+            <p><strong>DNI:</strong> {profile.dni}</p>
+            <p><strong>Institución:</strong> {profile.institution === 'ies_9023_maipu' ? 'IES 9-023 Maipú' : profile.institution === 'ies_edison' ? 'IES Tomás Alva Edison' : 'Otra'}</p>
+          </div>
+        </div>
+      )}
+      
     </div>
   </main>
 </Layout>
@@ -19,31 +109,276 @@ import Layout from '../../layouts/Layout.astro';
 <style>
   .dashboard-page {
     min-height: calc(100vh - var(--nav-h));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 0;
+    padding: 4rem 0;
   }
 
-  .dashboard-placeholder {
-    max-width: 600px;
-    width: 100%;
+  .dashboard-card {
+    max-width: 700px;
     margin: 0 auto;
     padding: 3rem;
+  }
+
+  .dash-header {
+    margin-bottom: 2.5rem;
     text-align: center;
   }
 
-  .dashboard-placeholder h1 {
-    font-family: var(--font-display);
-    font-weight: 900;
-    font-size: 2rem;
-    margin-bottom: 1rem;
+  .dash-subtitle {
+    color: var(--txt-2);
+    margin-top: 0.5rem;
   }
 
-  .dashboard-placeholder p {
+  .dash-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-group label {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--txt-1);
+  }
+
+  .form-group input[type="text"],
+  .form-group select {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--brd);
+    border-radius: var(--r-md);
+    background: var(--bg-input);
+    color: var(--txt-1);
+    transition: border-color var(--t-fast), box-shadow var(--t-fast);
+    outline: none;
+    appearance: none;
+  }
+
+  .form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: var(--c1);
+    box-shadow: 0 0 0 3px rgba(var(--c1r), 0.12);
+  }
+
+  /* Custom Checkbox */
+  .checkbox-group {
+    margin-top: 0.5rem;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-weight: normal !important;
+    color: var(--txt-2) !important;
+  }
+
+  .checkbox-label input {
+    display: none;
+  }
+
+  .custom-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--brd);
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--t-fast);
+    background: var(--bg-input);
+  }
+
+  .checkbox-label input:checked + .custom-checkbox {
+    background: var(--c1);
+    border-color: var(--c1);
+  }
+
+  .checkbox-label input:checked + .custom-checkbox::after {
+    content: '';
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-bottom: 2px;
+  }
+
+  .form-error {
+    background: rgba(220, 38, 38, 0.1);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    color: #dc2626;
+    padding: 0.75rem 1rem;
+    border-radius: var(--r-md);
+    font-size: 0.9rem;
+  }
+
+  .form-actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  /* Success Card Styles */
+  .success-card {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: 600px;
+  }
+
+  .success-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(var(--c2r), 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: -0.5rem;
+  }
+
+  .status-badge {
+    background: rgba(var(--c1r), 0.1);
+    color: var(--c1);
+    padding: 0.5rem 1.5rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(var(--c1r), 0.2);
+  }
+
+  .success-text {
     color: var(--txt-2);
-    font-size: 1.05rem;
-    line-height: 1.7;
-    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 500px;
+  }
+
+  .profile-summary {
+    background: var(--bg-2);
+    padding: 1.5rem;
+    border-radius: var(--r-md);
+    width: 100%;
+    text-align: left;
+    border: 1px solid var(--brd-s);
+  }
+
+  .profile-summary p {
+    margin-bottom: 0.5rem;
+    color: var(--txt-2);
+  }
+
+  .profile-summary p:last-child {
+    margin-bottom: 0;
+  }
+
+  .profile-summary strong {
+    color: var(--txt-1);
+    margin-right: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+    .dashboard-card {
+      padding: 2rem;
+    }
   }
 </style>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  const form = document.getElementById('profile-form') as HTMLFormElement;
+  const errorDiv = document.getElementById('form-error') as HTMLDivElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorDiv.style.display = 'none';
+
+    // Obtener los valores del formulario
+    const dni = (form.querySelector('#dni') as HTMLInputElement).value.trim();
+    const institution = (form.querySelector('#institution') as HTMLSelectElement).value;
+    const year_of_study = (form.querySelector('#year_of_study') as HTMLSelectElement).value;
+    const disciplinary_profile = (form.querySelector('#disciplinary_profile') as HTMLSelectElement).value;
+    const is_egresado = (form.querySelector('#is_egresado') as HTMLInputElement).checked;
+
+    if (!dni || !institution || !year_of_study || !disciplinary_profile) {
+      errorDiv.textContent = 'Por favor, completá todos los campos obligatorios.';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Guardando datos...';
+
+    // Obtener el ID del usuario actual desde la sesión
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError || !session) {
+      errorDiv.textContent = 'Error de autenticación. Por favor recargá la página.';
+      errorDiv.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Confirmar Inscripción';
+      return;
+    }
+
+    const userId = session.user.id;
+
+    // Actualizar el perfil en Supabase
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({
+        dni,
+        institution,
+        year_of_study,
+        disciplinary_profile,
+        is_egresado
+      })
+      .eq('id', userId);
+
+    if (updateError) {
+      console.error(updateError);
+      errorDiv.textContent = updateError.message.includes('unique') 
+        ? 'Este DNI ya está registrado por otro usuario.'
+        : 'Hubo un error al guardar tus datos. Intentá nuevamente.';
+      errorDiv.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Confirmar Inscripción';
+      return;
+    }
+
+    // Éxito: recargar la página para que el servidor Astro renderice la vista "Completo"
+    window.location.reload();
+  });
+</script>
