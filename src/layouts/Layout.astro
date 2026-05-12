@@ -11,7 +11,7 @@ import Footer from '../components/Footer.astro';
 ---
 
 <!doctype html>
-<html lang="es" data-theme="cyber-dark">
+<html lang="es" data-theme="brand-light">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,7 +22,7 @@ import Footer from '../components/Footer.astro';
 		<!-- Google Fonts -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Lora:ital,wght@0,400..700;1,400..700&family=Syne:wght@400..800&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@200;400;900&display=swap" rel="stylesheet">
 
 		<!-- Prevenir FOUC -->
 		<script is:inline>
@@ -30,7 +30,7 @@ import Footer from '../components/Footer.astro';
 				if (typeof localStorage !== 'undefined' && localStorage.getItem('edutech-theme')) {
 					return localStorage.getItem('edutech-theme');
 				}
-				return 'cyber-dark';
+				return 'brand-light';
 			})();
 			document.documentElement.setAttribute('data-theme', theme);
 		</script>
