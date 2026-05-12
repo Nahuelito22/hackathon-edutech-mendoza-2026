@@ -89,14 +89,14 @@ Esto se materializa en:
 ### ÉPICA 1: Tipografía y CSS Global (`global.css`)
 
 #### Tarea 1.1 — Reemplazar Google Fonts
-- [ ] **Archivo**: `src/layouts/Layout.astro`
+- [x] **Archivo**: `src/layouts/Layout.astro`
 - **Acciones**:
   1. Eliminar el `<link>` actual que carga Bebas Neue, DM Mono, Lora y Syne
   2. Reemplazar con el `<link>` de Google Fonts para **Lexend** con pesos: 200 (Extra Light), 400 (Regular), 900 (Black)
   3. Opcionalmente mantener DM Mono para datos técnicos (countdown, horarios, tags)
 
 #### Tarea 1.2 — Actualizar variables tipográficas en `:root`
-- [ ] **Archivo**: `src/styles/global.css`
+- [x] **Archivo**: `src/styles/global.css`
 - **Acciones**:
   1. Cambiar `--font-display` de `'Bebas Neue'` a `'Lexend', sans-serif` (peso Black 900)
   2. Cambiar `--font-heading` de `'Syne'` a `'Lexend', sans-serif` (peso Regular 400)
@@ -105,7 +105,7 @@ Esto se materializa en:
   5. Ajustar `font-weight` en cada componente que use estas variables
 
 #### Tarea 1.3 — Reemplazar paleta de colores en los temas
-- [ ] **Archivo**: `src/styles/global.css`
+- [x] **Archivo**: `src/styles/global.css`
 - **Acciones**:
   1. Redefinir tema **claro** (renombrar `eco-light` → `brand-light` o similar):
      - `--c1: #88007b` (fucsia) | `--c1r: 136,0,123`
@@ -121,7 +121,7 @@ Esto se materializa en:
   4. Actualizar el tema por defecto en el `<script is:inline>` de Layout.astro
 
 #### Tarea 1.4 — Actualizar ThemeToggle
-- [ ] **Archivo**: `src/components/ThemeToggle.astro`
+- [x] **Archivo**: `src/components/ThemeToggle.astro`
 - **Acciones**:
   1. Reducir opciones de 3 a 2 (claro / oscuro)
   2. Cambiar nombres y colores de los swatches del menú
