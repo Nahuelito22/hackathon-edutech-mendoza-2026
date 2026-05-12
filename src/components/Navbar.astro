@@ -267,25 +267,28 @@ const profile = Astro.locals.profile;
     );
 
     async function checkAuth() {
-        const { data: { session } } = await supabase.auth.getSession();
-        const authContainer = document.getElementById('nav-auth-buttons');
-        
-        if (authContainer && session) {
-            // Fetch profile to check role for client-side rendering (SSG pages)
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('role')
-                .eq('id', session.user.id)
-                .single();
-
-            const isAdmin = profile?.role === 'admin' || profile?.role === 'superadmin';
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const authContainer = document.getElementById('nav-auth-buttons');
             
-            authContainer.innerHTML = `
-                <div class="nav-act-logged">
-                    ${isAdmin ? '<a href="/admin" class="btn btn-outline">Admin</a>' : ''}
-                    <a href="/dashboard" class="btn btn-primary">Mi Panel</a>
-                </div>
-            `;
+            if (authContainer && session) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', session.user.id)
+                    .single();
+
+                const isAdmin = profile?.role === 'admin' || profile?.role === 'superadmin';
+                
+                authContainer.innerHTML = `
+                    <div class="nav-act-logged">
+                        ${isAdmin ? '<a href="/admin" class="btn btn-outline">Admin</a>' : ''}
+                        <a href="/dashboard" class="btn btn-primary">Mi Panel</a>
+                    </div>
+                `;
+            }
+        } catch (e) {
+            console.error("Auth check failed", e);
         }
     }
     
