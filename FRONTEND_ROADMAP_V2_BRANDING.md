@@ -164,7 +164,7 @@ Esto se materializa en:
 ### ÉPICA 3: Rediseño del Hero Section
 
 #### Tarea 3.1 — Reestructurar contenido del Hero
-- [ ] **Archivo**: `src/components/Hero.astro`
+- [x] **Archivo**: `src/components/Hero.astro`
 - **Acciones**:
   1. Reemplazar título `EDUTECH` por estructura completa:
      - "HACKATHON" (Lexend Extra Light, grande)
@@ -174,7 +174,7 @@ Esto se materializa en:
   4. Actualizar el badge de "2da Edición — Mendoza, Argentina"
 
 #### Tarea 3.2 — Reemplazar fondo animado
-- [ ] **Archivo**: `src/components/Hero.astro` (CSS + JS)
+- [x] **Archivo**: `src/components/Hero.astro` (CSS + JS)
 - **Acciones**:
   1. Eliminar las shapes geométricas flotantes actuales (círculos con border neón)
   2. Reemplazar por un fondo sutil con la **trama de hormigas** (el patrón modular del manual) como textura de fondo con baja opacidad
@@ -182,7 +182,7 @@ Esto se materializa en:
   4. Evaluar si las partículas CSS se mantienen (pueden funcionar como "hormigas" abstractas con los nuevos colores)
 
 #### Tarea 3.3 — Actualizar botón CTA y countdown
-- [ ] **Archivo**: `src/components/Hero.astro` (CSS)
+- [x] **Archivo**: `src/components/Hero.astro` (CSS)
 - **Acciones**:
   1. Cambiar `btnGlow` de cyan → fucsia (`--c1`)
   2. Verificar que el countdown use Lexend + colores de marca
