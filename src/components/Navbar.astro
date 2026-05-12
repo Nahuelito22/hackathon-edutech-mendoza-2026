@@ -248,9 +248,9 @@ const user = Astro.locals.user;
 
 <script>
     // Update Auth buttons on client-side (important for SSG landing page)
-    import { createClient } from '@supabase/supabase-js';
+    import { createBrowserClient } from '@supabase/ssr';
 
-    const supabase = createClient(
+    const supabase = createBrowserClient(
         import.meta.env.PUBLIC_SUPABASE_URL,
         import.meta.env.PUBLIC_SUPABASE_ANON_KEY
     );
