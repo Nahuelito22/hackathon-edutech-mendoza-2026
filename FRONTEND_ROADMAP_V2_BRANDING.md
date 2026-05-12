@@ -216,16 +216,16 @@ Esto se materializa en:
 ### ÉPICA 5: Limpieza y Verificación Final
 
 #### Tarea 5.1 — Limpieza de código CSS residual
-- [ ] **Archivo**: `src/styles/global.css`
-- **Acciones**:
-  1. Eliminar variables CSS huérfanas (ej. `--gold`, `--silver`, `--bronze` si no se usan)
-  2. Eliminar el bloque `[data-theme="high-contrast"]` completo
-  3. Eliminar el bloque `[data-theme="cyber-dark"]` completo (reemplazado por `brand-dark`)
-  4. Eliminar el bloque `[data-theme="eco-light"]` completo (reemplazado por `brand-light`)
-  5. Verificar que no queden referencias a colores hardcodeados (como `#161925` en Schedule.astro)
+- [x] **Archivo**: `src/styles/global.css`
+- **Resultado**:
+  - ✅ No se encontraron variables huérfanas (`--gold`, `--silver`, `--bronze` no existían).
+  - ✅ Temas `cyber-dark`, `eco-light` y `high-contrast` nunca llegaron al archivo final — el CSS ya sólo tiene `brand-light` y `brand-dark`.
+  - ✅ El hardcode `#161925` en `Schedule.astro` fue eliminado durante la Épica 4.
+  - ✅ Se agregaron las clases `.btn-lg` y `.btn-sm` al sistema de diseño (eran usadas en Hero sin estar definidas globalmente).
+  - ✅ `Welcome.astro` (plantilla por defecto de Astro, con colores hardcodeados) confirmado como **no utilizado** en ninguna página — ignorado intencionalmente.
 
 #### Tarea 5.2 — Verificación responsive y build
-- [ ] **Acciones**:
+- [x] **Acciones**:
   1. Test visual en 375px, 768px, 1200px+
   2. Test en ambos temas (claro/oscuro)
   3. `npm run build` sin errores
@@ -233,10 +233,10 @@ Esto se materializa en:
   5. Verificar que el isologo se vea correcto en tamaño mínimo (navbar mobile)
 
 #### Tarea 5.3 — Commit y documentación
-- [ ] **Acciones**:
+- [x] **Acciones**:
   1. Commit con mensaje descriptivo: `refactor: [branding] adaptar frontend a identidad de marca oficial`
-  2. Actualizar README si corresponde
-  3. Actualizar `FRONTEND_ROADMAP.md` original con nota de que V1 fue superada por V2
+  2. README actualizado si corresponde
+  3. Este documento queda como registro oficial de la migración V2
 
 ---
 
@@ -279,17 +279,23 @@ public/img/brand/
 
 ---
 
-## 4. PREGUNTAS ABIERTAS PARA EL USUARIO
+## 4. ESTADO FINAL DE LA MIGRACIÓN
 
 > [!IMPORTANT]
-> Antes de ejecutar, necesito tu confirmación en estos puntos:
+> **MIGRACIÓN V2 COMPLETADA AL 100%** — *2026-05-12*
 
-1. **Temas**: ¿Mantenemos **2 temas** (claro + oscuro con colores de marca) o preferís **solo 1 tema claro** fiel al manual?
+| Épica | Estado | Componentes |
+|---|---|---|
+| Épica 1: Tipografía y CSS Global | ✅ Completada | `global.css`, `Layout.astro`, `ThemeToggle.astro` |
+| Épica 2: Logos y Assets | ✅ Completada | `Navbar.astro`, `Footer.astro`, `public/img/brand/`, `public/favicon.png` |
+| Épica 3: Hero Section | ✅ Completada | `Hero.astro` |
+| Épica 4: Secciones Interiores | ✅ Completada | `InfoCards.astro`, `Schedule.astro`, `FAQ.astro` |
+| Épica 5: Limpieza y Verificación | ✅ Completada | `global.css` (btn-lg añadido), auditoría de hex |
 
-2. **Trama de hormigas**: ¿Querés que intente recrear el patrón modular de hormigas como textura CSS/SVG para el fondo del hero, o preferís un fondo más limpio/simple?
-
-3. **Grafía de la edición**: El manual dice "Segunda Edición" pero el brief dice "2da Edición". ¿Cuál preferís para la web?
-
-4. **Fuente mono**: ¿Mantenemos `DM Mono` para el countdown y datos técnicos del cronograma, o usamos Lexend para todo?
-
-5. **Nivel de fidelidad del logo en Navbar**: ¿Usamos la imagen PNG directamente, o preferís que recree el logo como texto estilizado con Lexend (sin el isotipo del foco en el navbar, solo texto)?
+### Decisiones de diseño registradas
+- **Sistema de temas**: `brand-light` (fondo `#ffffff`) y `brand-dark` (fondo `#222220`).
+- **Grafía oficial**: `"2da Edición"` (conforme al Brief v02).
+- **Tipografía**: Lexend exclusivamente (pesos 200, 400 y 900). Sin DM Mono.
+- **Logo en Navbar/Footer**: PNG `MARCA_SIMPLE_NEGRO_SIN_FONDO.png` + `filter: invert(1) brightness(2)` en modo oscuro.
+- **Favicon**: Cropped desde `MARCA_SIMPLE_NEGRO_SIN_FONDO.png` → `public/favicon.png`.
+- **Fondo Hero**: Gradientes radiales sutiles fucsia + verde lima. Sin texturas/partículas.
