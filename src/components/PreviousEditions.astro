@@ -1,0 +1,441 @@
+---
+// src/components/PreviousEditions.astro
+
+const editions = [
+  {
+    year: 2025,
+    projects: [
+      {
+        year: 2025,
+        projectName: "ArcoEdu",
+        members: "Lara Magallanes, Iara Fernández, Adriana Antunez, Carolina Lopez, Marías Mezzabotta",
+        category: "Idea Propia",
+        award: "Ganador",
+        description: "Proyecto ganador de la 1ra Edición. Galardonado con una Beca de la Incubadora de la UNCUYO.",
+        link: "https://gamma.app/docs/ArcoEdu-06n5t3igqfi1i0n"
+      },
+      {
+        year: 2025,
+        projectName: "Guidia",
+        members: "Equipo Guidia",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Asistente impulsado por Inteligencia Artificial diseñado para optimizar el ecosistema escolar.",
+        link: "https://view.genially.com/691745e39d1bf485d546ab2b"
+      },
+      {
+        year: 2025,
+        projectName: "Los Algoritmos del Lenguaje",
+        members: "Yasmín Gil, Sofía Figueroa, Pablo Salinas, Mariana Soto, Fabiana Rodríguez",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Proyecto destacado de la edición 2025 enfocado en la innovación educativa.",
+        link: "https://padlet.com/noegrando1/presentacion-final-por-equipo-hackathon-68n5mdh1ebd4li4r/wish/wKmOZ56jLwKPWzMA"
+      },
+      {
+        year: 2025,
+        projectName: "TeachMeUp",
+        members: "Francisco Iglesias, Jazmin Benitez, Lautaro Lluebero, Maximo Mercau, Santino Barrionuevo",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Solución tecnológica presentada en la ronda final del Hackathon.",
+        link: "https://padlet.com/noegrando1/presentacion-final-por-equipo-hackathon-68n5mdh1ebd4li4r/wish/J24jalrEbJNNZ0A1"
+      },
+      {
+        year: 2025,
+        projectName: "Instutech",
+        members: "Salena Argañarez, Vanesa Gervacio, Jose Vilte, Gisela Fleitas, Mariela Tapia",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Presentación final destacada por su enfoque en herramientas para instituciones.",
+        link: "https://www.canva.com/design/DAG4xOxyqTs/4UeIqXGwPUXig9eDDnT-NA/edit"
+      },
+      {
+        year: 2025,
+        projectName: "Aprender Jugando",
+        members: "Gastón Rodrigues, Romina Balverde, Pamela Novillo, Beatriz Baldevenites, Alvaro Costa",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Propuesta centrada en la gamificación del aprendizaje.",
+        link: "https://gamma.app/docs/Aprender-Jugando-1l2f0opnw0dccqh?mode=doc"
+      },
+      {
+        year: 2025,
+        projectName: "Edu-Bot",
+        members: "Andres Manegon, Gabirel Avila, Tomas Cersosimo, Gaston Comisso",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Implementación de interfaces conversacionales para la asistencia educativa.",
+        link: "https://www.canva.com/design/DAG4xWnLQHc/IyYrtNFKWB9IVjW1MTZHyQ/view"
+      },
+      {
+        year: 2025,
+        projectName: "Atenea: La sabiduria del error",
+        members: "Franco Orellano, Emmanuel Abrego, Cinthia Dragani, Liliana Trentacosta, Evelyn Bordón",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Plataforma enfocada en el aprendizaje constructivo a partir de la equivocación.",
+        link: "https://gemini.google.com/share/0aa2333c5d6f"
+      },
+      {
+        year: 2025,
+        projectName: "Dinamita",
+        members: "Gustavo del negro",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Desarrollo tecnológico destacado en la exposición final.",
+        link: "https://docs.google.com/presentation/d/1wU3SY5fNCU9ErJuR-f6IAQ_E-s8g3M8eMngHq_U-FqI/edit"
+      },
+      {
+        year: 2025,
+        projectName: "Proyecto Sinapsis AI",
+        members: "Helder Francisco, Araya Matias, Soloa juan, Beron Nicolás",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Integración de inteligencia artificial en procesos cognitivos y de estudio.",
+        link: "https://padlet.com/noegrando1/presentacion-final-por-equipo-hackathon-68n5mdh1ebd4li4r/wish/PVKBQOqvjvJkWj5x"
+      },
+      {
+        year: 2025,
+        projectName: "FluAIdez - Grupo LectoBOT",
+        members: "Agustina Irisarri, Axel Fernández, Estefania Palma, Matías Biott, Rodrigo Cruz",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Solución robótica y de IA aplicada a la mejora de la lectura fluida.",
+        link: "https://gamma.app/docs/FluAIdez-q5cfe2ttdhwqv84?mode=doc"
+      },
+      {
+        year: 2025,
+        projectName: "PRAY MALENA",
+        members: "Equipo Pray Malena",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Proyecto finalista de la edición 2025.",
+        link: "https://view.genially.com/691882b830af9b43a693295c"
+      },
+      {
+        year: 2025,
+        projectName: "EduPlay",
+        members: "Yoel Pereira, Andrea Rojas, Aarón Fernandez, Rodrigo Cortinez",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Herramienta interactiva para facilitar la educación mediante el juego.",
+        link: "https://padlet.com/noegrando1/presentacion-final-por-equipo-hackathon-68n5mdh1ebd4li4r/wish/L8KjW9qRl04VWJbv"
+      },
+      {
+        year: 2025,
+        projectName: "Leer IA",
+        members: "Anabel Rosi, Fernando Robert, Joel Allende, Cecilia Morales, Matias Sosa",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Aplicación de inteligencia artificial para la comprensión lectora.",
+        link: "https://padlet.com/noegrando1/presentacion-final-por-equipo-hackathon-68n5mdh1ebd4li4r/wish/9kmlZVr0zBpNZpgV"
+      },
+      {
+        year: 2025,
+        projectName: "Facilitas",
+        members: "Kevin Pereira, Franco Orozco, Felicitas Sosa, Claudio Maza, Maximiliano Daniele",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Solución de accesibilidad y facilitación tecnológica en las aulas.",
+        link: "https://padlet.com/noegrando1/presentacion-final-por-equipo-hackathon-68n5mdh1ebd4li4r/wish/x5A7arGE05zrQwr6"
+      },
+      {
+        year: 2025,
+        projectName: "INCLUSIÓN",
+        members: "Micaela Farfán, María Quiquinte, Mirta Quiquinte, Florencia Rosales, Paola Sastre",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Iniciativa tecnológica para garantizar la accesibilidad y la equidad educativa.",
+        link: "https://padlet.com/noegrando1/presentacion-final-por-equipo-hackathon-68n5mdh1ebd4li4r/wish/E1P8aX7qJPdEWwA9"
+      },
+      {
+        year: 2025,
+        projectName: "TAREapp",
+        members: "Equipo TAREapp",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Plataforma de gestión y seguimiento de actividades para estudiantes.",
+        link: "https://padlet.com/noegrando1/presentacion-final-por-equipo-hackathon-68n5mdh1ebd4li4r/wish/KxJvagYE7eM5ZAg0"
+      },
+      {
+        year: 2025,
+        projectName: "Jugado MB 9-008",
+        members: "Lisandro Lima, Kevin Fredes, Cristian Cortinez, Lucas Andrada",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Proyecto innovador evaluado en la ronda final.",
+        link: "https://padlet.com/noegrando1/presentacion-final-por-equipo-hackathon-68n5mdh1ebd4li4r/wish/0BA3ZpGEeBnKQnPb"
+      },
+      {
+        year: 2025,
+        projectName: "Manthecol",
+        members: "Equipo Manthecol",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Propuesta de valor presentada en la Hackathon 2025.",
+        link: "https://padlet.com/noegrando1/presentacion-final-por-equipo-hackathon-68n5mdh1ebd4li4r/wish/XGyBQbX6Bk90WL6K"
+      },
+      {
+        year: 2025,
+        projectName: "LeIA 360",
+        members: "Equipo LeIA 360",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Desarrollo tecnológico integral para la lectura interactiva.",
+        link: "https://karendelpino.github.io/LectorIA/"
+      },
+      {
+        year: 2025,
+        projectName: "MI AULA",
+        members: "Enzo Rojas, Matías Agüero, Gustavo Vera, Lautaro Videla",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Entorno virtual diseñado para enriquecer el vínculo docente-alumno.",
+        link: "https://padlet.com/noegrando1/presentacion-final-por-equipo-hackathon-68n5mdh1ebd4li4r/wish/x5m7aogEPJNDakAV"
+      },
+      {
+        year: 2025,
+        projectName: "AulaCopilot",
+        members: "Equipo AulaCopilot",
+        category: "Idea Propia",
+        award: "Finalista",
+        description: "Asistente inteligente diseñado para transformar la experiencia docente.",
+        link: "https://gamma.app/docs/AulaCopilot-transforma-tu-experiencia-docente-i7zbhxbfjie3r9i?mode=doc"
+      }
+    ]
+  }
+];
+
+// Start with the latest edition
+const latestYear = editions[0].year;
+---
+
+<section id="ediciones" class="ediciones section-padding bg-alt">
+  <div class="container">
+    <div class="section-header text-center">
+      <h2 class="section-title">Vitrina de <span class="text-gradient">Ediciones Anteriores</span></h2>
+      <p class="section-desc">Reviví los proyectos destacados que han dejado su marca en el Hackathon EduTech.</p>
+    </div>
+
+    <!-- Pestañas de Años -->
+    <div class="year-tabs">
+      {editions.map((edition) => (
+        <button 
+          class={`tab-btn ${edition.year === latestYear ? 'active' : ''}`} 
+          data-year={edition.year}
+        >
+          Edición {edition.year}
+        </button>
+      ))}
+    </div>
+
+    <!-- Contenedores de Proyectos -->
+    <div class="editions-content">
+      {editions.map((edition) => (
+        <div class={`edition-panel ${edition.year === latestYear ? 'active' : ''}`} id={`panel-${edition.year}`}>
+          <div class="projects-grid">
+            {edition.projects.map(project => (
+              <div class="project-card card hover-card">
+                <div class="card-header">
+                  <div class="tags">
+                    <span class={`badge award-${project.award.toLowerCase()}`}>{project.award}</span>
+                    <span class="badge category">{project.category}</span>
+                  </div>
+                  <h3 class="project-name">{project.projectName}</h3>
+                </div>
+                <div class="card-body">
+                  <p class="project-members"><strong>Integrantes:</strong> {project.members}</p>
+                  <p class="project-desc">{project.description}</p>
+                </div>
+                <div class="card-footer">
+                  <a href={project.link} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">
+                    Ver Presentación
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link" style="margin-left: 0.5rem;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .ediciones {
+    background-color: var(--bg-2);
+  }
+
+  .year-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    background: transparent;
+    border: 2px solid var(--brd);
+    color: var(--txt-2);
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.75rem 2rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all var(--t-fast);
+  }
+
+  .tab-btn:hover {
+    border-color: var(--c1);
+    color: var(--txt-1);
+  }
+
+  .tab-btn.active {
+    background: var(--c1);
+    border-color: var(--c1);
+    color: white;
+  }
+
+  .edition-panel {
+    display: none;
+    animation: fadeIn 0.4s ease forwards;
+  }
+
+  .edition-panel.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    padding: 2.5rem;
+    height: 100%;
+    background: var(--bg-card);
+  }
+
+  .card-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .award-ganador {
+    background: rgba(var(--c1r), 0.15);
+    color: var(--c1);
+    border: 1px solid rgba(var(--c1r), 0.3);
+  }
+
+  .award-finalista {
+    background: rgba(var(--c2r), 0.15);
+    color: var(--c2);
+    border: 1px solid rgba(var(--c2r), 0.3);
+  }
+
+  .award-destacado {
+    background: rgba(var(--txt-1r, 128, 128, 128), 0.1);
+    color: var(--txt-2);
+    border: 1px solid var(--brd);
+  }
+
+  .category {
+    background: var(--bg-3);
+    color: var(--txt-2);
+    border: 1px solid var(--brd);
+  }
+
+  .project-name {
+    font-size: 1.5rem;
+    margin: 0;
+  }
+
+  .card-body {
+    flex-grow: 1;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .project-members {
+    font-size: 0.85rem;
+    color: var(--txt-2);
+    line-height: 1.4;
+    opacity: 0.9;
+  }
+
+  .project-desc {
+    color: var(--txt-2);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .card-footer .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: center;
+  }
+</style>
+
+<script>
+  // Simple tab logic for editions
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.edition-panel');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetYear = btn.getAttribute('data-year');
+        
+        // Update buttons
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Update panels
+        panels.forEach(panel => {
+          if (panel.id === `panel-${targetYear}`) {
+            panel.classList.add('active');
+          } else {
+            panel.classList.remove('active');
+          }
+        });
+      });
+    });
+  });
+</script>

@@ -1,0 +1,280 @@
+---
+// src/pages/login.astro
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Iniciar sesión | HEM2026">
+  <main class="auth-page">
+    <div class="container">
+      <div class="auth-card card">
+        <div class="auth-header">
+          <a href="/" class="auth-back">&larr; Volver al inicio</a>
+          <h1>Iniciar sesión</h1>
+          <p class="auth-subtitle">Accedé a tu cuenta para gestionar tu inscripción</p>
+        </div>
+
+        <form id="login-form" class="auth-form" novalidate>
+          <div class="form-group">
+            <label for="email">Correo electrónico</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="tu@email.com"
+              required
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Contraseña</label>
+            <div class="password-wrapper">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Tu contraseña"
+                required
+                autocomplete="current-password"
+              />
+              <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+            </div>
+          </div>
+
+          <div id="form-error" class="form-error" style="display: none;"></div>
+
+          <button type="submit" class="btn btn-primary btn-lg btn-full" id="submit-btn">
+            Iniciar sesión
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          <p>¿No tenés cuenta? <a href="/registro" class="auth-link">Registrate gratis</a></p>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .auth-page {
+    min-height: calc(100vh - var(--nav-h));
+    padding: calc(var(--nav-h) + 2rem) 0 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .auth-card {
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 3rem;
+  }
+
+  .auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .auth-back {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--txt-m);
+    margin-bottom: 1.5rem;
+    transition: color var(--t-fast);
+  }
+
+  .auth-back:hover {
+    color: var(--c1);
+  }
+
+  .auth-header h1 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .auth-subtitle {
+    color: var(--txt-2);
+    font-size: 0.95rem;
+  }
+
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .form-group label {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--txt-1);
+  }
+
+  .form-group input {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--brd);
+    border-radius: var(--r-md);
+    background: var(--bg-input);
+    color: var(--txt-1);
+    transition: border-color var(--t-fast), box-shadow var(--t-fast);
+    outline: none;
+  }
+
+  .form-group input::placeholder {
+    color: var(--txt-m);
+  }
+
+  .form-group input:focus {
+    border-color: var(--c1);
+    box-shadow: 0 0 0 3px rgba(var(--c1r), 0.12);
+  }
+
+  .password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .password-wrapper input {
+    width: 100%;
+    padding-right: 3rem;
+  }
+
+  .toggle-password {
+    position: absolute;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--txt-2);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--t-fast);
+  }
+
+  .toggle-password:hover {
+    color: var(--c1);
+  }
+
+  .toggle-password svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .form-error {
+    background: rgba(220, 38, 38, 0.1);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    color: #dc2626;
+    padding: 0.75rem 1rem;
+    border-radius: var(--r-md);
+    font-size: 0.9rem;
+  }
+
+  .btn-full {
+    width: 100%;
+  }
+
+  .btn-full:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .auth-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--brd);
+    font-size: 0.9rem;
+    color: var(--txt-2);
+  }
+
+  .auth-link {
+    color: var(--c1);
+    font-weight: 600;
+  }
+
+  .auth-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<script>
+  import { createBrowserClient } from '@supabase/ssr';
+
+  const supabase = createBrowserClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  const form = document.getElementById('login-form') as HTMLFormElement;
+  const errorDiv = document.getElementById('form-error') as HTMLDivElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorDiv.style.display = 'none';
+
+    const email = (form.querySelector('#email') as HTMLInputElement).value.trim();
+    const password = (form.querySelector('#password') as HTMLInputElement).value;
+
+    if (!email || !password) {
+      errorDiv.textContent = 'Por favor, completá todos los campos.';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Iniciando sesión...';
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      let msg = error.message;
+      if (error.message === 'Invalid login credentials') {
+        msg = 'Email o contraseña incorrectos.';
+      } else if (error.message.includes('Email logins are disabled')) {
+        msg = 'El inicio de sesión con email está desactivado en la configuración de Supabase.';
+      }
+      errorDiv.textContent = msg;
+      errorDiv.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Iniciar sesión';
+      return;
+    }
+
+    // Login exitoso → redirigir al dashboard
+    window.location.href = '/dashboard';
+  });
+
+  // Password Visibility Toggle
+  const togglePassword = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('password') as HTMLInputElement;
+
+  togglePassword?.addEventListener('click', () => {
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    
+    // Optional: update icon based on state
+    if (type === 'text') {
+      togglePassword.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+    } else {
+      togglePassword.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+    }
+  });
+</script>

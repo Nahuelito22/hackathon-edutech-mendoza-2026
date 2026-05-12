@@ -1,24 +1,27 @@
 ---
 // src/components/Hero.astro
+// Fetch la fecha del evento desde Supabase en build-time
+import { supabase } from '../lib/supabase';
+
+const { data } = await supabase
+  .from('event_config')
+  .select('value')
+  .eq('key', 'event_start_datetime')
+  .single();
+
+const eventDate = data?.value || '2026-06-03T21:30:00-03:00';
 ---
 
 <section class="hero" id="inicio">
-  <div class="hero-shapes">
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-    <div class="shape shape-3"></div>
-    <div class="shape shape-4"></div>
-  </div>
-  <div class="particles" id="particles"></div>
   <div class="container hero-c">
+    <h1 class="hero-title">
+      <span class="t-hackathon">HACKATHON</span><br />
+      <span class="t-edutech">EDUTECH</span>
+    </h1>
     <div class="hero-badge">
       <span class="badge-dot"></span>
       2da Edición &mdash; Mendoza, Argentina
     </div>
-    <h1 class="hero-title">
-      <span class="t-edu">EDU</span><span class="t-tech">TECH</span>
-    </h1>
-    <p class="hero-ed">Hackathon de Nivel Superior Mendoza 2026</p>
     <p class="hero-desc">
       Un espacio intensivo de trabajo colaborativo donde equipos
       interdisciplinarios diseñan soluciones tecnológicas innovadoras para los
@@ -26,7 +29,7 @@
     </p>
 
     <!-- Countdown -->
-    <div class="countdown" id="countdown">
+    <div class="countdown" id="countdown" data-target-date={eventDate}>
       <div class="countdown-item">
         <span class="countdown-val" id="cdD">---</span><span
           class="countdown-label">Días</span>
@@ -66,10 +69,11 @@
 
 <style>
   .hero {
-    min-height: 100vh;
+    min-height: calc(100vh - 80px);
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -80,116 +84,17 @@
   .hero::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(
-      ellipse at 50% 0%,
-      rgba(var(--c1r), 0.15),
-      transparent 60%
-    );
+    inset: 0;
+    background: 
+      radial-gradient(circle at 20% 0%, rgba(var(--c1r), 0.08), transparent 50%),
+      radial-gradient(circle at 80% 0%, rgba(var(--c2r), 0.08), transparent 50%);
     pointer-events: none;
     z-index: 0;
     transition: background var(--t-theme);
-  }
-
-  .hero-shapes {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .shape {
-    position: absolute;
-    border: 1px solid var(--c1);
-    opacity: 0.06;
-    transition: border-color var(--t-theme);
-  }
-
-  .shape-1 {
-    width: 400px;
-    height: 400px;
-    top: -10%;
-    right: -8%;
-    border-radius: 50%;
-    animation: drift 60s infinite ease-in-out;
-  }
-  .shape-2 {
-    width: 250px;
-    height: 250px;
-    bottom: 5%;
-    left: -5%;
-    border-radius: 30%;
-    border-color: var(--c2);
-    animation: drift 50s infinite ease-in-out reverse;
-    animation-delay: -8s;
-  }
-  .shape-3 {
-    width: 180px;
-    height: 180px;
-    top: 40%;
-    right: 20%;
-    border-radius: 50%;
-    border-color: var(--c3);
-    animation: drift 45s infinite ease-in-out;
-    animation-delay: -15s;
-  }
-  .shape-4 {
-    width: 100px;
-    height: 100px;
-    top: 15%;
-    left: 15%;
-    border-radius: 50%;
-    animation: drift 70s infinite ease-in-out reverse;
-    animation-delay: -5s;
-  }
-
-  @keyframes drift {
-    0%,
-    100% {
-      transform: translate(0, 0) rotate(0deg) scale(1);
-    }
-    25% {
-      transform: translate(30px, -40px) rotate(90deg) scale(1.05);
-    }
-    50% {
-      transform: translate(-20px, 30px) rotate(180deg) scale(0.95);
-    }
-    75% {
-      transform: translate(15px, 15px) rotate(270deg) scale(1.02);
-    }
-  }
-
-  /* Claude Particles */
-  .particles {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 0;
-  }
-  :global(.particle) {
-    position: absolute;
-    border-radius: 50%;
-    background: var(--c1);
-    opacity: 0.15;
-    animation: float linear infinite;
-    transition: background var(--t-theme);
-  }
-  @keyframes float {
-    0% {
-      transform: translateY(100vh);
-    }
-    100% {
-      transform: translateY(-10vh);
-    }
   }
 
   .hero-c {
-    padding: 6rem 0;
+    padding: 2rem 0;
     position: relative;
     z-index: 2;
     display: flex;
@@ -239,38 +144,34 @@
   }
 
   .hero-title {
-    font-family: var(--font-display);
-    font-size: clamp(4rem, 12vw, 9rem);
-    line-height: 0.85;
-    letter-spacing: 0.02em;
-    margin-bottom: 1rem;
+    font-size: clamp(3rem, 8vw, 6rem);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
 
     opacity: 0;
     animation: fadeUp 0.7s var(--ease) forwards;
-    animation-delay: 0.3s;
+    animation-delay: 0.2s;
   }
 
-  .t-edu {
+  .t-hackathon {
+    font-family: var(--font-body);
+    font-weight: 200;
     color: var(--txt-1);
     transition: color var(--t-theme);
   }
-  .t-tech {
+  
+  .t-edutech {
+    font-family: var(--font-display);
+    font-weight: 900;
     color: var(--c1);
     transition: color var(--t-theme);
+    font-size: clamp(4rem, 11vw, 9rem);
   }
 
-  .hero-ed {
-    font-family: var(--font-heading);
-    font-size: clamp(1.2rem, 3vw, 1.8rem);
-    font-weight: 600;
-    color: var(--txt-2);
-    margin-bottom: 1.5rem;
-    transition: color var(--t-theme);
 
-    opacity: 0;
-    animation: fadeUp 0.7s var(--ease) forwards;
-    animation-delay: 0.45s;
-  }
 
   .hero-desc {
     font-size: 1.1rem;
@@ -303,16 +204,17 @@
   .countdown-val {
     font-family: var(--font-display);
     font-size: clamp(2.5rem, 5vw, 3.5rem);
-    font-weight: 800;
-    color: var(--c1); /* Color principal del tema */
+    font-weight: 900;
+    color: var(--c1);
     display: block;
     line-height: 1;
     margin-bottom: 0.25rem;
   }
 
   .countdown-label {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-family: var(--font-heading);
+    font-weight: 400;
+    font-size: 0.75rem;
     color: var(--txt-2);
     text-transform: uppercase;
     letter-spacing: 0.15em;
@@ -398,7 +300,7 @@
 
   @media (min-width: 1024px) {
     .hero-c {
-      padding: 8rem 0;
+      padding: 4rem 0;
     }
   }
   @media (max-width: 640px) {
@@ -409,33 +311,14 @@
 </style>
 
 <script>
-  // Particles System
-  (function () {
-    const c = document.getElementById("particles");
-    if (!c) return;
-
-    // --- CONFIGURACIÓN DE PARTÍCULAS ---
-    const particleCount = 20;
-    const minSpeed = 150; // Segundos (más alto = más lento)
-    const speedRange = 100; // Variación de velocidad
-    // ----------------------------------
-
-    for (let i = 0; i < particleCount; i++) {
-      const p = document.createElement("div");
-      p.className = "particle";
-      const size = Math.random() * 4 + 1; // Un poco más pequeñas para que se sientan más sutiles
-      const duration = Math.random() * speedRange + minSpeed;
-      p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random() * 100}%;animation-duration:${duration}s;animation-delay:${Math.random() * 20}s;opacity:${Math.random() * 0.1 + 0.05}`;
-      c.appendChild(p);
-    }
-  })();
-
   /* Countdown Timer Logic */
   const cdContainer = document.getElementById("countdown");
   const cdMessage = document.getElementById("countdown-message");
 
   function updateCD() {
-    const target = new Date("2026-06-03T21:30:00-03:00").getTime();
+    const countdownEl = document.getElementById("countdown");
+    const targetDateStr = countdownEl?.getAttribute("data-target-date") || "2026-06-03T21:30:00-03:00";
+    const target = new Date(targetDateStr).getTime();
     const now = new Date().getTime();
     const diff = target - now;
 

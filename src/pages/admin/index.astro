@@ -1,0 +1,582 @@
+---
+// src/pages/admin/index.astro
+import Layout from '../../layouts/Layout.astro';
+import { createServerClient, parseCookieHeader } from '@supabase/ssr';
+
+const user = Astro.locals.user;
+const profile = Astro.locals.profile;
+
+// Doble validación de seguridad (el middleware ya lo hace)
+if (!user || (profile?.role !== 'admin' && profile?.role !== 'superadmin')) {
+  return Astro.redirect('/dashboard');
+}
+
+// Crear cliente SSR para obtener datos con los permisos del usuario actual
+const supabase = createServerClient(
+  import.meta.env.PUBLIC_SUPABASE_URL,
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+  {
+    cookies: {
+      getAll() {
+        try {
+          return parseCookieHeader(Astro.request.headers.get('Cookie') ?? '');
+        } catch {
+          return [];
+        }
+      },
+      setAll() {} // No necesitamos setear cookies aquí, solo leer
+    }
+  }
+);
+
+// Obtener todos los perfiles
+const { data: allProfiles, error } = await supabase
+  .from('profiles')
+  .select('id, full_name, email, dni, institution, is_egresado, role, registration_status, created_at')
+  .order('created_at', { ascending: false });
+
+if (error) {
+  console.error('Error fetching profiles:', error);
+}
+
+const profiles = allProfiles || [];
+---
+
+<Layout title="Administración | HEM2026">
+  <main class="admin-page">
+    <div class="container admin-container">
+      
+      <div class="admin-header">
+        <h1>Centro de Comando</h1>
+        <p class="admin-subtitle">Gestión de usuarios, roles e inscripciones</p>
+      </div>
+
+      <div class="admin-actions">
+        <div class="filters">
+          <select id="filter-role" class="filter-select">
+            <option value="all">Todos los roles</option>
+            <option value="usuario">Usuario</option>
+            <option value="mentor">Mentor</option>
+            <option value="juez">Juez</option>
+            <option value="admin">Admin</option>
+            <option value="superadmin">Superadmin</option>
+          </select>
+          <select id="filter-status" class="filter-select">
+            <option value="all">Todos los estados</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="aprobado">Aprobado</option>
+            <option value="rechazado">Rechazado</option>
+          </select>
+        </div>
+        <button id="bulk-approve-btn" class="btn btn-primary" disabled>
+          Aprobar Seleccionados (0)
+        </button>
+      </div>
+
+      <div class="admin-card card">
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="select-all" />
+                    <span class="custom-checkbox"></span>
+                  </label>
+                </th>
+                <th>Nombre</th>
+                <th>DNI</th>
+                <th>Institución</th>
+                <th>Egresado</th>
+                <th>Estado Inscripción</th>
+                <th>Rol</th>
+              </tr>
+            </thead>
+            <tbody>
+              {profiles.length === 0 ? (
+                <tr>
+                  <td colspan="7" class="empty-state">No hay usuarios registrados aún.</td>
+                </tr>
+              ) : (
+                profiles.map((p) => (
+                  <tr data-user-id={p.id} class="user-row" data-role={p.role} data-status={p.registration_status}>
+                    <td>
+                      <label class="checkbox-label">
+                        <input type="checkbox" class="row-checkbox" value={p.id} />
+                        <span class="custom-checkbox"></span>
+                      </label>
+                    </td>
+                    <td>
+                      <div class="user-info">
+                        <strong>{p.full_name || 'Sin nombre'}</strong>
+                        <span class="user-email">{p.email}</span>
+                      </div>
+                    </td>
+                    <td>{p.dni || '-'}</td>
+                    <td>
+                      {p.institution === 'ies_9023_maipu' ? 'IES 9-023' : 
+                       p.institution === 'ies_edison' ? 'Edison' : 
+                       p.institution === 'otra' ? 'Otra' : '-'}
+                    </td>
+                    <td>
+                      {p.is_egresado ? (
+                        <span class="badge badge-yes">Sí</span>
+                      ) : (
+                        <span class="badge badge-no">No</span>
+                      )}
+                    </td>
+                    <td>
+                      <select class="status-select" data-original-val={p.registration_status}>
+                        <option value="pendiente" selected={p.registration_status === 'pendiente'}>Pendiente</option>
+                        <option value="aprobado" selected={p.registration_status === 'aprobado'}>Aprobado</option>
+                        <option value="rechazado" selected={p.registration_status === 'rechazado'}>Rechazado</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select class="role-select" data-original-val={p.role} disabled={p.role === 'superadmin' && profile.role !== 'superadmin'}>
+                        {p.role === 'superadmin' && (
+                          <option value="superadmin" selected>Superadmin</option>
+                        )}
+                        <option value="usuario" selected={p.role === 'usuario'}>Usuario</option>
+                        <option value="mentor" selected={p.role === 'mentor'}>Mentor</option>
+                        <option value="juez" selected={p.role === 'juez'}>Juez</option>
+                        {profile.role === 'superadmin' && (
+                          <option value="admin" selected={p.role === 'admin'}>Admin</option>
+                        )}
+                        {/* Si el current user es admin, no puede ver ni asignar superadmin */}
+                      </select>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+      <span id="toast-msg">Cambios guardados</span>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .admin-page {
+    min-height: calc(100vh - var(--nav-h));
+    padding: calc(var(--nav-h) + 2rem) 0 4rem;
+    background: var(--bg-3);
+  }
+
+  .admin-container {
+    max-width: 1400px;
+  }
+
+  .admin-header {
+    margin-bottom: 2rem;
+  }
+
+  .admin-header h1 {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .admin-subtitle {
+    color: var(--txt-2);
+    font-size: 1.1rem;
+  }
+
+  .admin-card {
+    padding: 0;
+    background: var(--bg-card);
+    border-radius: var(--r-md);
+    overflow: hidden;
+  }
+
+  .admin-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .filters {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .filter-select {
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    border-radius: var(--r-md);
+    background-color: var(--bg-card);
+    border: 1px solid var(--brd);
+    color: var(--txt-1);
+    font-size: 0.9rem;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .checkbox-label input {
+    display: none;
+  }
+
+  .custom-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--brd);
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-input);
+    transition: all var(--t-fast);
+  }
+
+  .checkbox-label input:checked + .custom-checkbox {
+    background: var(--c1);
+    border-color: var(--c1);
+  }
+
+  .checkbox-label input:checked + .custom-checkbox::after {
+    content: '';
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-bottom: 2px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    width: 100%;
+  }
+
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--brd-s);
+  }
+
+  .admin-table th {
+    background: rgba(0, 0, 0, 0.02);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--txt-m);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+  }
+
+  [data-theme="brand-dark"] .admin-table th {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .admin-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .admin-table tbody tr:hover {
+    background: rgba(var(--c1r), 0.03);
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .user-email {
+    font-size: 0.85rem;
+    color: var(--txt-m);
+  }
+
+  .badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .badge-yes {
+    background: rgba(var(--c2r), 0.15);
+    color: var(--c2);
+  }
+
+  .badge-no {
+    background: rgba(119, 119, 119, 0.15);
+    color: var(--txt-m);
+  }
+
+  select {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    padding: 0.4rem 2rem 0.4rem 0.75rem;
+    border: 1px solid var(--brd);
+    border-radius: var(--r-sm);
+    background-color: var(--bg-input);
+    color: var(--txt-1);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    transition: all var(--t-fast);
+  }
+
+  select:focus {
+    border-color: var(--c1);
+    box-shadow: 0 0 0 2px rgba(var(--c1r), 0.1);
+  }
+
+  select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .status-select {
+    font-weight: 600;
+  }
+
+  /* Specific colors for status based on option value can be done via JS, 
+     but standard styling is clean enough for now */
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem !important;
+    color: var(--txt-m);
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--bg-card);
+    color: var(--txt-1);
+    padding: 1rem 1.5rem;
+    border-radius: var(--r-md);
+    box-shadow: var(--sh-lg);
+    border-left: 4px solid var(--c2);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .toast::before {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 20px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc637' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'%3E%3C/path%3E%3Cpolyline points='22 4 12 14.01 9 11.01'%3E%3C/polyline%3E%3C/svg%3E");
+    background-size: cover;
+  }
+
+  .toast.error {
+    border-left-color: #dc2626;
+  }
+  
+  .toast.error::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cline x1='12' y1='8' x2='12' y2='12'%3E%3C/line%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'%3E%3C/line%3E%3C/svg%3E");
+  }
+</style>
+
+<script>
+  import { createBrowserClient } from '@supabase/ssr';
+
+  const supabase = createBrowserClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toast-msg');
+  let toastTimeout: ReturnType<typeof setTimeout>;
+
+  function showToast(message: string, isError = false) {
+    if (!toast || !toastMsg) return;
+    
+    toastMsg.textContent = message;
+    
+    if (isError) {
+      toast.classList.add('error');
+    } else {
+      toast.classList.remove('error');
+    }
+    
+    toast.classList.add('show');
+    
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3000);
+  }
+
+  // Escuchar cambios en los selects de rol y estado
+  document.querySelectorAll('select.status-select, select.role-select').forEach(select => {
+    select.addEventListener('change', async (e) => {
+      const target = e.target as HTMLSelectElement;
+      const newValue = target.value;
+      const originalValue = target.getAttribute('data-original-val');
+      const tr = target.closest('tr');
+      const userId = tr?.getAttribute('data-user-id');
+      const isRole = target.classList.contains('role-select');
+      const field = isRole ? 'role' : 'registration_status';
+
+      if (!userId || newValue === originalValue) return;
+
+      target.disabled = true;
+
+      // Actualizar en Supabase
+      const { error } = await supabase
+        .from('profiles')
+        .update({ [field]: newValue })
+        .eq('id', userId);
+
+      target.disabled = false;
+
+      if (error) {
+        console.error('Update error:', error);
+        showToast('Error al actualizar. Permisos insuficientes.', true);
+        target.value = originalValue || ''; // Revertir visualmente
+      } else {
+        target.setAttribute('data-original-val', newValue);
+        tr?.setAttribute(isRole ? 'data-role' : 'data-status', newValue); // Update DOM state for filters
+        showToast(`Usuario actualizado correctamente`);
+      }
+    });
+  });
+
+  // Lógica de Filtros
+  const filterRole = document.getElementById('filter-role') as HTMLSelectElement;
+  const filterStatus = document.getElementById('filter-status') as HTMLSelectElement;
+  const rows = document.querySelectorAll('.user-row');
+
+  function applyFilters() {
+    const roleVal = filterRole.value;
+    const statusVal = filterStatus.value;
+
+    rows.forEach((row) => {
+      const rRole = row.getAttribute('data-role');
+      const rStatus = row.getAttribute('data-status');
+      
+      const matchRole = roleVal === 'all' || rRole === roleVal;
+      const matchStatus = statusVal === 'all' || rStatus === statusVal;
+
+      (row as HTMLElement).style.display = matchRole && matchStatus ? '' : 'none';
+      
+      // Uncheck if hidden
+      if (!(matchRole && matchStatus)) {
+        const cb = row.querySelector('.row-checkbox') as HTMLInputElement;
+        if (cb) cb.checked = false;
+      }
+    });
+    updateBulkBtn();
+  }
+
+  filterRole?.addEventListener('change', applyFilters);
+  filterStatus?.addEventListener('change', applyFilters);
+
+  // Lógica de Acciones Masivas
+  const selectAll = document.getElementById('select-all') as HTMLInputElement;
+  const rowCheckboxes = document.querySelectorAll('.row-checkbox') as NodeListOf<HTMLInputElement>;
+  const bulkApproveBtn = document.getElementById('bulk-approve-btn') as HTMLButtonElement;
+
+  function updateBulkBtn() {
+    const checkedCount = Array.from(rowCheckboxes).filter(cb => cb.checked).length;
+    if (bulkApproveBtn) {
+      bulkApproveBtn.disabled = checkedCount === 0;
+      bulkApproveBtn.textContent = `Aprobar Seleccionados (${checkedCount})`;
+    }
+  }
+
+  selectAll?.addEventListener('change', (e) => {
+    const checked = (e.target as HTMLInputElement).checked;
+    rowCheckboxes.forEach(cb => {
+      const row = cb.closest('tr');
+      // Seleccionar solo filas visibles
+      if (row && row.style.display !== 'none') {
+        cb.checked = checked;
+      }
+    });
+    updateBulkBtn();
+  });
+
+  rowCheckboxes.forEach(cb => {
+    cb.addEventListener('change', () => {
+      const allVisible = Array.from(rows).filter(r => (r as HTMLElement).style.display !== 'none');
+      const checkedVisible = Array.from(rowCheckboxes).filter(c => c.checked && c.closest('tr')?.style.display !== 'none');
+      if (selectAll) selectAll.checked = allVisible.length > 0 && allVisible.length === checkedVisible.length;
+      updateBulkBtn();
+    });
+  });
+
+  bulkApproveBtn?.addEventListener('click', async () => {
+    const selectedIds = Array.from(rowCheckboxes)
+      .filter(cb => cb.checked)
+      .map(cb => cb.value);
+
+    if (selectedIds.length === 0) return;
+
+    bulkApproveBtn.disabled = true;
+    bulkApproveBtn.textContent = 'Aprobando...';
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ registration_status: 'aprobado' })
+      .in('id', selectedIds);
+
+    if (error) {
+      console.error('Bulk update error:', error);
+      showToast('Error al actualizar registros masivamente', true);
+      bulkApproveBtn.disabled = false;
+      updateBulkBtn();
+    } else {
+      showToast(`${selectedIds.length} usuarios aprobados con éxito`);
+      
+      // Update DOM
+      selectedIds.forEach(id => {
+        const row = document.querySelector(`tr[data-user-id="${id}"]`);
+        if (row) {
+          row.setAttribute('data-status', 'aprobado');
+          const select = row.querySelector('.status-select') as HTMLSelectElement;
+          if (select) {
+            select.value = 'aprobado';
+            select.setAttribute('data-original-val', 'aprobado');
+          }
+        }
+      });
+      
+      // Reset
+      if (selectAll) selectAll.checked = false;
+      rowCheckboxes.forEach(cb => cb.checked = false);
+      updateBulkBtn();
+    }
+  });
+</script>
