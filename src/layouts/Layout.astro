@@ -48,16 +48,21 @@ import Footer from '../components/Footer.astro';
 				entries.forEach(entry => {
 					if (entry.isIntersecting) {
 						entry.target.classList.add('revealed');
-						// Opcional: observer.unobserve(entry.target); para que anime solo una vez
 					}
 				});
 			}, { threshold: 0.15 });
 
-			document.addEventListener('DOMContentLoaded', () => {
+			const initReveal = () => {
 				document.querySelectorAll('.reveal').forEach((el) => {
 					observer.observe(el);
 				});
-			});
+			};
+
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', initReveal);
+			} else {
+				initReveal();
+			}
 		</script>
 	</body>
 </html>
