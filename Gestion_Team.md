@@ -221,11 +221,11 @@ Estado C — En equipo (miembro):
 
 ### Tarea 12.2.2 — Integrar Realtime en `TeamManager`
 
-- [ ] Suscribirse a `postgres_changes` en tabla `profiles` filtrando por `team_id`
-- [ ] Al detectar cambio: refrescar la lista de integrantes sin recargar la página
-- [ ] Manejar `unsubscribe` al desmontar el componente
-- [ ] Testear con 2 navegadores: unirse en uno, ver actualización en el otro
-- [ ] **Commit:** `feat: [dashboard] add realtime subscription for team member updates`
+- [x] Suscribirse a `postgres_changes` en tabla `profiles` filtrando por `team_id`
+- [x] Al detectar cambio: refrescar la lista de integrantes sin recargar la página
+- [x] Manejar `unsubscribe` al desmontar el componente
+- [x] Testear con 2 navegadores: unirse en uno, ver actualización en el otro
+- [x] **Commit:** `feat: [dashboard] add realtime subscription for team member updates`
 
 ```typescript
 const channel = supabase
@@ -282,21 +282,21 @@ const channel = supabase
 
 ### Tarea 12.4.1 — Test End-to-End del flujo completo
 
-- [ ] **Test 1 — Crear equipo:** Usuario aprobado crea equipo → genera código → aparece como líder
-- [ ] **Test 2 — Unirse por código:** Segundo usuario usa el código → aparece en la lista de integrantes
-- [ ] **Test 3 — Regla de egresados:** Segundo egresado intenta unirse → mensaje de error claro
-- [ ] **Test 4 — Límite de tamaño:** Llenar equipo a 5 → sexto usuario recibe error
-- [ ] **Test 5 — Abandonar (miembro):** Miembro regular abandona → queda sin equipo, equipo sigue
-- [ ] **Test 6 — Disolver (líder):** Líder abandona → todos quedan sin equipo, equipo se borra
-- [ ] **Test 7 — Switch admin:** Desactivar `teams_enabled` → sección desaparece del dashboard
-- [ ] **Test 8 — Realtime:** Abrir 2 navegadores, unirse en uno → aparece en el otro sin refresh
-- [ ] **Commit (si hay fixes):** `fix: [teams] resolve issues found during e2e testing`
+- [x] **Test 1 — Crear equipo:** Usuario aprobado crea equipo → genera código → aparece como líder
+- [x] **Test 2 — Unirse por código:** Segundo usuario usa el código → aparece en la lista de integrantes
+- [x] **Test 3 — Regla de egresados:** Segundo egresado intenta unirse → mensaje de error claro
+- [x] **Test 4 — Límite de tamaño:** Llenar equipo a 5 → sexto usuario recibe error
+- [x] **Test 5 — Abandonar (miembro):** Miembro regular abandona → queda sin equipo, equipo sigue
+- [x] **Test 6 — Disolver (líder):** Líder abandona → todos quedan sin equipo, equipo se borra
+- [x] **Test 7 — Switch admin:** Desactivar `teams_enabled` → sección desaparece del dashboard
+- [x] **Test 8 — Realtime:** Abrir 2 navegadores, unirse en uno → aparece en el otro sin refresh
+- [x] **Commit (si hay fixes):** `fix: [teams] resolve issues found during e2e testing`
 
 ---
 
 ### Tarea 12.4.2 — Validación SQL de integridad
 
-- [ ] Ejecutar queries de verificación:
+- [x] Ejecutar queries de verificación:
 
 ```sql
 -- No hay equipos con más miembros de los permitidos
@@ -315,16 +315,16 @@ FROM teams t JOIN profiles p ON p.id = t.leader_id
 WHERE p.team_id != t.id OR p.team_id IS NULL;
 ```
 
-- [ ] Verificar que las 3 consultas retornan **0 filas**
-- [ ] **Commit:** `docs: [teams] add SQL integrity validation queries`
+- [x] Verificar que las 3 consultas retornan **0 filas**
+- [x] **Commit:** `docs: [teams] add SQL integrity validation queries`
 
 ---
 
 ### Tarea 12.4.3 — Actualizar documentación
 
-- [ ] Actualizar `README.md` con la nueva funcionalidad de equipos
-- [ ] Marcar esta épica como completada en este archivo
-- [ ] **Commit:** `docs: [readme] update documentation with team management feature`
+- [x] Actualizar `README.md` con la nueva funcionalidad de equipos
+- [x] Marcar esta épica como completada en este archivo
+- [x] **Commit:** `docs: [readme] update documentation with team management feature`
 
 ---
 
