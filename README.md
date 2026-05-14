@@ -107,6 +107,16 @@ El proyecto cuenta con un sistema robusto de conformación de equipos integrado 
 
 ---
 
+## Entrega de Proyectos
+
+El módulo de entrega de proyectos finales permite a los equipos subir su solución tecnológica el día del evento:
+- **Control Administrativo:** Activado/desactivado en tiempo real mediante el switch `project_submission_enabled` desde el panel de administración.
+- **Acceso Restringido:** Solo el líder del equipo tiene permisos para crear, editar y enviar la información del proyecto (`UPSERT`).
+- **Vista de Integrantes:** Los demás miembros del equipo tienen acceso de solo lectura (formulario bloqueado) garantizando consistencia de los datos.
+- **Campos Solicitados:** Título, Descripción del Problema, Descripción de la Solución, Link al Prototipo y Material de Apoyo (Opcional).
+
+---
+
 ## Documentación del Proyecto
 
 | Documento | Descripción |
