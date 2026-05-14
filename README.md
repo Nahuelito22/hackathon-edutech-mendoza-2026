@@ -97,6 +97,26 @@ HEM2026/
 
 ---
 
+## Gestión de Equipos
+
+El proyecto cuenta con un sistema robusto de conformación de equipos integrado con Supabase:
+- **Autonomía:** Los participantes crean y se unen a equipos mediante un código privado de 6 caracteres.
+- **Validaciones RLS y RPCs:** Se valida en base de datos el tamaño del equipo (min 3, max 5) y las reglas de egresados (máximo 1 por equipo).
+- **Control Administrativo:** La visualización de la sección en el dashboard de participantes es controlada por el switch `teams_enabled` en la tabla `event_config`, que el administrador puede manipular desde `/admin`.
+- **Realtime:** Los cambios en los integrantes del equipo se reflejan en tiempo real para todos los participantes usando Supabase Realtime.
+
+---
+
+## Entrega de Proyectos
+
+El módulo de entrega de proyectos finales permite a los equipos subir su solución tecnológica el día del evento:
+- **Control Administrativo:** Activado/desactivado en tiempo real mediante el switch `project_submission_enabled` desde el panel de administración.
+- **Acceso Restringido:** Solo el líder del equipo tiene permisos para crear, editar y enviar la información del proyecto (`UPSERT`).
+- **Vista de Integrantes:** Los demás miembros del equipo tienen acceso de solo lectura (formulario bloqueado) garantizando consistencia de los datos.
+- **Campos Solicitados:** Título, Descripción del Problema, Descripción de la Solución, Link al Prototipo y Material de Apoyo (Opcional).
+
+---
+
 ## Documentación del Proyecto
 
 | Documento | Descripción |

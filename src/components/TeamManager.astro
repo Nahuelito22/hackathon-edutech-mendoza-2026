@@ -1,0 +1,629 @@
+---
+// src/components/TeamManager.astro
+// Team management component for the participant dashboard.
+// Props are passed as data attributes and read by client-side JS.
+
+interface Props {
+  userId: string;
+  teamId: string | null;
+  isEgresado: boolean;
+  fullName: string;
+  maxTeamSize: number;
+  minTeamSize: number;
+  projectsEnabled?: boolean;
+}
+
+const { userId, teamId, isEgresado, fullName, maxTeamSize = 5, minTeamSize = 3, projectsEnabled = false } = Astro.props;
+
+import ProjectSubmission from './ProjectSubmission.astro';
+---
+
+<section 
+  class="team-section"
+  id="team-manager"
+  data-user-id={userId}
+  data-team-id={teamId || ''}
+  data-is-egresado={String(isEgresado)}
+  data-full-name={fullName}
+  data-max-size={String(maxTeamSize)}
+  data-min-size={String(minTeamSize)}
+  data-projects-enabled={String(projectsEnabled)}
+>
+  <h2 class="team-title">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+    Gestión de Equipo
+  </h2>
+
+  <!-- State A: No team -->
+  <div id="team-no-team" class="team-state" style={teamId ? 'display:none' : ''}>
+    <div class="team-actions-grid">
+      <div class="team-action-card card">
+        <h3>Crear Equipo</h3>
+        <p class="team-action-desc">Elegí un nombre y compartí el código con tus compañeros.</p>
+        <form id="create-team-form" class="team-form">
+          <div class="form-group">
+            <label for="team-name-input">Nombre del equipo</label>
+            <input type="text" id="team-name-input" placeholder="Ej: Los Innovadores" required maxlength="40" />
+          </div>
+          <button type="submit" class="btn btn-primary" id="create-team-btn">Crear Equipo</button>
+        </form>
+      </div>
+      <div class="team-action-card card">
+        <h3>Unirse a un Equipo</h3>
+        <p class="team-action-desc">Ingresá el código de 6 caracteres que te compartieron.</p>
+        <form id="join-team-form" class="team-form">
+          <div class="form-group">
+            <label for="join-code-input">Código de equipo</label>
+            <input type="text" id="join-code-input" placeholder="Ej: ABC123" required maxlength="6" style="text-transform: uppercase; letter-spacing: 0.2em; font-weight: 700; text-align: center;" />
+          </div>
+          <button type="submit" class="btn btn-outline" id="join-team-btn">Unirse</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- State B/C: In a team -->
+  <div id="team-in-team" class="team-state" style={!teamId ? 'display:none' : ''}>
+    <div class="team-detail-card card">
+      <div class="team-detail-header">
+        <div>
+          <span class="team-detail-label">Mi Equipo</span>
+          <h3 id="team-display-name" class="team-display-name">Cargando...</h3>
+        </div>
+        <div class="team-code-box" id="team-code-box" style="display:none">
+          <span class="team-code-label">Código</span>
+          <button class="team-code-value" id="copy-code-btn" title="Copiar código">
+            <span id="team-display-code">------</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Min team warning -->
+      <div id="team-min-warning" class="team-warning" style="display:none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        <span>El equipo necesita al menos <strong id="min-size-display">3</strong> integrantes para competir.</span>
+      </div>
+
+      <!-- Members list -->
+      <div class="team-members-section">
+        <div class="team-members-header">
+          <span class="team-members-label">Integrantes</span>
+          <span class="team-members-count" id="team-members-count">0/5</span>
+        </div>
+        <ul class="team-members-list" id="team-members-list">
+          <li class="team-member-skeleton">Cargando miembros...</li>
+        </ul>
+      </div>
+
+      <!-- Leave/Dissolve button -->
+      <div class="team-leave-section">
+        <button class="btn btn-danger-outline" id="leave-team-btn" style="display:none">
+          Abandonar Equipo
+        </button>
+        <button class="btn btn-danger-outline" id="dissolve-team-btn" style="display:none">
+          ⚠ Disolver Equipo
+        </button>
+      </div>
+
+      <!-- Project Submission Module -->
+      <ProjectSubmission />
+    </div>
+  </div>
+
+  <!-- Feedback toast -->
+  <div id="team-toast" class="team-toast">
+    <span id="team-toast-msg">Mensaje</span>
+  </div>
+</section>
+
+<style>
+  .team-section {
+    margin-top: 3rem;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .team-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--txt-1);
+  }
+  .team-title svg { color: var(--c1); }
+
+  .team-actions-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  @media (min-width: 640px) {
+    .team-actions-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .team-action-card {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .team-action-card h3 {
+    font-size: 1.15rem;
+    margin: 0;
+  }
+  .team-action-desc {
+    color: var(--txt-2);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .team-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: auto;
+  }
+  .team-form .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+  .team-form label {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--txt-1);
+  }
+  .team-form input {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--brd);
+    border-radius: var(--r-md);
+    background: var(--bg-input);
+    color: var(--txt-1);
+    outline: none;
+    transition: border-color var(--t-fast), box-shadow var(--t-fast);
+  }
+  .team-form input:focus {
+    border-color: var(--c1);
+    box-shadow: 0 0 0 3px rgba(var(--c1r), 0.12);
+  }
+
+  /* Team detail card */
+  .team-detail-card {
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .team-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .team-detail-label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--txt-m);
+    font-weight: 600;
+  }
+  .team-display-name {
+    font-size: 1.5rem;
+    margin: 0.25rem 0 0 0;
+    color: var(--txt-1);
+  }
+
+  .team-code-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+  }
+  .team-code-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--txt-m);
+    font-weight: 600;
+  }
+  .team-code-value {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--c1);
+    background: rgba(var(--c1r), 0.08);
+    border: 1px solid rgba(var(--c1r), 0.2);
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--r-md);
+    cursor: pointer;
+    transition: all var(--t-fast);
+  }
+  .team-code-value:hover {
+    background: rgba(var(--c1r), 0.15);
+    border-color: var(--c1);
+  }
+
+  /* Warning banner */
+  .team-warning {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 193, 7, 0.08);
+    border: 1px solid rgba(255, 193, 7, 0.25);
+    border-radius: var(--r-md);
+    color: #e6a700;
+    font-size: 0.85rem;
+  }
+
+  /* Members */
+  .team-members-section { display: flex; flex-direction: column; gap: 0.75rem; }
+  .team-members-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .team-members-label {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--txt-2);
+    font-weight: 600;
+  }
+  .team-members-count {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--txt-m);
+  }
+
+  .team-members-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .team-member-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-3);
+    border-radius: var(--r-md);
+    font-size: 0.95rem;
+    transition: background var(--t-fast);
+  }
+  .team-member-item:hover { background: var(--bg-2); }
+
+  .member-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(var(--c1r), 0.12);
+    color: var(--c1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+  .member-name { font-weight: 600; color: var(--txt-1); }
+  .member-badge {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-left: auto;
+  }
+  .badge-leader {
+    background: rgba(var(--c2r), 0.15);
+    color: var(--c2);
+  }
+  .badge-egresado {
+    background: rgba(var(--c1r), 0.12);
+    color: var(--c1);
+  }
+  .team-member-skeleton {
+    color: var(--txt-m);
+    font-style: italic;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  /* Leave/Dissolve */
+  .team-leave-section {
+    border-top: 1px solid var(--brd-s);
+    padding-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .btn-danger-outline {
+    background: transparent;
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    color: #dc2626;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: var(--r-md);
+    cursor: pointer;
+    transition: all var(--t-fast);
+  }
+  .btn-danger-outline:hover {
+    background: rgba(220, 38, 38, 0.08);
+    border-color: #dc2626;
+  }
+
+  /* Toast */
+  .team-toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--bg-card);
+    color: var(--txt-1);
+    padding: 1rem 1.5rem;
+    border-radius: var(--r-md);
+    box-shadow: var(--sh-lg);
+    border-left: 4px solid var(--c2);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 1000;
+    font-size: 0.9rem;
+    max-width: 400px;
+  }
+  .team-toast.show { transform: translateY(0); opacity: 1; }
+  .team-toast.error { border-left-color: #dc2626; }
+</style>
+
+<script>
+  import { createBrowserClient } from '@supabase/ssr';
+
+  const supabase = createBrowserClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  // --- DOM refs ---
+  const section = document.getElementById('team-manager') as HTMLElement;
+  const noTeamDiv = document.getElementById('team-no-team') as HTMLElement;
+  const inTeamDiv = document.getElementById('team-in-team') as HTMLElement;
+  const teamNameDisplay = document.getElementById('team-display-name') as HTMLElement;
+  const teamCodeDisplay = document.getElementById('team-display-code') as HTMLElement;
+  const teamCodeBox = document.getElementById('team-code-box') as HTMLElement;
+  const membersList = document.getElementById('team-members-list') as HTMLElement;
+  const membersCount = document.getElementById('team-members-count') as HTMLElement;
+  const minWarning = document.getElementById('team-min-warning') as HTMLElement;
+  const minSizeDisplay = document.getElementById('min-size-display') as HTMLElement;
+  const leaveBtn = document.getElementById('leave-team-btn') as HTMLButtonElement;
+  const dissolveBtn = document.getElementById('dissolve-team-btn') as HTMLButtonElement;
+  const createForm = document.getElementById('create-team-form') as HTMLFormElement;
+  const joinForm = document.getElementById('join-team-form') as HTMLFormElement;
+  const copyBtn = document.getElementById('copy-code-btn') as HTMLButtonElement;
+  const toast = document.getElementById('team-toast') as HTMLElement;
+  const toastMsg = document.getElementById('team-toast-msg') as HTMLElement;
+
+  // --- Data from server ---
+  const userId = section.dataset.userId!;
+  let currentTeamId = section.dataset.teamId || null;
+  const maxSize = parseInt(section.dataset.maxSize || '5');
+  const minSize = parseInt(section.dataset.minSize || '3');
+
+  // --- Toast helper ---
+  let toastTimeout: ReturnType<typeof setTimeout>;
+  function showToast(msg: string, isError = false) {
+    toastMsg.textContent = msg;
+    toast.classList.toggle('error', isError);
+    toast.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => toast.classList.remove('show'), 4000);
+  }
+
+  // --- Switch view ---
+  function showState(state: 'no-team' | 'in-team') {
+    noTeamDiv.style.display = state === 'no-team' ? '' : 'none';
+    inTeamDiv.style.display = state === 'in-team' ? '' : 'none';
+  }
+
+  // --- Render members ---
+  function renderMembers(members: any[], leaderId: string | null) {
+    membersList.innerHTML = '';
+    members.forEach(m => {
+      const isLeader = m.id === leaderId;
+      const initials = (m.full_name || '??').split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase();
+      const li = document.createElement('li');
+      li.className = 'team-member-item';
+      let badges = '';
+      if (isLeader) badges += '<span class="member-badge badge-leader">Líder</span>';
+      if (m.is_egresado) badges += '<span class="member-badge badge-egresado">Egresado</span>';
+      li.innerHTML = `
+        <span class="member-avatar">${initials}</span>
+        <span class="member-name">${m.full_name || 'Sin nombre'}</span>
+        ${badges}
+      `;
+      membersList.appendChild(li);
+    });
+    membersCount.textContent = `${members.length}/${maxSize}`;
+    minSizeDisplay.textContent = String(minSize);
+    minWarning.style.display = members.length < minSize ? '' : 'none';
+  }
+
+  // --- Load team data ---
+  async function loadTeam() {
+    if (!currentTeamId) { showState('no-team'); return; }
+
+    const { data: team } = await supabase
+      .from('teams')
+      .select('id, name, join_code, leader_id')
+      .eq('id', currentTeamId)
+      .single();
+
+    if (!team) { currentTeamId = null; showState('no-team'); return; }
+
+    teamNameDisplay.textContent = team.name;
+    teamCodeDisplay.textContent = team.join_code || '------';
+    teamCodeBox.style.display = '';
+    showState('in-team');
+
+    // Show correct button
+    const isLeader = team.leader_id === userId;
+    leaveBtn.style.display = isLeader ? 'none' : '';
+    dissolveBtn.style.display = isLeader ? '' : 'none';
+
+    // Load members
+    const { data: members } = await supabase
+      .from('profiles')
+      .select('id, full_name, is_egresado')
+      .eq('team_id', currentTeamId);
+
+    renderMembers(members || [], team.leader_id);
+
+    // Dispatch event so ProjectSubmission knows we have a team and if we are leader
+    document.dispatchEvent(new CustomEvent('teamLoaded', {
+      detail: {
+        teamId: currentTeamId,
+        userId: userId,
+        isLeader: isLeader,
+        projectsEnabled: section.dataset.projectsEnabled === 'true'
+      }
+    }));
+
+    subscribeToTeam();
+  }
+
+  // --- Realtime ---
+  let channel: ReturnType<typeof supabase.channel> | null = null;
+
+  function subscribeToTeam() {
+    if (channel) supabase.removeChannel(channel);
+    if (!currentTeamId) return;
+
+    channel = supabase
+      .channel(`team-${currentTeamId}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'profiles',
+        filter: `team_id=eq.${currentTeamId}`
+      }, () => { loadTeam(); })
+      .subscribe();
+  }
+
+  // --- Create Team ---
+  createForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nameInput = document.getElementById('team-name-input') as HTMLInputElement;
+    const btn = document.getElementById('create-team-btn') as HTMLButtonElement;
+    const name = nameInput.value.trim();
+    if (!name) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Creando...';
+
+    const { data, error } = await supabase.rpc('create_team', { p_team_name: name });
+
+    if (error || !data?.ok) {
+      showToast(data?.error || error?.message || 'Error al crear equipo.', true);
+      btn.disabled = false;
+      btn.textContent = 'Crear Equipo';
+      return;
+    }
+
+    currentTeamId = data.team_id;
+    section.dataset.teamId = data.team_id;
+    showToast(`¡Equipo "${data.team_name}" creado! Código: ${data.join_code}`);
+    loadTeam();
+  });
+
+  // --- Join Team ---
+  joinForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const codeInput = document.getElementById('join-code-input') as HTMLInputElement;
+    const btn = document.getElementById('join-team-btn') as HTMLButtonElement;
+    const code = codeInput.value.trim().toUpperCase();
+    if (!code) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Uniéndose...';
+
+    const { data, error } = await supabase.rpc('join_team', { p_join_code: code });
+
+    if (error || !data?.ok) {
+      showToast(data?.error || error?.message || 'Error al unirse.', true);
+      btn.disabled = false;
+      btn.textContent = 'Unirse';
+      return;
+    }
+
+    currentTeamId = data.team_id;
+    section.dataset.teamId = data.team_id;
+    showToast(`¡Te uniste a "${data.team_name}"!`);
+    loadTeam();
+  });
+
+  // --- Leave Team ---
+  async function handleLeave(isDissolve: boolean) {
+    const msg = isDissolve
+      ? '¿Estás seguro? Al disolver el equipo, TODOS los integrantes quedarán sin equipo.'
+      : '¿Estás seguro de abandonar el equipo?';
+    if (!confirm(msg)) return;
+
+    const btn = isDissolve ? dissolveBtn : leaveBtn;
+    btn.disabled = true;
+    btn.textContent = isDissolve ? 'Disolviendo...' : 'Abandonando...';
+
+    const { data, error } = await supabase.rpc('leave_team');
+
+    if (error || !data?.ok) {
+      showToast(data?.error || error?.message || 'Error.', true);
+      btn.disabled = false;
+      btn.textContent = isDissolve ? '⚠ Disolver Equipo' : 'Abandonar Equipo';
+      return;
+    }
+
+    if (channel) supabase.removeChannel(channel);
+    currentTeamId = null;
+    section.dataset.teamId = '';
+    showToast(data.message);
+    showState('no-team');
+    document.dispatchEvent(new CustomEvent('teamCleared'));
+
+    // Reset forms
+    (document.getElementById('team-name-input') as HTMLInputElement).value = '';
+    (document.getElementById('join-code-input') as HTMLInputElement).value = '';
+    const createBtn = document.getElementById('create-team-btn') as HTMLButtonElement;
+    const joinBtn = document.getElementById('join-team-btn') as HTMLButtonElement;
+    createBtn.disabled = false; createBtn.textContent = 'Crear Equipo';
+    joinBtn.disabled = false; joinBtn.textContent = 'Unirse';
+  }
+
+  leaveBtn?.addEventListener('click', () => handleLeave(false));
+  dissolveBtn?.addEventListener('click', () => handleLeave(true));
+
+  // --- Copy code ---
+  copyBtn?.addEventListener('click', async () => {
+    const code = teamCodeDisplay.textContent || '';
+    try {
+      await navigator.clipboard.writeText(code);
+      showToast(`Código "${code}" copiado al portapapeles.`);
+    } catch {
+      showToast('No se pudo copiar. Copialo manualmente: ' + code, true);
+    }
+  });
+
+  // --- Init ---
+  if (currentTeamId) { loadTeam(); }
+</script>

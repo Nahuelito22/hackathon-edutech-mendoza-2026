@@ -1,0 +1,652 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import { createServerClient, parseCookieHeader } from '@supabase/ssr';
+
+const user = Astro.locals.user;
+const profile = Astro.locals.profile;
+
+// Doble validación de seguridad (el middleware ya protege, pero es buena práctica)
+if (!user || (profile?.role !== 'juez' && profile?.role !== 'admin' && profile?.role !== 'superadmin')) {
+  return Astro.redirect('/dashboard');
+}
+
+const supabase = createServerClient(
+  import.meta.env.PUBLIC_SUPABASE_URL,
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+  {
+    cookies: {
+      getAll() {
+        try {
+          return parseCookieHeader(Astro.request.headers.get('Cookie') ?? '');
+        } catch {
+          return [];
+        }
+      },
+      setAll() {}
+    }
+  }
+);
+
+// Obtener configuración de evaluación
+const { data: configData } = await supabase
+  .from('event_config')
+  .select('value')
+  .eq('key', 'evaluation_enabled')
+  .single();
+
+const isEvaluationEnabled = configData?.value === 'true';
+
+// Obtener todos los proyectos enviados
+const { data: projectsData, error: projectsError } = await supabase
+  .from('projects')
+  .select('*, teams(name)')
+  .order('created_at', { ascending: true });
+
+// Obtener las evaluaciones hechas por ESTE juez
+const { data: evaluationsData } = await supabase
+  .from('evaluations')
+  .select('*')
+  .eq('judge_id', user.id);
+
+const projects = projectsData || [];
+const evaluations = evaluationsData || [];
+
+// Mapa de evaluaciones para saber si ya evaluó el proyecto
+const evaluationsMap = evaluations.reduce((acc, ev) => {
+  acc[ev.project_id] = ev;
+  return acc;
+}, {} as Record<string, any>);
+
+// Separar proyectos evaluados de los pendientes (opcional, pero útil para UX)
+const pendingProjects = projects.filter(p => !evaluationsMap[p.id]);
+const completedProjects = projects.filter(p => evaluationsMap[p.id]);
+---
+
+<Layout title="Panel de Evaluación | HEM2026">
+  <Navbar />
+  <main class="eval-page">
+    <div class="container eval-container">
+      <div class="eval-header">
+        <h1>Panel de Evaluación</h1>
+        <p class="eval-subtitle">Bienvenido, {profile?.full_name || 'Juez'}.</p>
+      </div>
+
+      {!isEvaluationEnabled && profile?.role === 'juez' ? (
+        <div class="card warning-card">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--c1); margin-bottom: 1rem;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <h3>Evaluaciones Cerradas</h3>
+          <p>El administrador aún no ha habilitado la etapa de evaluación.</p>
+        </div>
+      ) : projects.length === 0 ? (
+        <div class="card empty-state">
+          <p>Aún no hay proyectos entregados para evaluar.</p>
+        </div>
+      ) : (
+        <div class="eval-sections">
+          
+          <div class="eval-section">
+            <h2 class="section-title">Pendientes de Evaluación <span class="badge badge-pending">{pendingProjects.length}</span></h2>
+            <div class="projects-grid">
+              {pendingProjects.map(project => (
+                <div class="project-card card" data-project={JSON.stringify(project)}>
+                  <div class="project-header">
+                    <h3>{project.title}</h3>
+                    <span class="team-name">Equipo: {project.teams?.name}</span>
+                  </div>
+                  <div class="project-body">
+                    <p class="project-desc">{project.description_problem ? project.description_problem.substring(0, 100) + '...' : 'Sin descripción'}</p>
+                  </div>
+                  <div class="project-footer">
+                    <button class="btn btn-primary evaluate-btn" data-id={project.id}>Evaluar Proyecto</button>
+                  </div>
+                </div>
+              ))}
+              {pendingProjects.length === 0 && <p class="text-muted">¡Excelente! Has evaluado todos los proyectos asignados.</p>}
+            </div>
+          </div>
+
+          <div class="eval-section">
+            <h2 class="section-title">Evaluados <span class="badge badge-completed">{completedProjects.length}</span></h2>
+            <div class="projects-grid">
+              {completedProjects.map(project => {
+                const ev = evaluationsMap[project.id];
+                const totalScore = ev.score_innovation + ev.score_viability + ev.score_ux + ev.score_pitch;
+                return (
+                  <div class="project-card card completed">
+                    <div class="project-header">
+                      <h3>{project.title}</h3>
+                      <span class="team-name">Equipo: {project.teams?.name}</span>
+                    </div>
+                    <div class="project-footer score-footer">
+                      <div class="score-display">
+                        <span class="score-label">Tu puntuación:</span>
+                        <span class="score-value">{totalScore}/40</span>
+                      </div>
+                      <span class="badge badge-yes">Completado</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+        </div>
+      )}
+    </div>
+
+    <!-- Modal de Evaluación -->
+    <div id="eval-modal" class="modal-backdrop">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modal-project-title">Título del Proyecto</h2>
+          <button id="close-modal" class="icon-btn" aria-label="Cerrar modal">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="project-details">
+            <h4>Problema</h4>
+            <p id="modal-problem"></p>
+            <h4>Solución</h4>
+            <p id="modal-solution"></p>
+            
+            <div class="links-grid">
+              <a href="#" id="modal-prototype" target="_blank" class="link-item" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                Ver Prototipo
+              </a>
+              <a href="#" id="modal-material" target="_blank" class="link-item" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Material de Apoyo
+              </a>
+            </div>
+          </div>
+
+          <form id="evaluation-form" class="evaluation-form">
+            <input type="hidden" id="form-project-id" name="project_id" />
+            <input type="hidden" id="form-judge-id" name="judge_id" value={user?.id || ''} />
+
+            <div class="rubric-grid">
+              <!-- Innovación -->
+              <div class="form-group rubric-item">
+                <div class="rubric-header">
+                  <label for="score_innovation">Innovación & Creatividad</label>
+                  <span class="score-output" id="out-innovation">5</span>
+                </div>
+                <p class="rubric-desc">¿Es la solución original? ¿Aborda el problema de una manera nueva?</p>
+                <input type="range" id="score_innovation" name="score_innovation" min="1" max="10" value="5" class="score-slider" />
+              </div>
+
+              <!-- Viabilidad -->
+              <div class="form-group rubric-item">
+                <div class="rubric-header">
+                  <label for="score_viability">Viabilidad Técnica & Negocio</label>
+                  <span class="score-output" id="out-viability">5</span>
+                </div>
+                <p class="rubric-desc">¿Es realista implementarlo? ¿Tiene sentido desde el punto de vista tecnológico?</p>
+                <input type="range" id="score_viability" name="score_viability" min="1" max="10" value="5" class="score-slider" />
+              </div>
+
+              <!-- UX -->
+              <div class="form-group rubric-item">
+                <div class="rubric-header">
+                  <label for="score_ux">Experiencia de Usuario (UX)</label>
+                  <span class="score-output" id="out-ux">5</span>
+                </div>
+                <p class="rubric-desc">¿Es fácil de usar? ¿El diseño está centrado en el usuario?</p>
+                <input type="range" id="score_ux" name="score_ux" min="1" max="10" value="5" class="score-slider" />
+              </div>
+
+              <!-- Pitch -->
+              <div class="form-group rubric-item">
+                <div class="rubric-header">
+                  <label for="score_pitch">Presentación (Pitch)</label>
+                  <span class="score-output" id="out-pitch">5</span>
+                </div>
+                <p class="rubric-desc">¿Fueron claros al explicar el problema y la solución? ¿Transmiten pasión?</p>
+                <input type="range" id="score_pitch" name="score_pitch" min="1" max="10" value="5" class="score-slider" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="feedback">Feedback Constructivo (Opcional)</label>
+              <textarea id="feedback" name="feedback" rows="3" placeholder="Deja un comentario constructivo para el equipo..." class="feedback-textarea"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100" id="submit-eval-btn">Guardar Evaluación</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast">
+      <span id="toast-msg"></span>
+    </div>
+
+  </main>
+</Layout>
+
+<style>
+  .eval-page {
+    min-height: calc(100vh - var(--nav-h));
+    padding: calc(var(--nav-h) + 2rem) 0 4rem;
+    background: var(--bg-3);
+  }
+
+  .eval-container {
+    max-width: 1200px;
+  }
+
+  .eval-header {
+    margin-bottom: 2rem;
+  }
+
+  .eval-header h1 {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--txt-1);
+  }
+
+  .eval-subtitle {
+    color: var(--txt-2);
+    font-size: 1.1rem;
+  }
+
+  .empty-state {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: var(--txt-m);
+    border: 1px dashed var(--brd);
+  }
+
+  .warning-card {
+    padding: 3rem 2rem;
+    text-align: center;
+    border: 1px solid rgba(var(--c1r), 0.3);
+    background: rgba(var(--c1r), 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .eval-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    color: var(--txt-1);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .badge-pending { background: rgba(var(--c1r), 0.15); color: var(--c1); }
+  .badge-completed { background: rgba(var(--c2r), 0.15); color: var(--c2); }
+  .badge-yes { background: rgba(var(--c2r), 0.15); color: var(--c2); padding: 0.25rem 0.75rem; font-size: 0.8rem; }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .projects-grid {
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+  }
+
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform var(--t-fast);
+  }
+  .project-card:not(.completed):hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  }
+
+  .project-header {
+    margin-bottom: 1rem;
+  }
+  .project-header h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.25rem;
+    color: var(--txt-1);
+  }
+  .team-name {
+    font-size: 0.9rem;
+    color: var(--c1);
+    font-weight: 600;
+  }
+
+  .project-desc {
+    color: var(--txt-2);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .project-footer {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--brd-s);
+  }
+  .score-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .score-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .score-label { color: var(--txt-2); font-size: 0.9rem; }
+  .score-value { font-weight: 700; font-size: 1.2rem; color: var(--txt-1); }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+    opacity: 0;
+    transition: opacity var(--t-fast);
+  }
+  .modal-backdrop.show {
+    display: flex;
+    opacity: 1;
+  }
+
+  .modal-content {
+    background: var(--bg-card);
+    width: 100%;
+    max-width: 800px;
+    border-radius: var(--r-lg);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    overflow: hidden;
+  }
+
+  .modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--brd);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal-header h2 { margin: 0; font-size: 1.5rem; color: var(--txt-1); }
+  
+  .icon-btn {
+    background: none; border: none; color: var(--txt-2);
+    cursor: pointer; padding: 0.5rem; border-radius: 50%;
+    transition: all var(--t-fast);
+  }
+  .icon-btn:hover { background: var(--bg-input); color: var(--txt-1); }
+
+  .modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .project-details {
+    background: var(--bg-input);
+    padding: 1.5rem;
+    border-radius: var(--r-md);
+    margin-bottom: 2rem;
+  }
+  .project-details h4 { margin: 0 0 0.5rem 0; color: var(--txt-1); font-size: 1rem;}
+  .project-details p { margin: 0 0 1.5rem 0; color: var(--txt-2); line-height: 1.6; font-size: 0.95rem; }
+  
+  .links-grid {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+  }
+  .link-item {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.5rem 1rem; background: var(--bg-card);
+    border: 1px solid var(--brd); border-radius: var(--r-sm);
+    color: var(--txt-1); text-decoration: none; font-size: 0.9rem; font-weight: 500;
+    transition: border-color var(--t-fast);
+  }
+  .link-item:hover { border-color: var(--c1); color: var(--c1); }
+
+  .rubric-grid {
+    display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem;
+  }
+  @media (min-width: 768px) {
+    .rubric-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .rubric-item {
+    background: var(--bg-card);
+    border: 1px solid var(--brd);
+    padding: 1.5rem;
+    border-radius: var(--r-md);
+    margin: 0;
+  }
+  
+  .rubric-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;
+  }
+  .rubric-header label { font-weight: 600; color: var(--txt-1); margin: 0; }
+  .score-output { 
+    background: rgba(var(--c1r), 0.1); color: var(--c1); 
+    font-weight: 700; padding: 0.25rem 0.75rem; border-radius: var(--r-sm);
+  }
+
+  .rubric-desc { font-size: 0.85rem; color: var(--txt-m); margin-bottom: 1rem; line-height: 1.4; }
+
+  .score-slider {
+    width: 100%;
+    accent-color: var(--c1);
+    height: 6px;
+    background: var(--brd);
+    border-radius: 3px;
+    outline: none;
+    appearance: none;
+  }
+  .score-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--c1);
+    cursor: pointer;
+    border: 2px solid var(--bg-card);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  .w-100 { width: 100%; }
+
+  .feedback-textarea {
+    width: 100%;
+    background: var(--bg-input);
+    color: var(--txt-1);
+    border: 1px solid var(--brd);
+    border-radius: var(--r-md);
+    padding: 0.75rem;
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+    margin-top: 0.5rem;
+    transition: border-color var(--t-fast);
+  }
+  .feedback-textarea:focus {
+    outline: none;
+    border-color: var(--c1);
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--c1);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--r-md);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all var(--t-normal);
+    z-index: 2000;
+    pointer-events: none;
+  }
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+</style>
+
+<script>
+  import { createBrowserClient } from '@supabase/ssr';
+
+  const supabase = createBrowserClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  // --- Modal Logic ---
+  const modal = document.getElementById('eval-modal');
+  const closeBtn = document.getElementById('close-modal');
+  const evalBtns = document.querySelectorAll('.evaluate-btn');
+  
+  const modalTitle = document.getElementById('modal-project-title');
+  const modalProblem = document.getElementById('modal-problem');
+  const modalSolution = document.getElementById('modal-solution');
+  const modalPrototype = document.getElementById('modal-prototype') as HTMLAnchorElement;
+  const modalMaterial = document.getElementById('modal-material') as HTMLAnchorElement;
+  const formProjectId = document.getElementById('form-project-id') as HTMLInputElement;
+
+  function openModal(project: any) {
+    if (!modal || !modalTitle || !modalProblem || !modalSolution || !formProjectId) return;
+    
+    modalTitle.textContent = project.title;
+    modalProblem.textContent = project.description_problem || 'Sin descripción del problema.';
+    modalSolution.textContent = project.description_solution || 'Sin descripción de la solución.';
+    
+    if (project.url_prototype && modalPrototype) {
+      modalPrototype.href = project.url_prototype;
+      modalPrototype.style.display = 'inline-flex';
+    } else if (modalPrototype) {
+      modalPrototype.style.display = 'none';
+    }
+
+    if (project.url_support_material && modalMaterial) {
+      modalMaterial.href = project.url_support_material;
+      modalMaterial.style.display = 'inline-flex';
+    } else if (modalMaterial) {
+      modalMaterial.style.display = 'none';
+    }
+
+    formProjectId.value = project.id;
+    
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden'; // prevent background scrolling
+  }
+
+  function closeModal() {
+    if (!modal) return;
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  evalBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const card = (e.target as HTMLElement).closest('.project-card');
+      if (card) {
+        const projectData = JSON.parse(card.getAttribute('data-project') || '{}');
+        openModal(projectData);
+      }
+    });
+  });
+
+  closeBtn?.addEventListener('click', closeModal);
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // --- Sliders Sync Logic ---
+  const sliders = ['innovation', 'viability', 'ux', 'pitch'];
+  sliders.forEach(key => {
+    const slider = document.getElementById(`score_${key}`) as HTMLInputElement;
+    const output = document.getElementById(`out-${key}`);
+    if (slider && output) {
+      slider.addEventListener('input', () => {
+        output.textContent = slider.value;
+      });
+    }
+  });
+
+  // --- Form Submission ---
+  const form = document.getElementById('evaluation-form') as HTMLFormElement;
+  const submitBtn = document.getElementById('submit-eval-btn') as HTMLButtonElement;
+  
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toast-msg');
+
+  function showToast(message: string, isError = false) {
+    if (!toast || !toastMsg) return;
+    toastMsg.textContent = message;
+    toast.style.background = isError ? 'var(--er)' : 'var(--c1)';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!submitBtn) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Guardando...';
+
+    const formData = new FormData(form);
+    const evaluationData = {
+      project_id: formData.get('project_id'),
+      judge_id: formData.get('judge_id'),
+      score_innovation: parseInt(formData.get('score_innovation') as string, 10),
+      score_viability: parseInt(formData.get('score_viability') as string, 10),
+      score_ux: parseInt(formData.get('score_ux') as string, 10),
+      score_pitch: parseInt(formData.get('score_pitch') as string, 10),
+      feedback: formData.get('feedback')
+    };
+
+    const { error } = await supabase
+      .from('evaluations')
+      .insert(evaluationData);
+
+    if (error) {
+      console.error('Error saving evaluation:', error);
+      showToast('Error al guardar la evaluación. ' + error.message, true);
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Guardar Evaluación';
+    } else {
+      showToast('¡Evaluación guardada con éxito!');
+      closeModal();
+      // Recargar la página para mover el proyecto a "Completados"
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    }
+  });
+</script>

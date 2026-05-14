@@ -8,6 +8,7 @@ import '../styles/global.css';
 import ThemeToggle from '../components/ThemeToggle.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import Analytics from '@vercel/analytics/astro';
 ---
 
 <!doctype html>
@@ -40,6 +41,7 @@ import Footer from '../components/Footer.astro';
 		<Navbar />
 		<slot />
 		<Footer />
+		<Analytics />
 		
 		<ThemeToggle />
 		<script>
