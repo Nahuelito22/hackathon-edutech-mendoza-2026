@@ -60,26 +60,15 @@ const projectsEnabled = configData?.find(c => c.key === 'project_submission_enab
         <p class="admin-subtitle">Gestión de usuarios, roles e inscripciones</p>
       </div>
 
-      <div class="admin-actions">
-        <div class="global-controls" style="display: flex; align-items: center; gap: 2rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--brd); flex-wrap: wrap;">
-          <div style="display: flex; align-items: center; gap: 1rem;">
-            <label class="toggle-switch">
-              <input type="checkbox" id="teams-enabled-toggle" checked={teamsEnabled} />
-              <span class="toggle-slider"></span>
-            </label>
-            <span style="font-weight: 600;">Habilitar Formación de Equipos</span>
-          </div>
-          
-          <div style="display: flex; align-items: center; gap: 1rem;">
-            <label class="toggle-switch">
-              <input type="checkbox" id="projects-enabled-toggle" checked={projectsEnabled} />
-              <span class="toggle-slider"></span>
-            </label>
-            <span style="font-weight: 600;">Recepción de Proyectos</span>
-          </div>
-        </div>
+      <div class="admin-tabs-nav">
+        <button class="tab-btn active" data-target="tab-usuarios">Usuarios</button>
+        <button class="tab-btn" data-target="tab-configuracion">Configuración</button>
+        <button class="tab-btn" data-target="tab-resultados">Resultados</button>
+      </div>
 
-        <div class="filters">
+      <div class="tab-content active" id="tab-usuarios">
+        <div class="admin-actions">
+          <div class="filters">
           <select id="filter-role" class="filter-select">
             <option value="all">Todos los roles</option>
             <option value="usuario">Usuario</option>
@@ -181,6 +170,61 @@ const projectsEnabled = configData?.find(c => c.key === 'project_submission_enab
         </div>
       </div>
 
+        </div>
+      </div>
+      </div> <!-- End tab-usuarios -->
+
+      <div class="tab-content" id="tab-configuracion">
+        <div class="config-grid">
+          <div class="config-card card">
+            <div class="config-info">
+              <h3>Formación de Equipos</h3>
+              <p>Permite a los participantes crear o unirse a equipos mediante códigos.</p>
+            </div>
+            <div class="config-action">
+              <label class="toggle-switch">
+                <input type="checkbox" id="teams-enabled-toggle" checked={teamsEnabled} />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="config-card card">
+            <div class="config-info">
+              <h3>Recepción de Proyectos</h3>
+              <p>Habilita la entrega final de proyectos (El Día D) por parte de los líderes.</p>
+            </div>
+            <div class="config-action">
+              <label class="toggle-switch">
+                <input type="checkbox" id="projects-enabled-toggle" checked={projectsEnabled} />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="config-card card" style="opacity: 0.6;">
+            <div class="config-info">
+              <h3>Evaluación de Jurados</h3>
+              <p>Permite a los jueces calificar los proyectos entregados. (Próximamente)</p>
+            </div>
+            <div class="config-action">
+              <label class="toggle-switch">
+                <input type="checkbox" disabled />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End tab-configuracion -->
+
+      <div class="tab-content" id="tab-resultados">
+        <div class="empty-results card">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--txt-m); margin-bottom: 1rem;"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+          <h3>Panel de Resultados</h3>
+          <p>El ranking en tiempo real aparecerá aquí cuando comiencen las evaluaciones.</p>
+        </div>
+      </div>
+
     </div>
 
     <!-- Toast Notification -->
@@ -215,6 +259,98 @@ const projectsEnabled = configData?.find(c => c.key === 'project_submission_enab
     color: var(--txt-2);
     font-size: 1.1rem;
   }
+
+  /* --- Tabs --- */
+  .admin-tabs-nav {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--brd);
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .admin-tabs-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--txt-2);
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all var(--t-fast);
+    white-space: nowrap;
+  }
+  .tab-btn:hover {
+    color: var(--txt-1);
+    background: rgba(0,0,0,0.02);
+  }
+  [data-theme="brand-dark"] .tab-btn:hover { background: rgba(255,255,255,0.02); }
+  
+  .tab-btn.active {
+    color: var(--c1);
+    border-bottom-color: var(--c1);
+  }
+
+  .tab-content {
+    display: none;
+    animation: fadeIn var(--t-normal) ease-out;
+  }
+  .tab-content.active {
+    display: block;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* --- Config Grid --- */
+  .config-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .config-grid {
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+  }
+
+  .config-card {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .config-info h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    color: var(--txt-1);
+  }
+  .config-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--txt-2);
+    line-height: 1.4;
+  }
+  .empty-results {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: var(--txt-2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .empty-results h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--txt-1);
+  }
+  .empty-results p { margin: 0; }
 
   .admin-card {
     padding: 0;
@@ -484,6 +620,22 @@ const projectsEnabled = configData?.find(c => c.key === 'project_submission_enab
 
 <script>
   import { createBrowserClient } from '@supabase/ssr';
+
+  // --- Lógica de Tabs ---
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.getAttribute('data-target');
+      
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabContents.forEach(c => c.classList.remove('active'));
+
+      btn.classList.add('active');
+      document.getElementById(targetId!)?.classList.add('active');
+    });
+  });
 
   const supabase = createBrowserClient(
     import.meta.env.PUBLIC_SUPABASE_URL,
