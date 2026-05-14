@@ -1,0 +1,76 @@
+---
+// admin.astro
+// IMPORTANTE: Asegúrate de que estas variables en tu .env empiecen con PUBLIC_
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+---
+
+<h1>Panel de Administración</h1>
+
+<div class="actions">
+  <button id="exportExcelBtn">Exportar a Excel</button>
+  <button id="exportPdfBtn">Exportar a PDF</button>
+</div>
+
+<div 
+  id="supabase-config" 
+  data-url={supabaseUrl} 
+  data-key={supabaseAnonKey}
+></div>
+
+<script>
+  import { createClient } from "https://esm.sh/@supabase/supabase-js";
+  import * as XLSX from "https://esm.sh/xlsx";
+  import { jsPDF } from "https://esm.sh/jspdf";
+  import autoTable from "https://esm.sh/jspdf-autotable";
+
+  // Obtenemos las variables desde el DOM
+  const configElement = document.getElementById("supabase-config");
+  const url = configElement.dataset.url;
+  const key = configElement.dataset.key;
+
+  const supabase = createClient(url, key);
+
+  async function fetchData() {
+    const { data, error } = await supabase.from("inscripciones").select("*");
+    if (error) {
+      console.error("Error de Supabase:", error);
+      return null;
+    }
+    return data;
+  }
+
+  // Exportar Excel
+  document.getElementById("exportExcelBtn")?.addEventListener("click", async () => {
+    const data = await fetchData();
+    if (!data) return;
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Inscripciones");
+    XLSX.writeFile(workbook, "inscripciones.xlsx");
+  });
+
+  // Exportar PDF
+  document.getElementById("exportPdfBtn")?.addEventListener("click", async () => {
+    const data = await fetchData();
+    if (!data || data.length === 0) return;
+
+    const doc = new jsPDF();
+    const headers = Object.keys(data[0]);
+    const rows = data.map(item => Object.values(item));
+
+    doc.text("Reporte de Inscripciones", 14, 15);
+    autoTable(doc, {
+      head: [headers],
+      body: rows,
+      startY: 20,
+    });
+    doc.save("inscripciones.pdf");
+  });
+</script>
+
+<style>
+  .actions { display: flex; gap: 10px; margin-top: 20px; }
+  button { padding: 10px; cursor: pointer; border-radius: 5px; border: 1px solid #ccc; }
+  #supabase-config { display: none; }
+</style>
