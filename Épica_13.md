@@ -14,10 +14,10 @@
 - [x] **Commit:** `feat: [db] configure projects table RLS and project_submission_enabled flag`
 
 ### 2. Panel de Administración (`/admin/index.astro`)
-- [ ] Leer el valor de `project_submission_enabled` de la base de datos vía SSR.
-- [ ] Añadir un nuevo Switch Toggle: "Recepción de Proyectos: Activa/Inactiva".
-- [ ] Implementar la lógica cliente (JS) para hacer un `UPDATE` a `event_config` al cambiar el switch.
-- [ ] **Commit:** `feat: [admin] add project_submission_enabled toggle switch`
+- [x] Leer el valor de `project_submission_enabled` de la base de datos vía SSR.
+- [x] Añadir un nuevo Switch Toggle: "Recepción de Proyectos: Activa/Inactiva".
+- [x] Implementar la lógica cliente (JS) para hacer un `UPDATE` a `event_config` al cambiar el switch.
+- [x] **Commit:** `feat: [admin] add project_submission_enabled toggle switch`
 
 ### 3. Frontend: Componente de Entrega (`src/components/ProjectSubmission.astro`)
 - [ ] Crear el archivo `ProjectSubmission.astro`.

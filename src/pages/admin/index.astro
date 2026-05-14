@@ -41,14 +41,14 @@ if (error) {
 
 const profiles = allProfiles || [];
 
-// Obtener configuración del evento para teams_enabled
+// Obtener configuración del evento para teams y projects
 const { data: configData } = await supabase
   .from('event_config')
-  .select('value')
-  .eq('key', 'teams_enabled')
-  .single();
+  .select('key, value')
+  .in('key', ['teams_enabled', 'project_submission_enabled']);
 
-const teamsEnabled = configData?.value === 'true';
+const teamsEnabled = configData?.find(c => c.key === 'teams_enabled')?.value === 'true';
+const projectsEnabled = configData?.find(c => c.key === 'project_submission_enabled')?.value === 'true';
 ---
 
 <Layout title="Administración | HEM2026">
@@ -61,12 +61,22 @@ const teamsEnabled = configData?.value === 'true';
       </div>
 
       <div class="admin-actions">
-        <div class="global-controls" style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--brd);">
-          <label class="toggle-switch">
-            <input type="checkbox" id="teams-enabled-toggle" checked={teamsEnabled} />
-            <span class="toggle-slider"></span>
-          </label>
-          <span style="font-weight: 600;">Habilitar Formación de Equipos</span>
+        <div class="global-controls" style="display: flex; align-items: center; gap: 2rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--brd); flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <label class="toggle-switch">
+              <input type="checkbox" id="teams-enabled-toggle" checked={teamsEnabled} />
+              <span class="toggle-slider"></span>
+            </label>
+            <span style="font-weight: 600;">Habilitar Formación de Equipos</span>
+          </div>
+          
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <label class="toggle-switch">
+              <input type="checkbox" id="projects-enabled-toggle" checked={projectsEnabled} />
+              <span class="toggle-slider"></span>
+            </label>
+            <span style="font-weight: 600;">Recepción de Proyectos</span>
+          </div>
         </div>
 
         <div class="filters">
@@ -663,6 +673,28 @@ const teamsEnabled = configData?.value === 'true';
       target.checked = !target.checked; // Revertir visualmente
     } else {
       showToast(newValue === 'true' ? 'Formación de equipos habilitada' : 'Formación de equipos deshabilitada');
+    }
+    target.disabled = false;
+  });
+
+  // Lógica del Toggle de Proyectos
+  const projectsToggle = document.getElementById('projects-enabled-toggle') as HTMLInputElement;
+  projectsToggle?.addEventListener('change', async (e) => {
+    const target = e.target as HTMLInputElement;
+    const newValue = target.checked ? 'true' : 'false';
+    target.disabled = true;
+
+    const { error } = await supabase
+      .from('event_config')
+      .update({ value: newValue })
+      .eq('key', 'project_submission_enabled');
+
+    if (error) {
+      console.error('Update config error:', error);
+      showToast('Error al actualizar configuración.', true);
+      target.checked = !target.checked; // Revertir visualmente
+    } else {
+      showToast(newValue === 'true' ? 'Recepción de proyectos habilitada' : 'Recepción de proyectos deshabilitada');
     }
     target.disabled = false;
   });
