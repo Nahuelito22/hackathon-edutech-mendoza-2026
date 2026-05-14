@@ -211,7 +211,7 @@ const completedProjects = projects.filter(p => evaluationsMap[p.id]);
 
             <div class="form-group">
               <label for="feedback">Feedback Constructivo (Opcional)</label>
-              <textarea id="feedback" name="feedback" rows="3" placeholder="Deja un comentario constructivo para el equipo..."></textarea>
+              <textarea id="feedback" name="feedback" rows="3" placeholder="Deja un comentario constructivo para el equipo..." class="feedback-textarea"></textarea>
             </div>
 
             <button type="submit" class="btn btn-primary w-100" id="submit-eval-btn">Guardar Evaluación</button>
@@ -222,7 +222,7 @@ const completedProjects = projects.filter(p => evaluationsMap[p.id]);
 
     <!-- Toast -->
     <div id="toast" class="toast">
-      <span id="toast-msg">Mensaje</span>
+      <span id="toast-msg"></span>
     </div>
 
   </main>
@@ -386,6 +386,7 @@ const completedProjects = projects.filter(p => evaluationsMap[p.id]);
     display: flex;
     flex-direction: column;
     max-height: 90vh;
+    overflow: hidden;
   }
 
   .modal-header {
@@ -407,6 +408,7 @@ const completedProjects = projects.filter(p => evaluationsMap[p.id]);
   .modal-body {
     padding: 1.5rem;
     overflow-y: auto;
+    flex: 1;
   }
 
   .project-details {
@@ -476,6 +478,44 @@ const completedProjects = projects.filter(p => evaluationsMap[p.id]);
   }
 
   .w-100 { width: 100%; }
+
+  .feedback-textarea {
+    width: 100%;
+    background: var(--bg-input);
+    color: var(--txt-1);
+    border: 1px solid var(--brd);
+    border-radius: var(--r-md);
+    padding: 0.75rem;
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+    margin-top: 0.5rem;
+    transition: border-color var(--t-fast);
+  }
+  .feedback-textarea:focus {
+    outline: none;
+    border-color: var(--c1);
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--c1);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--r-md);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all var(--t-normal);
+    z-index: 2000;
+    pointer-events: none;
+  }
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
 </style>
 
 <script>
