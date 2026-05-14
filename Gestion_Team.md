@@ -266,13 +266,13 @@ const channel = supabase
 
 ### Tarea 12.3.2 — Agregar toggle de `teams_enabled` en `admin/index.astro`
 
-- [ ] En el frontmatter SSR: leer el valor actual de `teams_enabled` desde `event_config`
-- [ ] En la zona de `admin-actions`: agregar un toggle switch estilizado con label "Formación de equipos"
-- [ ] Al hacer click: actualizar `event_config` via Supabase (`UPDATE ... SET value = 'true'/'false'`)
-- [ ] Feedback visual: toast de confirmación + cambio de estado del switch
-- [ ] Estilos del toggle respetando la paleta de marca
-- [ ] Testear: activar → ir al dashboard → verificar que aparece el componente
-- [ ] **Commit:** `feat: [admin] add teams_enabled toggle switch to admin panel`
+- [x] En el frontmatter SSR: leer el valor actual de `teams_enabled` desde `event_config`
+- [x] En la zona de `admin-actions`: agregar un toggle switch estilizado con label "Formación de equipos"
+- [x] Al hacer click: actualizar `event_config` via Supabase (`UPDATE ... SET value = 'true'/'false'`)
+- [x] Feedback visual: toast de confirmación + cambio de estado del switch
+- [x] Estilos del toggle respetando la paleta de marca
+- [x] Testear: activar → ir al dashboard → verificar que aparece el componente
+- [x] **Commit:** `feat: [admin] add teams_enabled toggle switch to admin panel`
 
 ---
 
