@@ -10,9 +10,12 @@ interface Props {
   fullName: string;
   maxTeamSize: number;
   minTeamSize: number;
+  projectsEnabled?: boolean;
 }
 
-const { userId, teamId, isEgresado, fullName, maxTeamSize = 5, minTeamSize = 3 } = Astro.props;
+const { userId, teamId, isEgresado, fullName, maxTeamSize = 5, minTeamSize = 3, projectsEnabled = false } = Astro.props;
+
+import ProjectSubmission from './ProjectSubmission.astro';
 ---
 
 <section 
@@ -24,6 +27,7 @@ const { userId, teamId, isEgresado, fullName, maxTeamSize = 5, minTeamSize = 3 }
   data-full-name={fullName}
   data-max-size={String(maxTeamSize)}
   data-min-size={String(minTeamSize)}
+  data-projects-enabled={String(projectsEnabled)}
 >
   <h2 class="team-title">
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
@@ -101,6 +105,9 @@ const { userId, teamId, isEgresado, fullName, maxTeamSize = 5, minTeamSize = 3 }
           ⚠ Disolver Equipo
         </button>
       </div>
+
+      <!-- Project Submission Module -->
+      <ProjectSubmission />
     </div>
   </div>
 
@@ -483,6 +490,17 @@ const { userId, teamId, isEgresado, fullName, maxTeamSize = 5, minTeamSize = 3 }
       .eq('team_id', currentTeamId);
 
     renderMembers(members || [], team.leader_id);
+
+    // Dispatch event so ProjectSubmission knows we have a team and if we are leader
+    document.dispatchEvent(new CustomEvent('teamLoaded', {
+      detail: {
+        teamId: currentTeamId,
+        userId: userId,
+        isLeader: isLeader,
+        projectsEnabled: section.dataset.projectsEnabled === 'true'
+      }
+    }));
+
     subscribeToTeam();
   }
 
@@ -581,6 +599,7 @@ const { userId, teamId, isEgresado, fullName, maxTeamSize = 5, minTeamSize = 3 }
     section.dataset.teamId = '';
     showToast(data.message);
     showState('no-team');
+    document.dispatchEvent(new CustomEvent('teamCleared'));
 
     // Reset forms
     (document.getElementById('team-name-input') as HTMLInputElement).value = '';

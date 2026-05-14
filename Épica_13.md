@@ -20,26 +20,26 @@
 - [x] **Commit:** `feat: [admin] add project_submission_enabled toggle switch`
 
 ### 3. Frontend: Componente de Entrega (`src/components/ProjectSubmission.astro`)
-- [ ] Crear el archivo `ProjectSubmission.astro`.
-- [ ] Si `project_submission_enabled` es `false`: Mostrar tarjeta/candado indicando "La entrega de proyectos se habilitará el día del evento".
-- [ ] Si `project_submission_enabled` es `true`: Mostrar formulario utilizando los campos existentes:
+- [x] Crear el archivo `ProjectSubmission.astro`.
+- [x] Si `project_submission_enabled` es `false`: Mostrar tarjeta/candado indicando "La entrega de proyectos se habilitará el día del evento".
+- [x] Si `project_submission_enabled` es `true`: Mostrar formulario utilizando los campos existentes:
   - Título del Proyecto (`title`)
   - Descripción del Problema (`description_problem`)
   - Descripción de la Solución (`description_solution`)
   - Enlace al Prototipo (`url_prototype`)
   - Enlace a Material de Apoyo (Opcional) (`url_support_material`)
-- [ ] Renderizar el componente dentro del Dashboard, solo visible cuando el usuario pertenece a un equipo.
-- [ ] **Commit:** `feat: [dashboard] create ProjectSubmission component UI`
+- [x] Renderizar el componente dentro del Dashboard, solo visible cuando el usuario pertenece a un equipo.
+- [x] **Commit:** `feat: [dashboard] create ProjectSubmission component UI`
 
 ### 4. Lógica de Cliente y UX
-- [ ] En el formulario, si el usuario NO es el `leader_id`, bloquear todos los inputs (modo `readonly`) y ocultar/deshabilitar el botón de enviar.
-- [ ] Al hacer submit (solo líder), realizar un `UPSERT` en la tabla `projects` asociando el `team_id`.
-- [ ] Mostrar Toast de confirmación de éxito o de error.
-- [ ] Al montar el componente, cargar los datos previos del proyecto (si existen) para permitir edición.
-- [ ] **Commit:** `feat: [logic] project submission bound to team leader and upsert`
+- [x] En el formulario, si el usuario NO es el `leader_id`, bloquear todos los inputs (modo `readonly`) y ocultar/deshabilitar el botón de enviar.
+- [x] Al hacer submit (solo líder), realizar un `UPSERT` en la tabla `projects` asociando el `team_id`.
+- [x] Mostrar Toast de confirmación de éxito o de error.
+- [x] Al montar el componente, cargar los datos previos del proyecto (si existen) para permitir edición.
+- [x] **Commit:** `feat: [logic] project submission bound to team leader and upsert`
 
 ### 5. Verificación y Testing
-- [ ] Validar que un líder pueda enviar y editar el proyecto.
-- [ ] Validar que un integrante no-líder solo pueda visualizar los datos cargados por el líder.
-- [ ] Validar el apagado del switch desde el panel de admin.
-- [ ] **Commit:** `fix: [projects] resolve issues after e2e test`
+- [x] Validar que un líder pueda enviar y editar el proyecto.
+- [x] Validar que un integrante no-líder solo pueda visualizar los datos cargados por el líder.
+- [x] Validar el apagado del switch desde el panel de admin.
+- [x] **Commit:** `fix: [projects] resolve issues after e2e test`

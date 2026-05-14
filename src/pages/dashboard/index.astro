@@ -17,16 +17,18 @@ const isProfileComplete = !!(profile.dni && profile.institution);
 
 // Fetch teams_enabled and team config from event_config
 let teamsEnabled = false;
+let projectsEnabled = false;
 let maxTeamSize = 5;
 let minTeamSize = 3;
 if (isProfileComplete && profile.registration_status === 'aprobado') {
   const { data: configRows } = await supabase
     .from('event_config')
     .select('key, value')
-    .in('key', ['teams_enabled', 'max_team_size', 'min_team_size']);
+    .in('key', ['teams_enabled', 'project_submission_enabled', 'max_team_size', 'min_team_size']);
   if (configRows) {
     for (const row of configRows) {
       if (row.key === 'teams_enabled') teamsEnabled = row.value === 'true';
+      if (row.key === 'project_submission_enabled') projectsEnabled = row.value === 'true';
       if (row.key === 'max_team_size') maxTeamSize = parseInt(row.value) || 5;
       if (row.key === 'min_team_size') minTeamSize = parseInt(row.value) || 3;
     }
@@ -172,6 +174,7 @@ if (isProfileComplete && profile.registration_status === 'aprobado') {
               fullName={profile.full_name}
               maxTeamSize={maxTeamSize}
               minTeamSize={minTeamSize}
+              projectsEnabled={projectsEnabled}
             />
           )}
 

@@ -1,0 +1,315 @@
+---
+// src/components/ProjectSubmission.astro
+// Componente para la entrega final del proyecto (Épica 13)
+---
+
+<div id="project-submission-module" class="project-submission-wrapper" style="display: none;">
+  <h3 class="section-title">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+    Entrega de Proyecto
+  </h3>
+
+  <!-- Estado Bloqueado -->
+  <div id="ps-locked" class="ps-locked card">
+    <div class="ps-locked-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    </div>
+    <h4>Recepción Cerrada</h4>
+    <p>La entrega de proyectos se habilitará el día del evento.</p>
+  </div>
+
+  <!-- Estado Formulario -->
+  <div id="ps-active" class="ps-active card" style="display: none;">
+    <div id="ps-not-leader-warning" class="ps-warning" style="display: none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <span>Modo Solo Lectura: Solo el <strong>Líder del Equipo</strong> puede editar y enviar el proyecto.</span>
+    </div>
+
+    <form id="project-submission-form" class="ps-form">
+      <div class="form-group">
+        <label for="ps-title">Título del Proyecto *</label>
+        <input type="text" id="ps-title" name="title" required placeholder="Ej: EduTech App" maxlength="100" />
+      </div>
+
+      <div class="form-group">
+        <label for="ps-problem">Descripción del Problema *</label>
+        <textarea id="ps-problem" name="description_problem" required placeholder="¿Qué problema intenta resolver su solución?" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="ps-solution">Descripción de la Solución *</label>
+        <textarea id="ps-solution" name="description_solution" required placeholder="¿Cómo funciona su solución y qué tecnologías usaron?" rows="4"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="ps-prototype">Enlace al Prototipo *</label>
+          <input type="url" id="ps-prototype" name="url_prototype" required placeholder="https://..." />
+          <small>Link al repositorio, figma o demo en vivo.</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="ps-support">Material de Apoyo (Opcional)</label>
+          <input type="url" id="ps-support" name="url_support_material" placeholder="https://..." />
+          <small>Link a presentación, video de pitch, etc.</small>
+        </div>
+      </div>
+
+      <div class="ps-actions">
+        <span id="ps-last-saved" class="ps-last-saved"></span>
+        <button type="submit" id="ps-submit-btn" class="btn btn-primary">
+          Guardar Proyecto
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .project-submission-wrapper {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--brd);
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    color: var(--txt-1);
+  }
+  .section-title svg { color: var(--c2); }
+
+  .ps-locked {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px dashed var(--brd);
+  }
+  [data-theme="brand-dark"] .ps-locked { background: rgba(255, 255, 255, 0.02); }
+
+  .ps-locked-icon {
+    color: var(--txt-m);
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+  
+  .ps-locked h4 { margin: 0 0 0.5rem 0; font-size: 1.1rem; }
+  .ps-locked p { margin: 0; color: var(--txt-2); }
+
+  .ps-active {
+    padding: 2rem;
+  }
+
+  .ps-warning {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(var(--c1r), 0.1);
+    color: var(--c1);
+    border-radius: var(--r-md);
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    border: 1px solid rgba(var(--c1r), 0.2);
+  }
+
+  .ps-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .ps-form .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+  
+  .ps-form label {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--txt-1);
+  }
+
+  .ps-form input, .ps-form textarea {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--brd);
+    border-radius: var(--r-md);
+    background: var(--bg-input);
+    color: var(--txt-1);
+    outline: none;
+    transition: all var(--t-fast);
+  }
+
+  .ps-form textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .ps-form input:focus, .ps-form textarea:focus {
+    border-color: var(--c2);
+    box-shadow: 0 0 0 3px rgba(var(--c2r), 0.12);
+  }
+
+  .ps-form input:disabled, .ps-form textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--bg-2);
+  }
+
+  .ps-form small {
+    font-size: 0.8rem;
+    color: var(--txt-m);
+  }
+
+  .ps-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--brd-s);
+  }
+
+  .ps-last-saved {
+    font-size: 0.85rem;
+    color: var(--txt-m);
+  }
+
+  @media (min-width: 640px) {
+    .ps-form .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+  }
+</style>
+
+<script>
+  import { createBrowserClient } from '@supabase/ssr';
+
+  const supabase = createBrowserClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  const moduleWrapper = document.getElementById('project-submission-module') as HTMLElement;
+  const lockedState = document.getElementById('ps-locked') as HTMLElement;
+  const activeState = document.getElementById('ps-active') as HTMLElement;
+  const warningMsg = document.getElementById('ps-not-leader-warning') as HTMLElement;
+  const form = document.getElementById('project-submission-form') as HTMLFormElement;
+  const submitBtn = document.getElementById('ps-submit-btn') as HTMLButtonElement;
+  const lastSaved = document.getElementById('ps-last-saved') as HTMLElement;
+
+  let currentTeamId: string | null = null;
+  let isLeader = false;
+
+  function toggleFormState(readonly: boolean) {
+    const elements = form.querySelectorAll('input, textarea');
+    elements.forEach((el) => {
+      (el as HTMLInputElement | HTMLTextAreaElement).disabled = readonly;
+    });
+    submitBtn.style.display = readonly ? 'none' : '';
+    warningMsg.style.display = readonly ? 'flex' : 'none';
+  }
+
+  async function fetchProjectData() {
+    if (!currentTeamId) return;
+    
+    // Set loading state
+    const elements = form.querySelectorAll('input, textarea');
+    elements.forEach(el => (el as any).value = 'Cargando...');
+
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('team_id', currentTeamId)
+      .single();
+
+    // Clear loading state
+    elements.forEach(el => (el as any).value = '');
+
+    if (data) {
+      (document.getElementById('ps-title') as HTMLInputElement).value = data.title || '';
+      (document.getElementById('ps-problem') as HTMLTextAreaElement).value = data.description_problem || '';
+      (document.getElementById('ps-solution') as HTMLTextAreaElement).value = data.description_solution || '';
+      (document.getElementById('ps-prototype') as HTMLInputElement).value = data.url_prototype || '';
+      (document.getElementById('ps-support') as HTMLInputElement).value = data.url_support_material || '';
+      
+      if (data.updated_at || data.created_at) {
+        const date = new Date(data.updated_at || data.created_at);
+        lastSaved.textContent = `Última modificación: ${date.toLocaleString()}`;
+      }
+    }
+  }
+
+  // Escuchar el evento emitido por TeamManager
+  document.addEventListener('teamLoaded', ((e: CustomEvent) => {
+    const detail = e.detail;
+    currentTeamId = detail.teamId;
+    isLeader = detail.isLeader;
+    const projectsEnabled = detail.projectsEnabled;
+
+    moduleWrapper.style.display = 'block';
+
+    if (!projectsEnabled) {
+      lockedState.style.display = 'block';
+      activeState.style.display = 'none';
+    } else {
+      lockedState.style.display = 'none';
+      activeState.style.display = 'block';
+      toggleFormState(!isLeader);
+      fetchProjectData();
+    }
+  }) as EventListener);
+
+  document.addEventListener('teamCleared', () => {
+    moduleWrapper.style.display = 'none';
+    currentTeamId = null;
+    isLeader = false;
+    form.reset();
+    lastSaved.textContent = '';
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!currentTeamId || !isLeader) return;
+
+    submitBtn.disabled = true;
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Guardando...';
+
+    const payload = {
+      team_id: currentTeamId,
+      title: (document.getElementById('ps-title') as HTMLInputElement).value.trim(),
+      description_problem: (document.getElementById('ps-problem') as HTMLTextAreaElement).value.trim(),
+      description_solution: (document.getElementById('ps-solution') as HTMLTextAreaElement).value.trim(),
+      url_prototype: (document.getElementById('ps-prototype') as HTMLInputElement).value.trim(),
+      url_support_material: (document.getElementById('ps-support') as HTMLInputElement).value.trim() || null,
+      updated_at: new Date().toISOString()
+    };
+
+    const { error } = await supabase
+      .from('projects')
+      .upsert(payload, { onConflict: 'team_id' });
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+
+    if (error) {
+      console.error('Error saving project:', error);
+      alert('Hubo un error al guardar el proyecto. Revisa tu conexión o intenta más tarde.');
+    } else {
+      lastSaved.textContent = `Última modificación: ${new Date().toLocaleString()}`;
+      // Notificación visual de éxito rápida
+      submitBtn.textContent = '¡Guardado con éxito!';
+      submitBtn.classList.add('btn-success'); // opcional
+      setTimeout(() => {
+        submitBtn.textContent = originalText;
+        submitBtn.classList.remove('btn-success');
+      }, 3000);
+    }
+  });
+</script>
