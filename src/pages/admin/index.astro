@@ -116,39 +116,39 @@ const projectsEnabled = configData?.find(c => c.key === 'project_submission_enab
               ) : (
                 profiles.map((p) => (
                   <tr data-user-id={p.id} class="user-row" data-role={p.role} data-status={p.registration_status}>
-                    <td>
+                    <td data-label="Seleccionar">
                       <label class="checkbox-label">
                         <input type="checkbox" class="row-checkbox" value={p.id} />
                         <span class="custom-checkbox"></span>
                       </label>
                     </td>
-                    <td>
+                    <td data-label="Nombre">
                       <div class="user-info">
                         <strong>{p.full_name || 'Sin nombre'}</strong>
                         <span class="user-email">{p.email}</span>
                       </div>
                     </td>
-                    <td>{p.dni || '-'}</td>
-                    <td>
+                    <td data-label="DNI">{p.dni || '-'}</td>
+                    <td data-label="Institución">
                       {p.institution === 'ies_9023_maipu' ? 'IES 9-023' : 
                        p.institution === 'ies_edison' ? 'Edison' : 
                        p.institution === 'otra' ? 'Otra' : '-'}
                     </td>
-                    <td>
+                    <td data-label="Egresado">
                       {p.is_egresado ? (
                         <span class="badge badge-yes">Sí</span>
                       ) : (
                         <span class="badge badge-no">No</span>
                       )}
                     </td>
-                    <td>
+                    <td data-label="Estado">
                       <select class="status-select" data-original-val={p.registration_status}>
                         <option value="pendiente" selected={p.registration_status === 'pendiente'}>Pendiente</option>
                         <option value="aprobado" selected={p.registration_status === 'aprobado'}>Aprobado</option>
                         <option value="rechazado" selected={p.registration_status === 'rechazado'}>Rechazado</option>
                       </select>
                     </td>
-                    <td>
+                    <td data-label="Rol">
                       <select class="role-select" data-original-val={p.role} disabled={p.role === 'superadmin' && profile.role !== 'superadmin'}>
                         {p.role === 'superadmin' && (
                           <option value="superadmin" selected>Superadmin</option>
@@ -458,6 +458,52 @@ const projectsEnabled = configData?.find(c => c.key === 'project_submission_enab
 
   .admin-table tbody tr:hover {
     background: rgba(var(--c1r), 0.03);
+  }
+
+  /* Tabla Responsive */
+  @media (max-width: 768px) {
+    .admin-table thead {
+      display: none;
+    }
+    .admin-table, .admin-table tbody, .admin-table tr, .admin-table td {
+      display: block;
+      width: 100%;
+    }
+    .admin-table tr {
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--brd);
+      border-radius: var(--r-md);
+      padding: 1rem;
+      background: var(--bg-card);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .admin-table td {
+      text-align: right;
+      padding: 0.75rem 0;
+      border-bottom: 1px dashed var(--brd-s);
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      white-space: normal;
+    }
+    .admin-table td:last-child {
+      border-bottom: none;
+    }
+    .admin-table td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      font-family: var(--font-heading);
+      color: var(--txt-m);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      text-align: left;
+      flex-shrink: 0;
+      margin-right: 1rem;
+    }
+    .user-info {
+      align-items: flex-end;
+    }
   }
 
   .user-info {
