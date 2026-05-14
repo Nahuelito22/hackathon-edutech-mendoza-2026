@@ -1,6 +1,8 @@
 ---
 // src/pages/dashboard/index.astro
 import Layout from '../../layouts/Layout.astro';
+import TeamManager from '../../components/TeamManager.astro';
+import { supabase } from '../../lib/supabase';
 
 const user = Astro.locals.user;
 const profile = Astro.locals.profile;
@@ -12,6 +14,24 @@ if (!user || !profile) {
 
 // Lógica para determinar si el perfil está completo
 const isProfileComplete = !!(profile.dni && profile.institution);
+
+// Fetch teams_enabled and team config from event_config
+let teamsEnabled = false;
+let maxTeamSize = 5;
+let minTeamSize = 3;
+if (isProfileComplete && profile.registration_status === 'aprobado') {
+  const { data: configRows } = await supabase
+    .from('event_config')
+    .select('key, value')
+    .in('key', ['teams_enabled', 'max_team_size', 'min_team_size']);
+  if (configRows) {
+    for (const row of configRows) {
+      if (row.key === 'teams_enabled') teamsEnabled = row.value === 'true';
+      if (row.key === 'max_team_size') maxTeamSize = parseInt(row.value) || 5;
+      if (row.key === 'min_team_size') minTeamSize = parseInt(row.value) || 3;
+    }
+  }
+}
 ---
 
 <Layout title="Dashboard | HEM2026">
@@ -142,6 +162,32 @@ const isProfileComplete = !!(profile.dni && profile.institution);
             </div>
           </form>
           </div>
+
+          {/* Team Management Section - only for approved users when enabled */}
+          {teamsEnabled && profile.registration_status === 'aprobado' && (
+            <TeamManager
+              userId={user.id}
+              teamId={profile.team_id}
+              isEgresado={profile.is_egresado}
+              fullName={profile.full_name}
+              maxTeamSize={maxTeamSize}
+              minTeamSize={minTeamSize}
+            />
+          )}
+
+          {!teamsEnabled && profile.registration_status === 'aprobado' && (
+            <div class="team-locked-msg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <span>La formación de equipos se habilitará próximamente.</span>
+            </div>
+          )}
+
+          {profile.registration_status === 'pendiente' && isProfileComplete && (
+            <div class="team-locked-msg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <span>Esperá a que la administración apruebe tu perfil para formar equipo.</span>
+            </div>
+          )}
         </div>
       )}
       
@@ -388,6 +434,23 @@ const isProfileComplete = !!(profile.dni && profile.institution);
     .dashboard-card {
       padding: 2rem;
     }
+  }
+
+  .team-locked-msg {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: rgba(var(--c1r), 0.08);
+    border: 1px solid rgba(var(--c1r), 0.2);
+    border-radius: var(--r-md);
+    color: var(--txt-1);
+    font-size: 0.95rem;
+    margin-top: 1.5rem;
+  }
+  .team-locked-msg svg {
+    color: var(--c1);
+    flex-shrink: 0;
   }
 </style>
 
