@@ -5,10 +5,13 @@ import { defineMiddleware } from 'astro:middleware';
 import { createServerClient, parseCookieHeader } from '@supabase/ssr';
 
 /** Rutas que requieren haber iniciado sesión */
-const PROTECTED_ROUTES = ['/dashboard', '/admin'];
+const PROTECTED_ROUTES = ['/dashboard', '/admin', '/evaluacion'];
 
 /** Rutas que requieren rol admin o superadmin */
 const ADMIN_ROUTES = ['/admin'];
+
+/** Rutas exclusivas para jueces */
+const JUDGE_ROUTES = ['/evaluacion'];
 
 /** Rutas de auth: si el usuario ya está logueado, redirigir al dashboard */
 const AUTH_ROUTES = ['/login', '/registro'];
@@ -85,8 +88,26 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
   }
 
-  // Rutas de auth (/login, /registro): si ya hay sesión, redirigir al dashboard
+  // Control de acceso a Dashboard vs Evaluación según el rol
+  if (pathname.startsWith('/dashboard') && user) {
+    if (locals.profile?.role === 'juez') {
+      return redirect('/evaluacion');
+    }
+  }
+
+  // Protección de rutas exclusivas de juez
+  const isJudgeRoute = JUDGE_ROUTES.some(r => pathname.startsWith(r));
+  if (isJudgeRoute && user) {
+    if (locals.profile?.role !== 'juez' && locals.profile?.role !== 'admin' && locals.profile?.role !== 'superadmin') {
+      return redirect('/dashboard');
+    }
+  }
+
+  // Rutas de auth (/login, /registro): si ya hay sesión, redirigir
   if (isAuthRoute && user) {
+    if (locals.profile?.role === 'juez') {
+      return redirect('/evaluacion');
+    }
     return redirect('/dashboard');
   }
 

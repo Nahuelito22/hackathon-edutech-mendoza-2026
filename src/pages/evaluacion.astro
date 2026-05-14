@@ -1,0 +1,64 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+
+const user = Astro.locals.user;
+const profile = Astro.locals.profile;
+
+// Doble validación de seguridad (el middleware ya protege, pero es buena práctica)
+if (!user || (profile?.role !== 'juez' && profile?.role !== 'admin' && profile?.role !== 'superadmin')) {
+  return Astro.redirect('/dashboard');
+}
+---
+
+<Layout title="Panel de Evaluación | HEM2026">
+  <Navbar />
+  <main class="eval-page">
+    <div class="container eval-container">
+      <div class="eval-header">
+        <h1>Panel de Evaluación</h1>
+        <p class="eval-subtitle">Bienvenido al sistema de calificación de proyectos.</p>
+      </div>
+
+      <div class="eval-content">
+        <div class="card empty-state">
+          <p>Próximamente: Lista de proyectos para evaluar y rúbricas de calificación.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .eval-page {
+    min-height: calc(100vh - var(--nav-h));
+    padding: calc(var(--nav-h) + 2rem) 0 4rem;
+    background: var(--bg-3);
+  }
+
+  .eval-container {
+    max-width: 1200px;
+  }
+
+  .eval-header {
+    margin-bottom: 2rem;
+  }
+
+  .eval-header h1 {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--txt-1);
+  }
+
+  .eval-subtitle {
+    color: var(--txt-2);
+    font-size: 1.1rem;
+  }
+
+  .empty-state {
+    padding: 3rem;
+    text-align: center;
+    color: var(--txt-m);
+  }
+</style>

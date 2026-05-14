@@ -41,14 +41,15 @@ if (error) {
 
 const profiles = allProfiles || [];
 
-// Obtener configuración del evento para teams y projects
+// Obtener configuración del evento para teams, projects y evaluations
 const { data: configData } = await supabase
   .from('event_config')
   .select('key, value')
-  .in('key', ['teams_enabled', 'project_submission_enabled']);
+  .in('key', ['teams_enabled', 'project_submission_enabled', 'evaluation_enabled']);
 
 const teamsEnabled = configData?.find(c => c.key === 'teams_enabled')?.value === 'true';
 const projectsEnabled = configData?.find(c => c.key === 'project_submission_enabled')?.value === 'true';
+const evaluationEnabled = configData?.find(c => c.key === 'evaluation_enabled')?.value === 'true';
 ---
 
 <Layout title="Administración | HEM2026">
@@ -202,14 +203,14 @@ const projectsEnabled = configData?.find(c => c.key === 'project_submission_enab
             </div>
           </div>
 
-          <div class="config-card card" style="opacity: 0.6;">
+          <div class="config-card card">
             <div class="config-info">
               <h3>Evaluación de Jurados</h3>
-              <p>Permite a los jueces calificar los proyectos entregados. (Próximamente)</p>
+              <p>Permite a los jueces calificar los proyectos entregados según sus rúbricas.</p>
             </div>
             <div class="config-action">
               <label class="toggle-switch">
-                <input type="checkbox" disabled />
+                <input type="checkbox" id="evaluation-enabled-toggle" checked={evaluationEnabled} />
                 <span class="toggle-slider"></span>
               </label>
             </div>
@@ -893,6 +894,28 @@ const projectsEnabled = configData?.find(c => c.key === 'project_submission_enab
       target.checked = !target.checked; // Revertir visualmente
     } else {
       showToast(newValue === 'true' ? 'Recepción de proyectos habilitada' : 'Recepción de proyectos deshabilitada');
+    }
+    target.disabled = false;
+  });
+
+  // Lógica del Toggle de Evaluaciones
+  const evaluationToggle = document.getElementById('evaluation-enabled-toggle') as HTMLInputElement;
+  evaluationToggle?.addEventListener('change', async (e) => {
+    const target = e.target as HTMLInputElement;
+    const newValue = target.checked ? 'true' : 'false';
+    target.disabled = true;
+
+    const { error } = await supabase
+      .from('event_config')
+      .update({ value: newValue })
+      .eq('key', 'evaluation_enabled');
+
+    if (error) {
+      console.error('Update config error:', error);
+      showToast('Error al actualizar configuración.', true);
+      target.checked = !target.checked; // Revertir visualmente
+    } else {
+      showToast(newValue === 'true' ? 'Evaluación de jurados habilitada' : 'Evaluación de jurados deshabilitada');
     }
     target.disabled = false;
   });
