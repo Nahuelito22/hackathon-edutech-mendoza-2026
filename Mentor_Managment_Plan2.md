@@ -652,10 +652,10 @@ Esto evita tickets "zombie" donde el mentor nunca respondió y el equipo quedó 
 
 ### Fase 5: Dashboard del Participante
 
-- [ ] **T5.1** — Modificar `src/pages/dashboard/index.astro`: agregar server-side queries para `help_enabled`, `mentor_session_duration`, y datos del mentor asignado.
-- [ ] **T5.2** — Agregar sección "Tu Mentor" en la vista de perfil completo (datos del mentor o mensaje de "aún no asignado").
-- [ ] **T5.3** — Agregar sección "Pedir Ayuda (SOS)" con botón que llama al RPC `request_help()`, estados visuales según estado del ticket, y actualización en tiempo real con Supabase Realtime.
-- [ ] **T5.4** — Pasar props adicionales a `TeamManager` si es necesario (mentorId, helpEnabled) para coordinar visibilidad.
+- [x] **T5.1** — Modificar `src/pages/dashboard/index.astro`: agregar server-side queries para `help_enabled`, `mentor_session_duration`, y datos del mentor asignado.
+- [x] **T5.2** — Agregar sección "Tu Mentor" en la vista de perfil completo (datos del mentor o mensaje de "aún no asignado").
+- [x] **T5.3** — Agregar sección "Pedir Ayuda (SOS)" con botón que llama al RPC `request_help()`, estados visuales según estado del ticket, y actualización en tiempo real con Supabase Realtime.
+- [x] **T5.4** — Pasar props adicionales a `TeamManager` si es necesario (mentorId, helpEnabled) para coordinar visibilidad.
 
 > **Commit después de T5.4:** `feat(epic16): botón SOS y datos de mentor en dashboard de participante`
 
