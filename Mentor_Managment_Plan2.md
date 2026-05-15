@@ -604,8 +604,16 @@ Una Supabase Edge Function (Deno) que corre periódicamente (cron o invocación 
 
 ```typescript
 // supabase/functions/expire-stale-help-requests/index.ts
-// Lógica: UPDATE help_requests SET status = 'expirado'
-// WHERE status = 'pendiente' AND created_at < now() - interval '30 minutes'
+// Lógica: 
+  UPDATE public.help_requests
+  SET status = 'expirado'
+  WHERE status = 'pendiente'
+    AND created_at < now() - interval '30 minutes';
+
+  UPDATE public.help_requests
+  SET status = 'expirado'
+  WHERE status = 'en_camino'
+    AND started_at < now() - interval '60 minutes';
 ```
 
 Esto evita tickets "zombie" donde el mentor nunca respondió y el equipo quedó bloqueado.
@@ -659,12 +667,12 @@ Esto evita tickets "zombie" donde el mentor nunca respondió y el equipo quedó 
 
 > **Commit después de T5.4:** `feat(epic16): botón SOS y datos de mentor en dashboard de participante`
 
-### Fase 6: Edge Function (Opcional)
+### Fase 6: Edge Function & Cron Job (Completado)
 
-- [ ] **T6.1** — Crear `supabase/functions/expire-stale-help-requests/index.ts` con lógica de expiración de tickets pendientes > 30 min.
-- [ ] **T6.2** — Configurar cron trigger o documentar invocación manual.
+- [x] **T6.1** — Crear `supabase/functions/expire-stale-help-requests/index.ts` con lógica de expiración de tickets pendientes > 30 min.
+- [x] **T6.2** — Configurar cron trigger via `pg_cron` en la base de datos para ejecutar la limpieza cada 5 minutos.
 
-> **Commit después de T6.2:** `feat(epic16): edge function para expirar tickets pendientes`
+> **Commit después de T6.2:** `feat(epic16): edge function y cron job para expirar tickets stale`
 
 ### Fase 7: Verificación Final
 
