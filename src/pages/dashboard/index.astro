@@ -2,7 +2,24 @@
 // src/pages/dashboard/index.astro
 import Layout from '../../layouts/Layout.astro';
 import TeamManager from '../../components/TeamManager.astro';
-import { supabase } from '../../lib/supabase';
+import { createServerClient, parseCookieHeader } from '@supabase/ssr';
+
+const supabase = createServerClient(
+  import.meta.env.PUBLIC_SUPABASE_URL,
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+  {
+    cookies: {
+      getAll() {
+        try {
+          return parseCookieHeader(Astro.request.headers.get('Cookie') ?? '');
+        } catch {
+          return [];
+        }
+      },
+      setAll() {}
+    }
+  }
+);
 
 const user = Astro.locals.user;
 const profile = Astro.locals.profile;
@@ -53,12 +70,20 @@ let mentor = null;
 if (profile.team_id) {
   const { data: teamData } = await supabase
     .from('teams')
-    .select('mentor_id, profiles!teams_mentor_id_fkey(full_name, phone_whatsapp, instagram_handle)')
+    .select('mentor_id')
     .eq('id', profile.team_id)
     .single();
   
-  if (teamData?.profiles) {
-    mentor = teamData.profiles;
+  if (teamData?.mentor_id) {
+    const { data: mentorData } = await supabase
+      .from('profiles')
+      .select('full_name, phone_whatsapp, instagram_handle')
+      .eq('id', teamData.mentor_id)
+      .single();
+    
+    if (mentorData) {
+      mentor = mentorData;
+    }
   }
 }
 
