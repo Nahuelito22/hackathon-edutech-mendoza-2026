@@ -91,7 +91,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
   }
 
-  // Control de acceso a Dashboard vs Evaluación vs Mentoría según el rol
+  // Control de acceso a Dashboard vs Otros paneles según el rol
   if (pathname.startsWith('/dashboard') && user) {
     if (locals.profile?.role === 'juez') {
       return redirect('/evaluacion');
