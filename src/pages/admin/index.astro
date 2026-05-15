@@ -443,26 +443,30 @@ const { count: mentorsCount } = await supabase
             <tr>
               <th>Mentor</th>
               <th>Institución</th>
-              <th>Tickets Totales</th>
+              <th>Equipos</th>
+              <th>Tickets</th>
               <th>Finalizados</th>
-              <th>Calificación Promedio</th>
+              <th>Rta. Promedio</th>
             </tr>
           </thead>
           <tbody>
             {
               !mentorStats || mentorStats.length === 0 ? (
                 <tr>
-                  <td colspan="5" class="empty-state">No hay actividad de mentoría registrada aún.</td>
+                  <td colspan="6" class="empty-state">No hay actividad de mentoría registrada aún.</td>
                 </tr>
               ) : (
                 mentorStats.map((s) => (
                   <tr>
-                    <td data-label="Mentor"><strong>{s.full_name}</strong></td>
+                    <td data-label="Mentor"><strong>{s.mentor_name}</strong></td>
                     <td data-label="Institución">{s.institution}</td>
+                    <td data-label="Equipos" title={s.assigned_teams_list}>
+                       {s.assigned_teams_count} {s.assigned_teams_count === 1 ? 'equipo' : 'equipos'}
+                    </td>
                     <td data-label="Tickets">{s.total_tickets}</td>
-                    <td data-label="Finalizados">{s.finished_tickets}</td>
-                    <td data-label="Calificación">
-                      {s.avg_rating ? Number(s.avg_rating).toFixed(1) + " ⭐" : "-"}
+                    <td data-label="Finalizados">{s.finished_count}</td>
+                    <td data-label="Rta. Promedio">
+                      {s.avg_response_minutes > 0 ? s.avg_response_minutes + " min" : "-"}
                     </td>
                   </tr>
                 ))
@@ -1451,7 +1455,7 @@ const { count: mentorsCount } = await supabase
     btn.textContent = "Procesando...";
 
     const { data, error } = await supabase.rpc("assign_mentors_randomly", { 
-      reset_all: reset 
+      reset_current: reset 
     });
 
     if (error) {

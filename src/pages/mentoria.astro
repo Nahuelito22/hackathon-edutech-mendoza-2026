@@ -417,8 +417,8 @@ const historyTickets = tickets.filter(t => t.status === 'finalizado' || t.status
   // --- Lógica de Acciones (RPCs) ---
   async function handleUpdateTicket(ticketId, newStatus) {
     const { data, error } = await supabase.rpc('mentor_update_ticket', {
-      ticket_id: ticketId,
-      new_status: newStatus
+      p_ticket_id: ticketId,
+      p_new_status: newStatus
     });
 
     if (error) {
