@@ -681,6 +681,8 @@ Esto evita tickets "zombie" donde el mentor nunca respondió y el equipo quedó 
 - [ ] **T7.3** — Verificar responsive en mobile (dashboard mentor, dashboard participante, admin).
 - [ ] **T7.4** — Verificar dark mode (todos los componentes nuevos usan variables CSS del design system).
 
+- [x] **T7.5** — Corregido error de visibilidad de mentor en dashboard: se cambió el cliente estático por `createServerClient` para respetar RLS en SSR.
+
 > **Commit final de épica:** `feat(epic16): sistema de mentoría y tickets SOS completo`
 
 ---
