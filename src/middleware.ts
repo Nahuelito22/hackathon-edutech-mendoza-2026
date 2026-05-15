@@ -5,13 +5,16 @@ import { defineMiddleware } from 'astro:middleware';
 import { createServerClient, parseCookieHeader } from '@supabase/ssr';
 
 /** Rutas que requieren haber iniciado sesión */
-const PROTECTED_ROUTES = ['/dashboard', '/admin', '/evaluacion'];
+const PROTECTED_ROUTES = ['/dashboard', '/admin', '/evaluacion', '/mentoria'];
 
 /** Rutas que requieren rol admin o superadmin */
 const ADMIN_ROUTES = ['/admin'];
 
 /** Rutas exclusivas para jueces */
 const JUDGE_ROUTES = ['/evaluacion'];
+
+/** Rutas exclusivas para mentores */
+const MENTOR_ROUTES = ['/mentoria'];
 
 /** Rutas de auth: si el usuario ya está logueado, redirigir al dashboard */
 const AUTH_ROUTES = ['/login', '/registro'];
@@ -88,10 +91,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
   }
 
-  // Control de acceso a Dashboard vs Evaluación según el rol
+  // Control de acceso a Dashboard vs Evaluación vs Mentoría según el rol
   if (pathname.startsWith('/dashboard') && user) {
     if (locals.profile?.role === 'juez') {
       return redirect('/evaluacion');
+    }
+    if (locals.profile?.role === 'mentor') {
+      return redirect('/mentoria');
     }
   }
 
@@ -103,10 +109,21 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
   }
 
+  // Protección de rutas exclusivas de mentor
+  const isMentorRoute = MENTOR_ROUTES.some(r => pathname.startsWith(r));
+  if (isMentorRoute && user) {
+    if (locals.profile?.role !== 'mentor' && locals.profile?.role !== 'admin' && locals.profile?.role !== 'superadmin') {
+      return redirect('/dashboard');
+    }
+  }
+
   // Rutas de auth (/login, /registro): si ya hay sesión, redirigir
   if (isAuthRoute && user) {
     if (locals.profile?.role === 'juez') {
       return redirect('/evaluacion');
+    }
+    if (locals.profile?.role === 'mentor') {
+      return redirect('/mentoria');
     }
     return redirect('/dashboard');
   }
