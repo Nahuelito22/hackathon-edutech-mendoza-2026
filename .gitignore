@@ -173,10 +173,11 @@ vite.config.ts.timestamp-*
 Thumbs.db
 desktop.ini
 
-# ================================
 # AI Agents / Gemini CLI (configuración personal)
 # ================================
 .gemini/
+.agents/
+skills-lock.json
 
 # ================================
 # Carpetas personales (no del proyecto)

@@ -2,7 +2,24 @@
 // src/pages/dashboard/index.astro
 import Layout from '../../layouts/Layout.astro';
 import TeamManager from '../../components/TeamManager.astro';
-import { supabase } from '../../lib/supabase';
+import { createServerClient, parseCookieHeader } from '@supabase/ssr';
+
+const supabase = createServerClient(
+  import.meta.env.PUBLIC_SUPABASE_URL,
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+  {
+    cookies: {
+      getAll() {
+        try {
+          return parseCookieHeader(Astro.request.headers.get('Cookie') ?? '');
+        } catch {
+          return [];
+        }
+      },
+      setAll() {}
+    }
+  }
+);
 
 const user = Astro.locals.user;
 const profile = Astro.locals.profile;
@@ -18,21 +35,71 @@ const isProfileComplete = !!(profile.dni && profile.institution);
 // Fetch teams_enabled and team config from event_config
 let teamsEnabled = false;
 let projectsEnabled = false;
+let helpEnabled = false;
 let maxTeamSize = 5;
 let minTeamSize = 3;
+let mentorSessionDuration = 15;
+
 if (isProfileComplete && profile.registration_status === 'aprobado') {
   const { data: configRows } = await supabase
     .from('event_config')
     .select('key, value')
-    .in('key', ['teams_enabled', 'project_submission_enabled', 'max_team_size', 'min_team_size']);
+    .in('key', [
+      'teams_enabled', 
+      'project_submission_enabled', 
+      'max_team_size', 
+      'min_team_size',
+      'help_enabled',
+      'mentor_session_duration'
+    ]);
+    
   if (configRows) {
     for (const row of configRows) {
       if (row.key === 'teams_enabled') teamsEnabled = row.value === 'true';
       if (row.key === 'project_submission_enabled') projectsEnabled = row.value === 'true';
+      if (row.key === 'help_enabled') helpEnabled = row.value === 'true';
       if (row.key === 'max_team_size') maxTeamSize = parseInt(row.value) || 5;
       if (row.key === 'min_team_size') minTeamSize = parseInt(row.value) || 3;
+      if (row.key === 'mentor_session_duration') mentorSessionDuration = parseInt(row.value) || 15;
     }
   }
+}
+
+// Fetch assigned mentor if user has a team
+let mentor = null;
+if (profile.team_id) {
+  const { data: teamData } = await supabase
+    .from('teams')
+    .select('mentor_id')
+    .eq('id', profile.team_id)
+    .single();
+  
+  if (teamData?.mentor_id) {
+    const { data: mentorData } = await supabase
+      .from('profiles')
+      .select('full_name, phone_whatsapp, instagram_handle')
+      .eq('id', teamData.mentor_id)
+      .single();
+    
+    if (mentorData) {
+      mentor = mentorData;
+    }
+  }
+}
+
+// Fetch active help request for the team
+let activeHelpRequest = null;
+if (profile.team_id && helpEnabled) {
+  const { data: helpData } = await supabase
+    .from('help_requests')
+    .select('*')
+    .eq('team_id', profile.team_id)
+    .in('status', ['pendiente', 'en_camino'])
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  
+  activeHelpRequest = helpData;
 }
 ---
 
@@ -163,6 +230,69 @@ if (isProfileComplete && profile.registration_status === 'aprobado') {
               </button>
             </div>
           </form>
+
+          {/* Sección Tu Mentor (T5.2) */}
+          {profile.team_id && (
+            <div class="mentor-info-section">
+              <h3 class="section-label">Tu Mentor Asignado</h3>
+              {mentor ? (
+                <div class="mentor-card">
+                  <div class="mentor-avatar-sm">
+                    {mentor.full_name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase()}
+                  </div>
+                  <div class="mentor-details">
+                    <span class="mentor-name">{mentor.full_name}</span>
+                    <div class="mentor-socials">
+                      {mentor.phone_whatsapp && (
+                        <a href={`https://wa.me/${mentor.phone_whatsapp}`} target="_blank" class="social-link" title="WhatsApp">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        </a>
+                      )}
+                      {mentor.instagram_handle && (
+                        <a href={`https://instagram.com/${mentor.instagram_handle.replace('@','')}`} target="_blank" class="social-link" title="Instagram">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div class="mentor-empty">
+                  <p>Aún no se ha asignado un mentor a tu equipo.</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Sección SOS (T5.3) */}
+          {helpEnabled && profile.team_id && mentor && (
+            <div class="sos-section" id="sos-container" data-team-id={profile.team_id} data-initial-status={activeHelpRequest?.status || ''} data-started-at={activeHelpRequest?.started_at || ''}>
+              <h3 class="section-label">Sistema de Ayuda SOS</h3>
+              <div class="sos-card">
+                <div class="sos-info">
+                  <p id="sos-status-text">
+                    {!activeHelpRequest 
+                      ? '¿Necesitan ayuda técnica o de negocio? Pidan un SOS y su mentor vendrá a su mesa.' 
+                      : activeHelpRequest.status === 'pendiente' 
+                        ? '🔔 Pedido enviado. Tu mentor vendrá en cuanto esté libre.' 
+                        : '🏃‍♂️ ¡Tu mentor está en camino! Prepará tus dudas.'}
+                  </p>
+                  {activeHelpRequest?.status === 'en_camino' && (
+                    <div class="sos-timer">
+                      ⏱️ Sesión en curso: <span id="sos-timer-val">--:--</span>
+                    </div>
+                  )}
+                </div>
+                <button 
+                  id="sos-btn" 
+                  class={`btn ${activeHelpRequest ? 'btn-disabled' : 'btn-danger'}`} 
+                  disabled={!!activeHelpRequest}
+                >
+                  {activeHelpRequest ? 'Pedido Activo' : 'Pedir Ayuda (SOS)'}
+                </button>
+              </div>
+            </div>
+          )}
           </div>
 
           {/* Team Management Section - only for approved users when enabled */}
@@ -455,6 +585,77 @@ if (isProfileComplete && profile.registration_status === 'aprobado') {
     color: var(--c1);
     flex-shrink: 0;
   }
+
+  /* Mentor & SOS Styles (T5.2 & T5.3) */
+  .mentor-info-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--brd-s);
+  }
+
+  .mentor-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-3);
+    border-radius: var(--r-md);
+  }
+
+  .mentor-avatar-sm {
+    width: 40px; height: 40px;
+    background: var(--c1); color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem;
+  }
+
+  .mentor-details { flex: 1; display: flex; justify-content: space-between; align-items: center; }
+  .mentor-name { font-weight: 600; color: var(--txt-1); }
+  .mentor-socials { display: flex; gap: 0.5rem; }
+  .social-link {
+    color: var(--txt-2); padding: 0.4rem; border-radius: var(--r-sm);
+    transition: all var(--t-fast);
+  }
+  .social-link:hover { color: var(--c1); background: rgba(var(--c1r), 0.1); }
+
+  .mentor-empty { color: var(--txt-m); font-style: italic; font-size: 0.9rem; }
+
+  .sos-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--brd-s);
+  }
+
+  .sos-card {
+    background: rgba(var(--c1r), 0.05);
+    border: 1px solid rgba(var(--c1r), 0.1);
+    padding: 1.5rem;
+    border-radius: var(--r-md);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .sos-card { flex-direction: row; align-items: center; }
+  }
+
+  .sos-info { flex: 1; }
+  .sos-info p { margin: 0; font-size: 0.95rem; color: var(--txt-1); line-height: 1.5; }
+  .sos-timer { margin-top: 0.5rem; font-family: monospace; color: var(--c1); font-weight: 700; font-size: 1rem; }
+
+  .btn-danger {
+    background: #dc2626; color: white; border: none; font-weight: 700;
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4);
+    transition: all var(--t-fast);
+  }
+  .btn-danger:hover:not(:disabled) { background: #b91c1c; transform: translateY(-2px); }
+  .btn-danger:active { transform: translateY(0); }
+  
+  .btn-disabled {
+    background: var(--brd); color: var(--txt-m); cursor: not-allowed;
+  }
 </style>
 
 <script>
@@ -572,4 +773,79 @@ if (isProfileComplete && profile.registration_status === 'aprobado') {
       updateBtn.classList.add('btn-outline');
     }, 3000);
   });
+
+  // --- SOS Logic (T5.3) ---
+  const sosContainer = document.getElementById('sos-container');
+  const sosBtn = document.getElementById('sos-btn') as HTMLButtonElement;
+  const sosStatusText = document.getElementById('sos-status-text');
+  const sosTimerVal = document.getElementById('sos-timer-val');
+
+  if (sosContainer && sosBtn) {
+    const teamId = sosContainer.dataset.teamId;
+    let currentStatus = sosContainer.dataset.initialStatus;
+    let startedAt = sosContainer.dataset.startedAt;
+
+    async function requestHelp() {
+      sosBtn.disabled = true;
+      sosBtn.textContent = 'Enviando...';
+
+      const { data, error } = await supabase.rpc('request_help');
+
+      if (error || !data?.ok) {
+        alert(data?.error || error?.message || 'Error al pedir ayuda.');
+        sosBtn.disabled = false;
+        sosBtn.textContent = 'Pedir Ayuda (SOS)';
+        return;
+      }
+
+      // El realtime actualizará la UI
+    }
+
+    sosBtn.addEventListener('click', requestHelp);
+
+    // Realtime subscription for ticket status
+    if (teamId) {
+      supabase
+        .channel(`sos-${teamId}`)
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'help_requests',
+          filter: `team_id=eq.${teamId}`
+        }, (payload: any) => {
+          const ticket = payload.new;
+          if (!ticket || ticket.status === 'finalizado' || ticket.status === 'expirado') {
+            window.location.reload(); // Recargar para limpiar estado
+            return;
+          }
+          
+          currentStatus = ticket.status;
+          startedAt = ticket.started_at;
+          
+          if (sosStatusText) {
+            sosStatusText.textContent = ticket.status === 'pendiente' 
+              ? '🔔 Pedido enviado. Tu mentor vendrá en cuanto esté libre.' 
+              : '🏃‍♂️ ¡Tu mentor está en camino! Prepará tus dudas.';
+          }
+          
+          sosBtn.disabled = true;
+          sosBtn.textContent = 'Pedido Activo';
+          sosBtn.classList.remove('btn-danger');
+          sosBtn.classList.add('btn-disabled');
+        })
+        .subscribe();
+    }
+
+    // Timer logic
+    setInterval(() => {
+      if (currentStatus === 'en_camino' && startedAt && sosTimerVal) {
+        const startTime = new Date(startedAt).getTime();
+        const now = Date.now();
+        const elapsedSecs = Math.floor((now - startTime) / 1000);
+        const mins = Math.floor(elapsedSecs / 60);
+        const secs = elapsedSecs % 60;
+        sosTimerVal.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+      }
+    }, 1000);
+  }
 </script>

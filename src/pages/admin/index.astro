@@ -51,6 +51,9 @@ const { data: configData } = await supabase
     "teams_enabled",
     "project_submission_enabled",
     "evaluation_enabled",
+    "help_enabled",
+    "mentor_session_duration",
+    "help_cooldown_minutes",
   ]);
 
 const teamsEnabled =
@@ -60,6 +63,12 @@ const projectsEnabled =
   "true";
 const evaluationEnabled =
   configData?.find((c) => c.key === "evaluation_enabled")?.value === "true";
+const helpEnabled =
+  configData?.find((c) => c.key === "help_enabled")?.value === "true";
+const mentorSessionDuration =
+  configData?.find((c) => c.key === "mentor_session_duration")?.value || "15";
+const helpCooldownMinutes =
+  configData?.find((c) => c.key === "help_cooldown_minutes")?.value || "10";
 
 // Obtener datos del Leaderboard
 const { data: leaderboardData, error: leaderboardError } = await supabase
@@ -72,6 +81,24 @@ if (leaderboardError) {
 }
 
 const leaderboard = leaderboardData || [];
+
+// Obtener estadísticas de mentoría
+const { data: mentorStats } = await supabase
+  .from("mentor_help_stats")
+  .select("*");
+
+// Obtener equipos sin mentor
+const { data: orphanTeams } = await supabase
+  .from("teams")
+  .select("id, name")
+  .is("mentor_id", null);
+
+// Obtener mentores aprobados (para saber el ratio)
+const { count: mentorsCount } = await supabase
+  .from("profiles")
+  .select("*", { count: "exact", head: true })
+  .eq("role", "mentor")
+  .eq("registration_status", "aprobado");
 ---
 
 <Layout title="Administración | HEM2026">
@@ -89,6 +116,7 @@ const leaderboard = leaderboardData || [];
         <button class="tab-btn" data-target="tab-configuracion"
           >Configuración</button
         >
+        <button class="tab-btn" data-target="tab-mentoria">Mentoría</button>
         <button class="tab-btn" data-target="tab-resultados">Resultados</button>
       </div>
 
@@ -320,9 +348,136 @@ const leaderboard = leaderboardData || [];
           </label>
         </div>
       </div>
+
+      <div class="config-card card">
+        <div class="config-info">
+          <h3>Pedidos de Ayuda SOS</h3>
+          <p>
+            Habilita el sistema de tickets en tiempo real para que los equipos pidan ayuda.
+          </p>
+        </div>
+        <div class="config-action">
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              id="help-enabled-toggle"
+              checked={helpEnabled}
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="config-card card">
+        <div class="config-info">
+          <h3>Duración de Sesión (Minutos)</h3>
+          <p>Tiempo estimado de atención por cada ticket SOS.</p>
+        </div>
+        <div class="config-action">
+          <input 
+            type="number" 
+            id="mentor-duration-input" 
+            class="filter-select" 
+            style="width: 80px; text-align: center;" 
+            value={mentorSessionDuration}
+            min="1"
+            max="120"
+          />
+        </div>
+      </div>
+
+      <div class="config-card card">
+        <div class="config-info">
+          <h3>Cooldown SOS (Minutos)</h3>
+          <p>Tiempo de espera entre pedidos de ayuda de un mismo equipo.</p>
+        </div>
+        <div class="config-action">
+          <input 
+            type="number" 
+            id="help-cooldown-input" 
+            class="filter-select" 
+            style="width: 80px; text-align: center;" 
+            value={helpCooldownMinutes}
+            min="0"
+            max="60"
+          />
+        </div>
+      </div>
     </div>
   </div>
   <!-- End tab-configuracion -->
+
+  <div class="tab-content" id="tab-mentoria">
+    <div class="admin-actions">
+      <h2 style="font-family: var(--font-heading); color: var(--txt-1); margin: 0; font-size: 1.5rem;">Gestión de Mentores</h2>
+      <div style="display: flex; gap: 0.5rem;">
+        <button id="assign-mentors-simple" class="btn btn-outline">
+          Asignar Nuevos (Equitativo)
+        </button>
+        <button id="assign-mentors-reset" class="btn btn-danger">
+          Resetear y Reasignar Todo
+        </button>
+      </div>
+    </div>
+
+    <div class="config-grid" style="margin-bottom: 2rem;">
+      <div class="config-card card" style="border-left: 4px solid var(--c1);">
+        <div class="config-info">
+          <h3>Estado de Cobertura</h3>
+          <p>
+            {mentorsCount} mentores aprobados disponibles para {orphanTeams?.length + (profiles.length - orphanTeams?.length)} equipos.
+          </p>
+          {orphanTeams && orphanTeams.length > 0 && (
+            <p style="color: var(--err); font-weight: 600; margin-top: 0.5rem;">
+              ⚠️ {orphanTeams.length} equipos no tienen mentor asignado.
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-card card">
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Mentor</th>
+              <th>Institución</th>
+              <th>Equipos</th>
+              <th>Tickets</th>
+              <th>Finalizados</th>
+              <th>Rta. Promedio</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              !mentorStats || mentorStats.length === 0 ? (
+                <tr>
+                  <td colspan="6" class="empty-state">No hay actividad de mentoría registrada aún.</td>
+                </tr>
+              ) : (
+                mentorStats.map((s) => (
+                  <tr>
+                    <td data-label="Mentor"><strong>{s.mentor_name}</strong></td>
+                    <td data-label="Institución">{s.institution}</td>
+                    <td data-label="Equipos" title={s.assigned_teams_list}>
+                       {s.assigned_teams_count} {s.assigned_teams_count === 1 ? 'equipo' : 'equipos'}
+                    </td>
+                    <td data-label="Tickets">{s.total_tickets}</td>
+                    <td data-label="Finalizados">{s.finished_count}</td>
+                    <td data-label="Rta. Promedio">
+                      {s.avg_response_minutes > 0 ? s.avg_response_minutes + " min" : "-"}
+                    </td>
+                  </tr>
+                ))
+              )
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- End tab-mentoria -->
 
   <div class="tab-content" id="tab-resultados">
     <div class="admin-actions" style="justify-content: space-between;">
@@ -1228,4 +1383,93 @@ const leaderboard = leaderboardData || [];
     }
     target.disabled = false;
   });
+
+  // Lógica del Toggle de Ayuda SOS
+  const helpToggle = document.getElementById(
+    "help-enabled-toggle",
+  ) as HTMLInputElement;
+  helpToggle?.addEventListener("change", async (e) => {
+    const target = e.target as HTMLInputElement;
+    const newValue = target.checked ? "true" : "false";
+    target.disabled = true;
+
+    const { error } = await supabase
+      .from("event_config")
+      .update({ value: newValue })
+      .eq("key", "help_enabled");
+
+    if (error) {
+      console.error("Update config error:", error);
+      showToast("Error al actualizar configuración.", true);
+      target.checked = !target.checked;
+    } else {
+      showToast(
+        newValue === "true"
+          ? "Pedidos de ayuda SOS habilitados"
+          : "Pedidos de ayuda SOS deshabilitados",
+      );
+    }
+    target.disabled = false;
+  });
+
+  // Lógica de Inputs Numéricos (Duración y Cooldown)
+  const durationInput = document.getElementById("mentor-duration-input") as HTMLInputElement;
+  const cooldownInput = document.getElementById("help-cooldown-input") as HTMLInputElement;
+
+  [durationInput, cooldownInput].forEach(input => {
+    input?.addEventListener("change", async () => {
+      const key = input.id === "mentor-duration-input" ? "mentor_session_duration" : "help_cooldown_minutes";
+      const value = input.value;
+      input.disabled = true;
+
+      const { error } = await supabase
+        .from("event_config")
+        .update({ value: value })
+        .eq("key", key);
+
+      if (error) {
+        showToast("Error al guardar configuración", true);
+      } else {
+        showToast("Configuración guardada");
+      }
+      input.disabled = false;
+    });
+  });
+
+  // Lógica de Asignación de Mentores
+  const assignSimpleBtn = document.getElementById("assign-mentors-simple");
+  const assignResetBtn = document.getElementById("assign-mentors-reset");
+
+  const runAssignment = async (reset: boolean) => {
+    const btn = reset ? assignResetBtn : assignSimpleBtn;
+    if (!btn) return;
+
+    const confirmMsg = reset 
+      ? "¿Estás seguro? Se eliminarán todas las asignaciones actuales y se repartirán los equipos de nuevo entre los mentores aprobados."
+      : "¿Asignar mentores a los equipos que aún no tienen uno?";
+    
+    if (!confirm(confirmMsg)) return;
+
+    (btn as HTMLButtonElement).disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "Procesando...";
+
+    const { data, error } = await supabase.rpc("assign_mentors_randomly", { 
+      reset_current: reset 
+    });
+
+    if (error) {
+      console.error("RPC Error:", error);
+      showToast(error.message || "Error al ejecutar la asignación", true);
+    } else {
+      showToast(`Éxito: ${data.teams_updated} equipos asignados a ${data.mentors_used} mentores.`);
+      setTimeout(() => window.location.reload(), 1500);
+    }
+
+    btn.textContent = originalText;
+    (btn as HTMLButtonElement).disabled = false;
+  };
+
+  assignSimpleBtn?.addEventListener("click", () => runAssignment(false));
+  assignResetBtn?.addEventListener("click", () => runAssignment(true));
 </script>
