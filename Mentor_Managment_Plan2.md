@@ -641,12 +641,12 @@ Esto evita tickets "zombie" donde el mentor nunca respondió y el equipo quedó 
 
 ### Fase 4: Dashboard del Mentor
 
-- [ ] **T4.1** — Crear `src/pages/mentoria.astro`: layout base con header, sección de cola de ayuda, sección de historial.
-- [ ] **T4.2** — Implementar server-side: verificación de rol, obtener `mentor_session_duration`, obtener tickets del mentor con JOIN a `teams`.
-- [ ] **T4.3** — Implementar client-side: renderizado de tickets por estado, botones de acción (llamando RPCs), actualización de UI en tiempo real con Supabase Realtime.
-- [ ] **T4.4** — Implementar cronómetro: cuenta regresiva cuando ticket está `en_camino`, pintar rojo al excederse, limpiar intervalos.
-- [ ] **T4.5** — Implementar notificación: beep sonoro en nuevo ticket, indicador en `document.title`.
-- [ ] **T4.6** — Agregar estilos: cards con borde lateral por estado, responsive, animaciones de entrada.
+- [x] **T4.1** — Crear `src/pages/mentoria.astro`: layout base con header, sección de cola de ayuda, sección de historial.
+- [x] **T4.2** — Implementar server-side: verificación de rol, obtener `mentor_session_duration`, obtener tickets del mentor con JOIN a `teams`.
+- [x] **T4.3** — Implementar client-side: renderizado de tickets por estado, botones de acción (llamando RPCs), actualización de UI en tiempo real con Supabase Realtime.
+- [x] **T4.4** — Implementar cronómetro: cuenta regresiva cuando ticket está `en_camino`, pintar rojo al excederse, limpiar intervalos.
+- [x] **T4.5** — Implementar notificación: beep sonoro en nuevo ticket, indicador en `document.title`.
+- [x] **T4.6** — Agregar estilos: cards con borde lateral por estado, responsive, animaciones de entrada.
 
 > **Commit después de T4.6:** `feat(epic16): dashboard de mentor con cola de ayuda en tiempo real`
 

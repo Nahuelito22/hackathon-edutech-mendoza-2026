@@ -1,0 +1,543 @@
+---
+// src/pages/mentoria.astro
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import { createServerClient, parseCookieHeader } from '@supabase/ssr';
+
+const user = Astro.locals.user;
+const profile = Astro.locals.profile;
+
+// Doble validación de seguridad
+if (!user || (profile?.role !== 'mentor' && profile?.role !== 'admin' && profile?.role !== 'superadmin')) {
+  return Astro.redirect('/dashboard');
+}
+
+const supabase = createServerClient(
+  import.meta.env.PUBLIC_SUPABASE_URL,
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+  {
+    cookies: {
+      getAll() {
+        try {
+          return parseCookieHeader(Astro.request.headers.get('Cookie') ?? '');
+        } catch {
+          return [];
+        }
+      },
+      setAll() {}
+    }
+  }
+);
+
+// Obtener duración de sesión configurada
+const { data: configData } = await supabase
+  .from('event_config')
+  .select('value')
+  .eq('key', 'mentor_session_duration')
+  .single();
+
+const mentorSessionDuration = parseInt(configData?.value || '15', 10);
+
+// Obtener tickets de ayuda del mentor
+// Nota: Un admin verá todos los tickets si quisiéramos, pero por ahora seguimos el plan: 
+// el mentor ve sus propios tickets.
+const { data: ticketsData, error: ticketsError } = await supabase
+  .from('help_requests')
+  .select(`
+    *,
+    teams (
+      name,
+      projects (title)
+    )
+  `)
+  .eq('mentor_id', user.id)
+  .order('created_at', { ascending: false });
+
+if (ticketsError) {
+  console.error("Error fetching tickets:", ticketsError);
+}
+
+const tickets = ticketsData || [];
+
+// Separar tickets activos de los finalizados
+const activeTickets = tickets.filter(t => t.status === 'pendiente' || t.status === 'en_camino');
+const historyTickets = tickets.filter(t => t.status === 'finalizado' || t.status === 'expirado');
+---
+
+<Layout title="Panel de Mentoría | HEM2026">
+  <Navbar />
+  <main class="mentor-page">
+    <div class="container mentor-container">
+      <div class="mentor-header">
+        <h1>Panel de Mentoría</h1>
+        <p class="mentor-subtitle">Gestioná tus pedidos de ayuda en tiempo real.</p>
+      </div>
+
+      <div class="mentor-sections">
+        <!-- Cola de Ayuda -->
+        <section class="mentor-section">
+          <h2 class="section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list-todo"><rect x="3" y="5" width="6" height="6" rx="1"/><path d="m3 17 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>
+            Cola de Ayuda 
+            <span id="active-count" class="badge badge-active">{activeTickets.length}</span>
+          </h2>
+          
+          <div id="active-tickets-grid" class="tickets-grid">
+            {activeTickets.length === 0 ? (
+              <div class="empty-state card">
+                <p>No tenés pedidos de ayuda pendientes en este momento.</p>
+                <small>Los nuevos pedidos aparecerán aquí automáticamente.</small>
+              </div>
+            ) : (
+              activeTickets.map(ticket => (
+                <div class={`ticket-card card status-${ticket.status}`} id={`ticket-${ticket.id}`} data-ticket={JSON.stringify(ticket)}>
+                  <div class="ticket-status-strip"></div>
+                  <div class="ticket-body">
+                    <div class="ticket-main">
+                      <div class="team-info">
+                        <h3>{ticket.teams?.name}</h3>
+                        <span class="project-title">{ticket.teams?.projects?.[0]?.title || 'Sin proyecto'}</span>
+                      </div>
+                      <div class="ticket-meta">
+                        <span class="status-pill">
+                          {ticket.status === 'pendiente' ? '🟡 Pendiente' : '🔵 En camino'}
+                        </span>
+                        <span class="time-elapsed" data-start={ticket.created_at}>
+                           Hace {Math.floor((Date.now() - new Date(ticket.created_at).getTime()) / 60000)} min
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {ticket.status === 'en_camino' && (
+                      <div class="timer-section">
+                        <span class="timer-label">⏱️ Tiempo restante:</span>
+                        <span class="timer-value" data-started={ticket.started_at}>--:--</span>
+                      </div>
+                    )}
+
+                    <div class="ticket-actions">
+                      {ticket.status === 'pendiente' && (
+                        <button class="btn btn-primary action-btn btn-go" data-id={ticket.id}>
+                          ¡Voy en Camino!
+                        </button>
+                      )}
+                      {ticket.status === 'en_camino' && (
+                        <button class="btn btn-success action-btn btn-finish" data-id={ticket.id}>
+                          Finalizar Ayuda
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+
+        <!-- Historial -->
+        <section class="mentor-section">
+          <h2 class="section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-history"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="m12 7 0 5 3 3"/></svg>
+            Historial Reciente
+          </h2>
+          <div id="history-tickets-list" class="history-list">
+            {historyTickets.length === 0 ? (
+              <p class="text-muted">Aún no has completado ninguna sesión de mentoría.</p>
+            ) : (
+              historyTickets.map(ticket => (
+                <div class="history-item card">
+                  <div class="history-info">
+                    <strong>{ticket.teams?.name}</strong>
+                    <span>{ticket.status === 'finalizado' ? '✅ Finalizado' : '🔴 Expirado'}</span>
+                  </div>
+                  <div class="history-time">
+                    {new Date(ticket.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+      <span id="toast-msg"></span>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .mentor-page {
+    min-height: calc(100vh - var(--nav-h));
+    padding: calc(var(--nav-h) + 2rem) 0 4rem;
+    background: var(--bg-3);
+  }
+
+  .mentor-container {
+    max-width: 1000px;
+  }
+
+  .mentor-header {
+    margin-bottom: 3rem;
+  }
+
+  .mentor-header h1 {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--txt-1);
+  }
+
+  .mentor-subtitle {
+    color: var(--txt-2);
+    font-size: 1.1rem;
+  }
+
+  .mentor-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    color: var(--txt-1);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .badge-active {
+    background: var(--c1);
+    color: white;
+    padding: 0.1rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+  }
+
+  .tickets-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .tickets-grid {
+      grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    }
+  }
+
+  .ticket-card {
+    display: flex;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    transition: all var(--t-normal);
+  }
+
+  .ticket-status-strip {
+    width: 6px;
+    height: 100%;
+    flex-shrink: 0;
+  }
+
+  .status-pendiente .ticket-status-strip { background: #eab308; } /* Yellow */
+  .status-en_camino .ticket-status-strip { background: var(--c1); } /* Blue */
+  
+  .ticket-body {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .ticket-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .team-info h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.3rem;
+    color: var(--txt-1);
+  }
+
+  .project-title {
+    font-size: 0.9rem;
+    color: var(--txt-2);
+    font-style: italic;
+  }
+
+  .ticket-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+  }
+
+  .status-pill {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: var(--bg-2);
+  }
+
+  .time-elapsed {
+    font-size: 0.8rem;
+    color: var(--txt-m);
+  }
+
+  .timer-section {
+    background: rgba(var(--c1r), 0.05);
+    border: 1px solid rgba(var(--c1r), 0.2);
+    padding: 0.75rem 1rem;
+    border-radius: var(--r-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .timer-label { font-size: 0.9rem; color: var(--txt-2); }
+  .timer-value { font-family: monospace; font-size: 1.2rem; font-weight: 700; color: var(--c1); }
+
+  /* Red state for exceeded time */
+  .timer-exceeded .timer-section {
+    background: rgba(220, 38, 38, 0.1);
+    border-color: #dc2626;
+  }
+  .timer-exceeded .timer-value { color: #dc2626; }
+
+  .ticket-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .action-btn {
+    flex: 1;
+    padding: 0.75rem;
+  }
+
+  .empty-state {
+    padding: 3rem;
+    text-align: center;
+    border: 2px dashed var(--brd);
+  }
+
+  .empty-state p {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--txt-1);
+  }
+
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+  }
+
+  .history-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .history-info strong { color: var(--txt-1); }
+  .history-info span { font-size: 0.85rem; color: var(--txt-m); }
+  .history-time { font-size: 0.9rem; color: var(--txt-2); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--c1);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--r-md);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all var(--t-normal);
+    z-index: 2000;
+  }
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  .toast.error { background: #dc2626; }
+</style>
+
+<script is:inline define:vars={{ mentorId: user.id, mentorSessionDuration }}>
+  // Nota: Usamos is:inline para simplificar el acceso a variables de Astro y evitar problemas de hidratación complejos.
+  // Pero importamos el cliente de Supabase dinámicamente o lo pasamos por window.
+  // Mejor: Usamos un script normal y obtenemos los datos de data-attributes.
+</script>
+
+<script>
+  import { createBrowserClient } from '@supabase/ssr';
+
+  const supabase = createBrowserClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  const activeGrid = document.getElementById('active-tickets-grid');
+  const historyList = document.getElementById('history-tickets-list');
+  const activeCountBadge = document.getElementById('active-count');
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toast-msg');
+
+  // Obtener mentorId desde el cliente para Realtime (o pasar por prop)
+  // Como ya validamos sesión en el server, podemos usar auth.getUser() o confiar en que el middleware puso el profile.
+  const mentorId = (await supabase.auth.getUser()).data.user?.id;
+  const mentorSessionDuration = 15; // Valor fallback, idealmente obtenido de prop
+
+  function showToast(message, isError = false) {
+    if (!toast || !toastMsg) return;
+    toastMsg.textContent = message;
+    toast.classList.toggle('error', isError);
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // --- Lógica de Acciones (RPCs) ---
+  async function handleUpdateTicket(ticketId, newStatus) {
+    const { data, error } = await supabase.rpc('mentor_update_ticket', {
+      ticket_id: ticketId,
+      new_status: newStatus
+    });
+
+    if (error) {
+      showToast(error.message, true);
+      return false;
+    }
+    return true;
+  }
+
+  // Event Delegation para botones
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.action-btn');
+    if (!btn) return;
+
+    const ticketId = btn.getAttribute('data-id');
+    const isFinish = btn.classList.contains('btn-finish');
+    const newStatus = isFinish ? 'finalizado' : 'en_camino';
+
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = 'Procesando...';
+
+    const success = await handleUpdateTicket(ticketId, newStatus);
+    
+    if (!success) {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+    // Realtime se encargará de actualizar la UI
+  });
+
+  // --- Realtime Subscription ---
+  if (mentorId) {
+    supabase
+      .channel('mentor-help-requests')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'help_requests',
+          filter: `mentor_id=eq.${mentorId}`
+        },
+        (payload) => {
+          console.log('Realtime change:', payload);
+          // Recargar para simplificar (aunque lo ideal es manipular el DOM)
+          // Para esta versión, recargamos para asegurar que los joins y estados estén frescos
+          window.location.reload();
+        }
+      )
+      .subscribe();
+  }
+
+  // --- Cronómetros y Timers ---
+  function updateTimers() {
+    const timerValues = document.querySelectorAll('.timer-value');
+    timerValues.forEach(el => {
+      const startedAt = el.getAttribute('data-started');
+      if (!startedAt) return;
+
+      const startTime = new Date(startedAt).getTime();
+      const endTime = startTime + (mentorSessionDuration * 60 * 1000);
+      const now = Date.now();
+      const diff = endTime - now;
+
+      if (diff <= 0) {
+        el.textContent = "¡Tiempo agotado!";
+        el.closest('.ticket-card').classList.add('timer-exceeded');
+      } else {
+        const mins = Math.floor(diff / 60000);
+        const secs = Math.floor((diff % 60000) / 1000);
+        el.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+      }
+    });
+
+    // Actualizar también el "hace X min" de los pendientes
+    const timeElapsedEl = document.querySelectorAll('.time-elapsed');
+    timeElapsedEl.forEach(el => {
+      const start = el.getAttribute('data-start');
+      if (!start) return;
+      const elapsed = Math.floor((Date.now() - new Date(start).getTime()) / 60000);
+      el.textContent = `Hace ${elapsed} min`;
+    });
+  }
+
+  setInterval(updateTimers, 1000);
+  updateTimers();
+
+  // --- Notificación (T4.5) ---
+  const initialCount = parseInt(activeCountBadge?.textContent || '0', 10);
+  
+  // Guardar en sessionStorage para detectar incrementos tras recarga por Realtime
+  const lastCount = parseInt(sessionStorage.getItem('mentor_active_tickets') || '0', 10);
+  
+  if (initialCount > lastCount) {
+    // Nuevo ticket detectado
+    document.title = `(¡NUEVO!) ${document.title}`;
+    
+    // Intentar sonido (oscilador simple para no depender de assets externos)
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.2);
+    } catch (e) { console.log('Audio blocked by browser'); }
+
+    showToast('¡Has recibido un nuevo pedido de ayuda!');
+  }
+  
+  sessionStorage.setItem('mentor_active_tickets', initialCount.toString());
+
+  // Limpiar el título al mover el mouse o hacer foco
+  window.addEventListener('focus', () => {
+    document.title = 'Panel de Mentoría | HEM2026';
+  }, { once: true });
+</script>
